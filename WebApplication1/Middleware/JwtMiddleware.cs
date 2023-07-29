@@ -1,6 +1,7 @@
 ﻿using DoranOfficeBackend.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -20,7 +21,7 @@ namespace DoranOfficeBackend.Middleware
             _configuration = configuration;
         }
 
-        public async Task Invoke(HttpContext httpContext, MyDbContext dbContext)
+        public async Task Invoke(HttpContext httpContext, DoranDbContext dbContext)
         {
 
             var token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
@@ -28,22 +29,27 @@ namespace DoranOfficeBackend.Middleware
             Console.WriteLine("Token: " + token);
             if (token != null)
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_configuration.GetSection("Jwt")["Secret"]);
-              
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                try
                 {
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuerSigningKey = false,
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                }, out SecurityToken validatedToken);
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                Console.WriteLine("JWT: " + jwtToken.Claims.First(x => x.Type == "Id").Value);
-                var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "Id").Value);
-                
-                var user = dbContext.Users.FirstOrDefault(x => x.Id == userId);
-                httpContext.Items["User"] = user;
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var key = Encoding.ASCII.GetBytes(_configuration.GetSection("Jwt")["Secret"]);
+                    tokenHandler.ValidateToken(token, new TokenValidationParameters
+                    {
+                        TryAllIssuerSigningKeys = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuerSigningKey = false,
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                    }, out SecurityToken validatedToken);
+                    var jwtToken = (JwtSecurityToken)validatedToken;
+                    Console.WriteLine("JWT: " + jwtToken.Claims.First(x => x.Type == "Id").Value);
+                    var userId = jwtToken.Claims.First(x => x.Type == "Id").Value;
+
+                    var user = dbContext.Masterusers.FirstOrDefault(x => x.Kodeku.ToString() == userId);
+                    httpContext.Items["User"] = user;
+                }
+                catch (Exception ex) { }
+
             }
 
             await _next(httpContext);

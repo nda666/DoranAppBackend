@@ -26,7 +26,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpGet]
-        [Authorize]
+        [Auth]
         public async Task<IActionResult> GetAll()
         {
             if (_context.Roles == null)
@@ -59,7 +59,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpPost]
-        [Authorize]
+        [Auth]
         public async Task<IActionResult> Create([FromBody] Role saveRole)
         {
             var role = new Role { Active = saveRole.Active, Name = saveRole.Name, CreatedAt = DateTime.Now };
@@ -69,7 +69,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpPut("{id}")]
-        [Authorize]
+        [Auth]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] SaveRole saveRole)
         {
 
@@ -87,7 +87,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Auth]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var role = _context.Roles.SingleOrDefault(d => d.Id == id);

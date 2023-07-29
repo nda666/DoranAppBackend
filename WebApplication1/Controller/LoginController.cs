@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DoranOfficeBackend.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using DoranOfficeBackend.Dto.Auth;
+using DoranOfficeBackend.Dtos.Auth;
+using DoranOfficeBackend.Models;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -17,10 +12,10 @@ namespace DoranOfficeBackend.Controller
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly DoranDbContext _context;
         private readonly IConfiguration _configuration;
 
-        public LoginController(MyDbContext context, IConfiguration configuration)
+        public LoginController(DoranDbContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
@@ -29,17 +24,21 @@ namespace DoranOfficeBackend.Controller
         // POST: api/Login
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostLogin(LoginDto login)
+        public async Task<ActionResult<Masteruser>> PostLogin(LoginDto login)
         {
-          if (_context.Users == null)
+            
+                Console.WriteLine("SECRET " + _configuration.GetSection("Jwt")["Secret"]);
+          if (_context.Masterusers == null)
           {
               return Problem("Entity set 'DoranOfficeContext.Users'  is null.");
           }
             
             try
             {
-                var user = _context.Users.Where(user => user.Username == login.username).First();
-                if (!BCrypt.Net.BCrypt.Verify(login.password, user.Password))
+                var user = _context.Masterusers.Where(user => user.Usernameku == login.username).First();
+               
+
+                if (login.password != user.Passwordku)
                 {
                     return Unauthorized();
                 }
@@ -49,9 +48,9 @@ namespace DoranOfficeBackend.Controller
                 {
                     Subject = new ClaimsIdentity(new[]
               {
-                new Claim("Id", user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-                new Claim(JwtRegisteredClaimNames.Email, user.Username),
+                new Claim("Id", user.Kodeku.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Usernameku),
+                new Claim(JwtRegisteredClaimNames.Email, user.Usernameku),
                 new Claim(JwtRegisteredClaimNames.Jti,
                 Guid.NewGuid().ToString())
              }),
@@ -70,12 +69,9 @@ namespace DoranOfficeBackend.Controller
 
                 return user;
             } catch (InvalidOperationException ex){
+                Console.WriteLine("123123 " + ex.Message);
                 return Unauthorized();
             }
-                
-                
-           
-           
             
         }
 

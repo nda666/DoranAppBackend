@@ -14,7 +14,7 @@ namespace DoranOfficeBackend.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Auth]
     public class SalesController : ControllerBase
     {
         private readonly MyDbContext _context;
