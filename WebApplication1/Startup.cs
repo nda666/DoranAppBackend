@@ -9,6 +9,7 @@ using MySql.EntityFrameworkCore.Extensions;
 using DoranOfficeBackend.Interceptors;
 using DoranOfficeBackend.Mappings;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.ReDoc;
 
 namespace DoranOfficeBackend
 {
@@ -27,7 +28,12 @@ namespace DoranOfficeBackend
                
                 options.AddInterceptors(new TimestampInterceptor()).UseMySQL(Configuration.GetConnectionString("DefaultConnection"));
             });
-            services.AddAutoMapper(typeof(Startup), typeof(MasterTimSalesMapping));
+
+            services.AddAutoMapper(
+                typeof(Startup), 
+                typeof(MasterTimSalesMapping),
+                typeof(SalesMapping)
+                );
 
             //services.AddControllers().AddJsonOptions(options =>
             //{
@@ -121,8 +127,15 @@ namespace DoranOfficeBackend
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwagger(c =>
+                {
+                    c.SerializeAsV2 = true;
+                });
+                app.UseReDoc(c =>
+                {
+                    c.RoutePrefix = "docs";
+                    c.SpecUrl("/swagger/v1/swagger.json");
+                });
             }
 
 

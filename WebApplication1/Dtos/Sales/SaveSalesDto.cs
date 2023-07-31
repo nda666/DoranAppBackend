@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 
-namespace DoranOfficeBackend.Models
+namespace DoranOfficeBackend.Dtos.Sales
 {
-    public partial class Sale
+    public class SaveSalesDto
     {
         public sbyte Kode { get; set; }
         public string Nama { get; set; } = null!;
-        public sbyte Aktif { get; set; }
+        public bool Aktif { get; set; }
         public sbyte Urutan { get; set; }
         public sbyte Tipe { get; set; }
         public string NamaPendamping { get; set; } = null!;
@@ -32,11 +31,12 @@ namespace DoranOfficeBackend.Models
         public sbyte Emailbos { get; set; }
         public sbyte Syaratbonus { get; set; }
         public sbyte Kodetimsales { get; set; }
-        public sbyte Bisalihatomzettahunantim { get; set; }
-        public sbyte EmailOmzetTerdahsyat { get; set; }
-        public sbyte EmailJeteterdahsyat { get; set; }
-        public sbyte EmailTargetTahunan { get; set; }
-        public sbyte Emailresikiriman { get; set; }
+        public bool Bisalihatomzettahunantim { get; set; }
+        public bool EmailOmzetTerdahsyat { get; set; }
+        public bool EmailJeteterdahsyat { get; set; }
+        public bool EmailTargetTahunan { get; set; }
+        public bool Emailresikiriman { get; set; }
+
         public int BonusJete { get; set; }
     }
 }

@@ -191,7 +191,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Potonganbarangkurang> Potonganbarangkurangs { get; set; } = null!;
         public virtual DbSet<Profileperush> Profileperushes { get; set; } = null!;
         public virtual DbSet<Rumushargaonline> Rumushargaonlines { get; set; } = null!;
-        public virtual DbSet<Sale> Sales { get; set; } = null!;
+        public virtual DbSet<Sales> Sales { get; set; } = null!;
         public virtual DbSet<Sethargajual> Sethargajuals { get; set; } = null!;
         public virtual DbSet<Sethargalevel> Sethargalevels { get; set; } = null!;
         public virtual DbSet<Sethargatoko> Sethargatokos { get; set; } = null!;
@@ -6509,7 +6509,7 @@ namespace DoranOfficeBackend
                     .HasColumnName("kodeBrand");
             });
 
-            modelBuilder.Entity<Sale>(entity =>
+            modelBuilder.Entity<Sales>(entity =>
             {
                 entity.HasKey(e => e.Kode)
                     .HasName("PRIMARY");
@@ -7741,10 +7741,30 @@ namespace DoranOfficeBackend
 
         public void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Mastertimsales>()
-                .HasOne(e => e.Masterchannelsales)
+            modelBuilder.Entity<Mastertimsales>(entity =>
+            {
+                entity.HasOne(e => e.Masterchannelsales)
                 .WithMany(c => c.Mastertimsales)
-                .HasForeignKey(c => c.Kodechannel);
+                .HasForeignKey("Kodechannel");
+            });
+
+            modelBuilder.Entity<Sales>(entity =>
+            {
+                entity.HasOne(e => e.SalesManager)
+               .WithOne()
+               .HasForeignKey<Sales>(f => f.Kodemanager);
+
+                entity.HasOne(e => e.Mastertimsales)
+                .WithMany(c => c.Sales)
+                .HasForeignKey("Kodetimsales");
+            });
+
+            modelBuilder.Entity<Masteruser>(entity =>
+            {
+                entity.HasOne(e => e.Sales)
+                  .WithOne(c => c.Masteruser)
+                  .HasForeignKey<Masteruser>("Kodesales");
+            });
 
         }
 

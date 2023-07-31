@@ -26,8 +26,7 @@ namespace DoranOfficeBackend.Controller
         [HttpPost]
         public async Task<ActionResult<Masteruser>> PostLogin(LoginDto login)
         {
-            
-                Console.WriteLine("SECRET " + _configuration.GetSection("Jwt")["Secret"]);
+         
           if (_context.Masterusers == null)
           {
               return Problem("Entity set 'DoranOfficeContext.Users'  is null.");
@@ -36,8 +35,8 @@ namespace DoranOfficeBackend.Controller
             try
             {
                 var user = _context.Masterusers.Where(user => user.Usernameku == login.username).First();
-               
 
+                Console.WriteLine("PASS " + user.Passwordku);
                 if (login.password != user.Passwordku)
                 {
                     return Unauthorized();

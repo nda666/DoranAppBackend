@@ -95,8 +95,6 @@ namespace DoranOfficeBackend.Controller
             try
             {
                 _mapper.Map(dto, dbSalesChannel);
-                Console.WriteLine("SKOMISI dto " + dto.SyaratKomisi);
-                Console.WriteLine("SKOMISI dbSalesChannel " + dbSalesChannel.SyaratKomisi);
                 var result = await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

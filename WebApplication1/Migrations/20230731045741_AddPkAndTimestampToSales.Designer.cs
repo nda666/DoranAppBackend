@@ -3,6 +3,7 @@ using System;
 using DoranOfficeBackend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoranOfficeBackend.Migrations
 {
     [DbContext(typeof(DoranDbContext))]
-    partial class DoranDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230731045741_AddPkAndTimestampToSales")]
+    partial class AddPkAndTimestampToSales
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -7368,9 +7370,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("int(11)")
                         .HasColumnName("t5");
 
-                    b.Property<int>("TempId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Tim")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -8633,7 +8632,6 @@ namespace DoranOfficeBackend.Migrations
                     b.HasOne("DoranOfficeBackend.Models.Sales", "Sales")
                         .WithOne("Masteruser")
                         .HasForeignKey("DoranOfficeBackend.Models.Masteruser", "Kodesales")
-                        .HasPrincipalKey("DoranOfficeBackend.Models.Sales", "TempId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

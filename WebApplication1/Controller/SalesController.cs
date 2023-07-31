@@ -5,28 +5,33 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DoranOfficeBackend.Entities;
-using DoranOfficeBackend.Dto.SalesDto;
-using DoranOfficeBackend.Entities.Extentsions;
+using DoranOfficeBackend.Models;
+using DoranOfficeBackend.Extentsions;
 using DoranOfficeBackend.Attributes;
+using AutoMapper;
+using DoranOfficeBackend.Dtos.Sales;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace DoranOfficeBackend.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
     [Auth]
+
     public class SalesController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly DoranDbContext _context;
 
-        public SalesController(MyDbContext context)
+        public SalesController(IMapper mapper, DoranDbContext context)
         {
+            _mapper = mapper;
             _context = context;
         }
 
         // GET: api/Sales
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Sales>>> GetSales([FromQuery] SalesQueryDto salesQuery)
+        public async Task<ActionResult<IEnumerable<SalesDto>>> GetSales([FromQuery] FindSalesDto dto)
         {
           if (_context.Sales == null)
           {
@@ -34,124 +39,116 @@ namespace DoranOfficeBackend.Controller
           }
 
             var query = _context.Sales.AsNoTracking()
-                    .Include(x => x.Manager)
-                    .Include(x => x.SalesTeam)
+                    .Include(x => x.SalesManager)
+                    .Include(x => x.Mastertimsales)
                     .AsQueryable();
-            if (!string.IsNullOrEmpty(salesQuery.Name))
+            if (!string.IsNullOrEmpty(dto.Nama))
             {
-                query = query.Where(r => EF.Functions.Like(r.Name, $"%{salesQuery.Name}%"));
+                query = query.Where(r => EF.Functions.Like(r.Nama, $"%{dto.Nama}%"));
             }
 
-            if (!string.IsNullOrEmpty(salesQuery.Active))
+            if (dto.Aktif.HasValue)
             {
-                query = query.Where(r => r.Active == bool.Parse(salesQuery.Active));
+                query = query.Where(r => r.Aktif == dto.Aktif);
             }
 
-            if (!string.IsNullOrEmpty(salesQuery.SalesTeamlId))
+            if (dto.Kodetimsales.HasValue)
             {
-                query = query.Where(r => r.SalesTeamId.ToString() == salesQuery.SalesTeamlId);
+                query = query.Where(r => r.Kodetimsales == dto.Kodetimsales);
             }
 
-            if (!string.IsNullOrEmpty(salesQuery.GetOmzetEmail))
+            Console.WriteLine("dto.Manager " + dto.Manager);
+            if (dto.Manager.HasValue)
             {
-                query = query.Where(r => r.GetOmzetEmail.ToString() == salesQuery.GetOmzetEmail);
-            }
-
-            if (!string.IsNullOrEmpty(salesQuery.ManagerId))
-            {
-                query = query.Where(r => r.GetOmzetEmail.ToString() == salesQuery.ManagerId);
-            }
-            Console.WriteLine(Request.QueryString);
-            if (!string.IsNullOrEmpty(salesQuery.IsManager))
-            {
-                query = query.Where(r => r.IsManager == bool.Parse(salesQuery.IsManager));
+                query = query.Where(r => r.Manager == dto.Manager);
                 
             }
 
-            if (!string.IsNullOrEmpty(salesQuery.Deleted))
+            if (dto.Deleted == true)
             {
                 query = query.WhereDeleted();
-            }
-            else
+            } else
             {
-                query = query.WhereNotDeleted();
+                query =  query.WhereNotDeleted();
             }
-            return await _context.Sales.ToListAsync();
+
+            var result = await query.ToListAsync();
+
+            return _mapper.Map<SalesDto[]>(result);
         }
 
         // GET: api/Sales/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Sales>> GetSales(Guid id)
+        [HttpGet("{kode}")]
+        public async Task<ActionResult<SalesDto>> GetSales(sbyte kode)
         {
           if (_context.Sales == null)
           {
               return NotFound();
           }
-            var sales = await _context.Sales.FindAsync(id);
+            var sales = await _context.Sales
+                    .AsNoTracking()
+                    .Include(x => x.SalesManager)
+                    .Include(x => x.Mastertimsales)
+                    .Where(x => x.Kode == kode)
+                    .FirstOrDefaultAsync();
 
             if (sales == null)
             {
                 return NotFound();
             }
 
-            return sales;
+            return _mapper.Map<SalesDto>(sales);
         }
 
         // PUT: api/Sales/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSales(Guid id, Sales sales)
+        [HttpPut("{kode}")]
+        public async Task<ActionResult<Sales>> PutSales(sbyte kode, SaveSalesDto dto)
         {
-            if (id != sales.Id)
+            var sales = await _context.Sales.FindAsync(kode);
+            if (sales == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
-            _context.Entry(sales).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                _mapper.Map(dto, sales);
+                var result = await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SalesExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
-            return NoContent();
+            return Ok(sales);
         }
 
         // POST: api/Sales
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Sales>> PostSales(Sales sales)
+        public async Task<ActionResult<Sales>> PostSales(SaveSalesDto dto)
         {
           if (_context.Sales == null)
           {
               return Problem("Entity set 'MyDbContext.Sales'  is null.");
           }
-            _context.Sales.Add(sales);
+            var entity = _mapper.Map<Sales>(dto);
+            _context.Sales.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSales", new { id = sales.Id }, sales);
+            return CreatedAtAction("GetMastertimsales", new { id = entity.Id }, entity);
         }
 
         // DELETE: api/Sales/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSales(Guid id)
+        [HttpDelete("{kode}")]
+        public async Task<ActionResult<Sales>> DeleteSales(sbyte kode)
         {
             if (_context.Sales == null)
             {
                 return NotFound();
             }
-            var sales = await _context.Sales.FindAsync(id);
+            var sales = await _context.Sales.FindAsync(kode);
             if (sales == null)
             {
                 return NotFound();
@@ -160,12 +157,25 @@ namespace DoranOfficeBackend.Controller
             _context.Sales.Remove(sales);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(sales);
         }
 
-        private bool SalesExists(Guid id)
+        [HttpDelete("{kode}/restore")]
+        public async Task<ActionResult<Sales>> RestoreDeleteSales(sbyte kode)
         {
-            return (_context.Sales?.Any(e => e.Id == id)).GetValueOrDefault();
+            if (_context.Mastertimsales == null)
+            {
+                return NotFound();
+            }
+            var sales = await _context.Sales.FindAsync(kode);
+            if (sales == null)
+            {
+                return NotFound();
+            }
+
+            await _context.RestoreSoftDeleteAsync<Sales>(sales);
+
+            return Ok(sales);
         }
     }
 }

@@ -35,5 +35,7 @@ namespace DoranOfficeBackend.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual  Masterchannelsales? Masterchannelsales { get; set; }
+
+        public virtual ICollection<Sales> Sales { get; set; }
     }
 }
