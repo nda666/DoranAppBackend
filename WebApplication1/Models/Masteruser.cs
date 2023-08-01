@@ -21,7 +21,7 @@ namespace DoranOfficeBackend.Models
         public string Akses { get; set; } = null!;
         public string? Sidikjari { get; set; } = null!;
         public bool? Aktif { get; set; }
-        public sbyte Kodesales { get; set; }
+        public int Kodesales { get; set; }
 
         [Column("created_at")]
         public DateTime? CreatedAt { get; set; }

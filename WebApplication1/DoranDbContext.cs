@@ -6519,7 +6519,7 @@ namespace DoranOfficeBackend
                 entity.HasIndex(e => e.Kodetimsales, "kodetimsales");
 
                 entity.Property(e => e.Kode)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("kode");
 
                 entity.Property(e => e.Aktif)
@@ -6568,7 +6568,7 @@ namespace DoranOfficeBackend
                     .HasComment("1 = Terima Email OMZET");
 
                 entity.Property(e => e.Kodemanager)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("kodemanager");
 
                 entity.Property(e => e.Kodepegawai)

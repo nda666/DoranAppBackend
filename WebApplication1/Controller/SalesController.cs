@@ -79,7 +79,7 @@ namespace DoranOfficeBackend.Controller
 
         // GET: api/Sales/5
         [HttpGet("{kode}")]
-        public async Task<ActionResult<SalesDto>> GetSales(sbyte kode)
+        public async Task<ActionResult<SalesDto>> GetSales(int kode)
         {
           if (_context.Sales == null)
           {
@@ -103,7 +103,7 @@ namespace DoranOfficeBackend.Controller
         // PUT: api/Sales/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{kode}")]
-        public async Task<ActionResult<Sales>> PutSales(sbyte kode, SaveSalesDto dto)
+        public async Task<ActionResult<Sales>> PutSales(int kode, SaveSalesDto dto)
         {
             var sales = await _context.Sales.FindAsync(kode);
             if (sales == null)
@@ -133,16 +133,20 @@ namespace DoranOfficeBackend.Controller
           {
               return Problem("Entity set 'MyDbContext.Sales'  is null.");
           }
+         
             var entity = _mapper.Map<Sales>(dto);
+            entity.Emailspv ="";
+            entity.NamaPendamping = "";
+            entity.Tim = "";
             _context.Sales.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMastertimsales", new { id = entity.Id }, entity);
+            return CreatedAtAction("GetSales", new { id = entity.Id }, entity);
         }
 
         // DELETE: api/Sales/5
         [HttpDelete("{kode}")]
-        public async Task<ActionResult<Sales>> DeleteSales(sbyte kode)
+        public async Task<ActionResult<Sales>> DeleteSales(int kode)
         {
             if (_context.Sales == null)
             {
@@ -161,7 +165,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpDelete("{kode}/restore")]
-        public async Task<ActionResult<Sales>> RestoreDeleteSales(sbyte kode)
+        public async Task<ActionResult<Sales>> RestoreDeleteSales(int kode)
         {
             if (_context.Mastertimsales == null)
             {

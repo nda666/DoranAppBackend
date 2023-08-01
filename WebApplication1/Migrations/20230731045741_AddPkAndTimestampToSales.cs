@@ -10,22 +10,15 @@ namespace DoranOfficeBackend.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<sbyte>(
-                      name: "kodesales",
-             table: "masteruser",
-              type: "tinyint(4)",
-              nullable: false,
-              oldClrType: typeof(int),
-              oldType: "int(11)"
-            );
-            migrationBuilder.AlterColumn<sbyte>(
-                      name: "kode",
-              table: "sales",
-              type: "tinyint(4)",
+            migrationBuilder.AlterColumn<int>(
+               name: "kodemanager",
+               table: "sales",
+              oldType: "tinyint(4)",
               nullable: false,
               oldClrType: typeof(sbyte),
-              oldType: "tinyint(4)"
-            ).Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn);
+             type: "int(11)"
+            );
+           
            
             migrationBuilder.AddColumn<Guid>(
                 name: "id",
@@ -113,14 +106,6 @@ namespace DoranOfficeBackend.Migrations
             oldClrType: typeof(sbyte),
             type: "int(11)"
           );
-            migrationBuilder.AlterColumn<sbyte>(
-                      name: "kode",
-              table: "sales",
-              type: "tinyint(4)",
-              nullable: false,
-              oldClrType: typeof(sbyte),
-              oldType: "tinyint(4)"
-            );
         }
     }
 }

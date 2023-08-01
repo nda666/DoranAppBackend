@@ -14,7 +14,7 @@ namespace DoranOfficeBackend.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public sbyte Kode { get; set; }
+        public int Kode { get; set; }
         public string Nama { get; set; } = null!;
         public bool Aktif { get; set; }
         public sbyte Urutan { get; set; }
@@ -32,10 +32,10 @@ namespace DoranOfficeBackend.Models
         public int T4 { get; set; }
         public int T5 { get; set; }
         public string Tim { get; set; } = null!;
-        public sbyte Salesol { get; set; }
+        public bool Salesol { get; set; }
         public int Kodepegawai { get; set; }
         public bool Manager { get; set; }
-        public sbyte Kodemanager { get; set; }
+        public int Kodemanager { get; set; }
         public sbyte Persenkomisi { get; set; }
         public sbyte Persenbonus { get; set; }
         public sbyte Emailbos { get; set; }
