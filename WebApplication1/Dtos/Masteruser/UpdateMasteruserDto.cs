@@ -1,6 +1,6 @@
 ﻿namespace DoranOfficeBackend.Dtos.Masteruser
 {
-    public class UpdateMasteruser
+    public class UpdateMasteruserDto
     {
         public string Usernameku { get; set; } = null!;
         public string Passwordku { get; set; } = null!;

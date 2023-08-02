@@ -1,6 +1,6 @@
 ﻿namespace DoranOfficeBackend.Dtos.Masteruser
 {
-    public class SaveMasteruser
+    public class SaveMasteruserDto
     {
         public string Usernameku { get; set; } = null!;
         public string Passwordku { get; set; } = null!;

@@ -10,32 +10,38 @@ namespace DoranOfficeBackend.Controller
     [Route("api/[controller]")]
     [ApiController]
     [Auth]
-    public class UsersController : ControllerBase
+    public class MasteruserController : ControllerBase
     {
         private readonly DoranDbContext _context;
 
-        public UsersController(DoranDbContext context)
+        public MasteruserController(DoranDbContext context)
         {
             _context = context;
         }
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Masteruser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<Masteruser>>> GetUsers([FromQuery]FindMasteruserDto dto)
         {
+            ConsoleDump.Extensions.Dump(dto);
             if (_context.Masterusers == null)
             {
                 return NotFound();
             }
             var query = _context.Masterusers.AsNoTracking().AsQueryable();
-            if (!String.IsNullOrEmpty(Request.Query["username"]))
+            if (!String.IsNullOrEmpty(dto.Username))
             {
                 query = query.Where(r => EF.Functions.Like(r.Usernameku, $"%{Request.Query["username"]}%"));
             }
-
-            if (!String.IsNullOrEmpty(Request.Query["deleted"]))
+           
+            if (dto.Aktif.HasValue)
             {
-                query = query.WhereDeleted();
+                query = query.Where(r => r.Aktif == dto.Aktif);
+            }
+
+            if (dto.Deleted.HasValue)
+            {
+                query = dto.Deleted == true ? query.WhereDeleted() : query;
             }
             else
             {
@@ -66,7 +72,7 @@ namespace DoranOfficeBackend.Controller
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Masteruser>> PostUser([FromBody] SaveMasteruser
+        public async Task<ActionResult<Masteruser>> PostUser([FromBody] SaveMasteruserDto
  saveMasteruser)
         {
             if (_context.Masterusers == null)
@@ -90,18 +96,18 @@ namespace DoranOfficeBackend.Controller
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{kodeKu}")]
-        public async Task<IActionResult> PutUser(string kodeKu, UpdateMasteruser updateMasteruser)
+        public async Task<IActionResult> PutUser(int kodeKu, UpdateMasteruserDto dto)
         {
-            var user = _context.Masterusers?.Where(e => e.Kodeku.ToString() == kodeKu).FirstOrDefault();
+            var user = _context.Masterusers?.Where(e => e.Kodeku == kodeKu).FirstOrDefault();
 
             if (user == null)
             {
                 return NotFound();
             }
-            user.Passwordku = updateMasteruser.Passwordku;
-            user.Aktif = updateMasteruser.Aktif;
-            user.Akses = updateMasteruser.Akses;
-            Console.WriteLine("Akses " + updateMasteruser.Akses);
+            user.Usernameku = dto.Usernameku;
+            user.Passwordku = dto.Passwordku;
+            user.Aktif = dto.Aktif;
+            user.Akses = dto.Akses;
             try
             {
                 await _context.SaveChangesAsync();
