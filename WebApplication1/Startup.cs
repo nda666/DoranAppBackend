@@ -32,7 +32,8 @@ namespace DoranOfficeBackend
             services.AddAutoMapper(
                 typeof(Startup), 
                 typeof(MasterTimSalesMapping),
-                typeof(SalesMapping)
+                typeof(SalesMapping),
+                typeof(HkategoribarangMapping)
                 );
 
             //services.AddControllers().AddJsonOptions(options =>

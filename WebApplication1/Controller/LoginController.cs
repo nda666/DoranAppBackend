@@ -36,7 +36,8 @@ namespace DoranOfficeBackend.Controller
             {
                 var user = _context.Masterusers.Where(user => user.Usernameku == login.username).First();
 
-                Console.WriteLine("PASS " + user.Passwordku);
+                ConsoleDump.Extensions.Dump(123123);
+
                 if (login.password != user.Passwordku)
                 {
                     return Unauthorized();
@@ -68,6 +69,7 @@ namespace DoranOfficeBackend.Controller
 
                 return user;
             } catch (InvalidOperationException ex){
+                ConsoleDump.Extensions.Dump(ex);
                 Console.WriteLine("123123 " + ex.Message);
                 return Unauthorized();
             }

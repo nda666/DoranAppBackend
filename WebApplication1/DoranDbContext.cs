@@ -2772,7 +2772,6 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Hkategoribarang>(entity =>
             {
-                entity.HasNoKey();
 
                 entity.ToTable("hkategoribarang");
 
@@ -2803,6 +2802,9 @@ namespace DoranOfficeBackend
                     .HasColumnType("tinyint(4)")
                     .HasColumnName("perlusetharga")
                     .HasDefaultValueSql("'1'");
+
+                
+                entity.HasKey(x => x.Kodeh);
             });
 
             modelBuilder.Entity<Hkirimretur>(entity =>
