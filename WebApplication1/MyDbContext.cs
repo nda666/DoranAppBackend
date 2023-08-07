@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace DoranOfficeBackend
 {
-    public partial class DoranDbContext : DbContext
+    public partial class MyDbContext : DbContext
     {
         private readonly IConfiguration _configuration;
 
@@ -16,12 +16,12 @@ namespace DoranOfficeBackend
         private static readonly SoftDeleteInterceptor softDeleteInterceptor
        = new SoftDeleteInterceptor();
 
-        public DoranDbContext(IConfiguration configuration)
+        public MyDbContext(IConfiguration configuration)
         {
             this._configuration = configuration;
         }
 
-        public DoranDbContext(DbContextOptions<DoranDbContext> options, IConfiguration configuration)
+        public MyDbContext(DbContextOptions<MyDbContext> options, IConfiguration configuration)
             : base(options)
         {
             this._configuration = configuration;
@@ -159,7 +159,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Mastercatatan> Mastercatatans { get; set; } = null!;
         public virtual DbSet<Masterchannelsales> Masterchannelsales { get; set; } = null!;
         public virtual DbSet<Mastercicilan> Mastercicilans { get; set; } = null!;
-        public virtual DbSet<Masterdivisi> Masterdivisis { get; set; } = null!;
+        public virtual DbSet<Masterdivisi> Masterdivisi { get; set; } = null!;
         public virtual DbSet<Mastergrupnilai> Mastergrupnilais { get; set; } = null!;
         public virtual DbSet<Mastergudang> Mastergudangs { get; set; } = null!;
         public virtual DbSet<Masterharilibur> Masterhariliburs { get; set; } = null!;

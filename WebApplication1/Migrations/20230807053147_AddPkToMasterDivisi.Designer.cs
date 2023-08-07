@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoranOfficeBackend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20230731045741_AddPkAndTimestampToSales")]
-    partial class AddPkAndTimestampToSales
+    [Migration("20230807053147_AddPkToMasterDivisi")]
+    partial class AddPkToMasterDivisi
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -2730,6 +2730,11 @@ namespace DoranOfficeBackend.Migrations
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Hkategoribarang", b =>
                 {
+                    b.Property<int>("Kodeh")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)")
+                        .HasColumnName("kodeh");
+
                     b.Property<sbyte>("Aktif")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(4)")
@@ -2742,13 +2747,22 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnName("cektahunan")
                         .HasDefaultValueSql("'1'");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
                     b.Property<int>("Hargakhusus")
                         .HasColumnType("int(11)")
                         .HasColumnName("hargakhusus");
 
-                    b.Property<int>("Kodeh")
-                        .HasColumnType("int(11)")
-                        .HasColumnName("kodeh");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)")
+                        .HasColumnName("id");
 
                     b.Property<string>("Nama")
                         .IsRequired()
@@ -2763,6 +2777,12 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("tinyint(4)")
                         .HasColumnName("perlusetharga")
                         .HasDefaultValueSql("'1'");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Kodeh");
 
                     b.ToTable("hkategoribarang", (string)null);
                 });
@@ -5059,6 +5079,18 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("int(11)")
                         .HasColumnName("kode");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("id");
+
                     b.Property<string>("Nama")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -5066,6 +5098,10 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("nama")
                         .HasDefaultValueSql("''''''");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Kode")
                         .HasName("PRIMARY");
@@ -7235,9 +7271,9 @@ namespace DoranOfficeBackend.Migrations
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Sales", b =>
                 {
-                    b.Property<sbyte>("Kode")
+                    b.Property<int>("Kode")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(4)")
+                        .HasColumnType("int(11)")
                         .HasColumnName("kode");
 
                     b.Property<sbyte>("Aktif")
@@ -7304,8 +7340,8 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnName("jenis")
                         .HasComment("1 = Terima Email OMZET");
 
-                    b.Property<sbyte>("Kodemanager")
-                        .HasColumnType("tinyint(4)")
+                    b.Property<int>("Kodemanager")
+                        .HasColumnType("int(11)")
                         .HasColumnName("kodemanager");
 
                     b.Property<int>("Kodepegawai")
@@ -7390,6 +7426,9 @@ namespace DoranOfficeBackend.Migrations
 
                     b.HasKey("Kode")
                         .HasName("PRIMARY");
+
+                    b.HasIndex("Kodemanager")
+                        .IsUnique();
 
                     b.HasIndex(new[] { "Kodetimsales" }, "kodetimsales");
 
@@ -8640,14 +8679,14 @@ namespace DoranOfficeBackend.Migrations
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Sales", b =>
                 {
-                    b.HasOne("DoranOfficeBackend.Models.Mastertimsales", "Mastertimsales")
-                        .WithMany("Sales")
-                        .HasForeignKey("Kodetimsales")
+                    b.HasOne("DoranOfficeBackend.Models.Sales", "SalesManager")
+                        .WithOne()
+                        .HasForeignKey("DoranOfficeBackend.Models.Sales", "Kodemanager")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DoranOfficeBackend.Models.Sales", "SalesManager")
-                        .WithMany("SalesManagers")
+                    b.HasOne("DoranOfficeBackend.Models.Mastertimsales", "Mastertimsales")
+                        .WithMany("Sales")
                         .HasForeignKey("Kodetimsales")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -8670,8 +8709,6 @@ namespace DoranOfficeBackend.Migrations
             modelBuilder.Entity("DoranOfficeBackend.Models.Sales", b =>
                 {
                     b.Navigation("Masteruser");
-
-                    b.Navigation("SalesManagers");
                 });
 #pragma warning restore 612, 618
         }

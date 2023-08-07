@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoranOfficeBackend.Migrations
 {
-    [DbContext(typeof(DoranDbContext))]
+    [DbContext(typeof(MyDbContext))]
     partial class DoranDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -2728,6 +2728,11 @@ namespace DoranOfficeBackend.Migrations
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Hkategoribarang", b =>
                 {
+                    b.Property<int>("Kodeh")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)")
+                        .HasColumnName("kodeh");
+
                     b.Property<sbyte>("Aktif")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(4)")
@@ -2757,11 +2762,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("char(36)")
                         .HasColumnName("id");
 
-                    b.Property<int>("Kodeh")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
-                        .HasColumnName("kodeh");
-
                     b.Property<string>("Nama")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -2779,6 +2779,8 @@ namespace DoranOfficeBackend.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("updated_at");
+
+                    b.HasKey("Kodeh");
 
                     b.ToTable("hkategoribarang", (string)null);
                 });
@@ -5075,6 +5077,18 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("int(11)")
                         .HasColumnName("kode");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("id");
+
                     b.Property<string>("Nama")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -5082,6 +5096,10 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("nama")
                         .HasDefaultValueSql("''''''");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Kode")
                         .HasName("PRIMARY");

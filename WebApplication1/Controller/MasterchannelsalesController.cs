@@ -12,9 +12,9 @@ namespace DoranOfficeBackend.Controller
     [Auth]
     public class MasterchannelsalesController : ControllerBase
     {
-        private readonly DoranDbContext _context;
+        private readonly MyDbContext _context;
 
-        public MasterchannelsalesController(DoranDbContext context)
+        public MasterchannelsalesController(MyDbContext context)
         {
             _context = context;
         }

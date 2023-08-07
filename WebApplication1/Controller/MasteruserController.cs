@@ -12,9 +12,9 @@ namespace DoranOfficeBackend.Controller
     [Auth]
     public class MasteruserController : ControllerBase
     {
-        private readonly DoranDbContext _context;
+        private readonly MyDbContext _context;
 
-        public MasteruserController(DoranDbContext context)
+        public MasteruserController(MyDbContext context)
         {
             _context = context;
         }

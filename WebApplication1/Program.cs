@@ -23,7 +23,6 @@ namespace DoranOfficeBackend
                 {
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseUrls("https://localhost:44376/");
-
                 });
     }
 

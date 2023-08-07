@@ -12,10 +12,10 @@ namespace DoranOfficeBackend.Controller
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly DoranDbContext _context;
+        private readonly MyDbContext _context;
         private readonly IConfiguration _configuration;
 
-        public LoginController(DoranDbContext context, IConfiguration configuration)
+        public LoginController(MyDbContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;

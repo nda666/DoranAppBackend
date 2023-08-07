@@ -14,9 +14,9 @@ namespace DoranOfficeBackend.Controller.HkategoriBarangsController
     [Auth]
     public class HkategoriBarangController : ControllerBase
     {
-        private readonly DoranDbContext _context;
+        private readonly MyDbContext _context;
         private readonly IMapper _mapper;
-        public HkategoriBarangController(IMapper mapper , DoranDbContext context)
+        public HkategoriBarangController(IMapper mapper , MyDbContext context)
         {
             _context = context;
             _mapper = mapper;

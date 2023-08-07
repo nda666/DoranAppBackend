@@ -23,7 +23,7 @@ namespace DoranOfficeBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DoranDbContext>(options =>
+            services.AddDbContext<MyDbContext>(options =>
             {
                
                 options.AddInterceptors(new TimestampInterceptor()).UseMySQL(Configuration.GetConnectionString("DefaultConnection"));
@@ -33,7 +33,8 @@ namespace DoranOfficeBackend
                 typeof(Startup), 
                 typeof(MasterTimSalesMapping),
                 typeof(SalesMapping),
-                typeof(HkategoribarangMapping)
+                typeof(HkategoribarangMapping),
+                typeof(MasterdivisiMapping)
                 );
 
             //services.AddControllers().AddJsonOptions(options =>

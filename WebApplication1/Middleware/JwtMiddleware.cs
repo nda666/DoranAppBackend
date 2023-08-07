@@ -1,11 +1,6 @@
-﻿using DoranOfficeBackend.Entities;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DoranOfficeBackend.Middleware
 {
@@ -21,7 +16,7 @@ namespace DoranOfficeBackend.Middleware
             _configuration = configuration;
         }
 
-        public async Task Invoke(HttpContext httpContext, DoranDbContext dbContext)
+        public async Task Invoke(HttpContext httpContext, MyDbContext dbContext)
         {
 
             var token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();

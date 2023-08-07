@@ -15,9 +15,9 @@ namespace DoranOfficeBackend.Controller
     public class MastertimsalesController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly DoranDbContext _context;
+        private readonly MyDbContext _context;
 
-        public MastertimsalesController(IMapper mapper, DoranDbContext context)
+        public MastertimsalesController(IMapper mapper, MyDbContext context)
         {
             _mapper = mapper;
             _context = context;

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoranOfficeBackend.Migrations
 {
-    [DbContext(typeof(DoranDbContext))]
+    [DbContext(typeof(MyDbContext))]
     [Migration("20230728064250_AddIdAndTimestampMasterTimSales")]
     partial class AddIdAndTimestampMasterTimSales
     {
