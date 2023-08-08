@@ -2,6 +2,6 @@
 {
     public class SaveMasterdivisiDto
     {
-        public string Name { get; set; }
+        public string Nama { get; set; }
     }
 }

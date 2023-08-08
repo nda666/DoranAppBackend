@@ -22,5 +22,7 @@ namespace DoranOfficeBackend.Models
 
         [Column("deleted_at")]
         public DateTime? DeletedAt { get; set; }
+
+        public virtual ICollection<Masterpegawai>? Masterpegawais { get; set; }
     }
 }

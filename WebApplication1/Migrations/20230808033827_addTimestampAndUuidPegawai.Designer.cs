@@ -3,6 +3,7 @@ using System;
 using DoranOfficeBackend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoranOfficeBackend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class DoranDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230808033827_addTimestampAndUuidPegawai")]
+    partial class addTimestampAndUuidPegawai
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5253,18 +5255,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("int(11)")
                         .HasColumnName("kode");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("id");
-
                     b.Property<string>("Nama")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -5272,10 +5262,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("nama")
                         .HasDefaultValueSql("''''''");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated_at");
 
                     b.HasKey("Kode")
                         .HasName("PRIMARY");
@@ -5555,8 +5541,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasName("PRIMARY");
 
                     b.HasIndex("Kodedivisi");
-
-                    b.HasIndex("Kodejabatan");
 
                     b.ToTable("masterpegawai", (string)null);
                 });
@@ -8697,15 +8681,7 @@ namespace DoranOfficeBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DoranOfficeBackend.Models.Masterjabatan", "Masterjabatan")
-                        .WithMany("Masterpegawais")
-                        .HasForeignKey("Kodejabatan")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Masterdivisi");
-
-                    b.Navigation("Masterjabatan");
                 });
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Mastertimsales", b =>
@@ -8755,11 +8731,6 @@ namespace DoranOfficeBackend.Migrations
                 });
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Masterdivisi", b =>
-                {
-                    b.Navigation("Masterpegawais");
-                });
-
-            modelBuilder.Entity("DoranOfficeBackend.Models.Masterjabatan", b =>
                 {
                     b.Navigation("Masterpegawais");
                 });

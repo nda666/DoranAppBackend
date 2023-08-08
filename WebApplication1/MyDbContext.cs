@@ -164,7 +164,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Mastergudang> Mastergudangs { get; set; } = null!;
         public virtual DbSet<Masterharilibur> Masterhariliburs { get; set; } = null!;
         public virtual DbSet<Masterinventari> Masterinventaris { get; set; } = null!;
-        public virtual DbSet<Masterjabatan> Masterjabatans { get; set; } = null!;
+        public virtual DbSet<Masterjabatan> Masterjabatan { get; set; } = null!;
         public virtual DbSet<Masterjenisinventari> Masterjenisinventaris { get; set; } = null!;
         public virtual DbSet<Masterlevelpelanggan> Masterlevelpelanggans { get; set; } = null!;
         public virtual DbSet<Masterleveltokopedium> Masterleveltokopedia { get; set; } = null!;
@@ -7743,6 +7743,20 @@ namespace DoranOfficeBackend
 
         public void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<Masterpegawai>(e =>
+            {
+                e.HasOne(e => e.Masterdivisi)
+                .WithMany(c => c.Masterpegawais)
+                .HasForeignKey(x => x.Kodedivisi)
+                .HasPrincipalKey(x => x.Kode);
+
+                e.HasOne(e => e.Masterjabatan)
+               .WithMany(c => c.Masterpegawais)
+               .HasForeignKey(x => x.Kodejabatan)
+               .HasPrincipalKey(x => x.Kode);
+            });
+
             modelBuilder.Entity<Mastertimsales>(entity =>
             {
                 entity.HasOne(e => e.Masterchannelsales)

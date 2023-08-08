@@ -8,34 +8,34 @@ using Microsoft.EntityFrameworkCore;
 using DoranOfficeBackend;
 using DoranOfficeBackend.Models;
 using AutoMapper;
-using DoranOfficeBackend.Dtos.Masterdivisi;
+using DoranOfficeBackend.Dtos.Masterjabatan;
 using DoranOfficeBackend.Extentsions;
 
 namespace DoranOfficeBackend.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MasterdivisiController : ControllerBase
+    public class MasterjabatanController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly MyDbContext _context;
 
-        public MasterdivisiController(IMapper mapper, MyDbContext context)
+        public MasterjabatanController(IMapper mapper, MyDbContext context)
         {
             _mapper = mapper;
             _context = context;
         }
 
-        // GET: api/Masterdivisi
+        // GET: api/Masterjabatan
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Masterdivisi>>> GetMasterdivisi([FromQuery] FindMasterdivisiDto dto)
+        public async Task<ActionResult<IEnumerable<Masterjabatan>>> GetMasterjabatan([FromQuery] FindMasterjabatanDto dto)
         {
-          if (_context.Masterdivisi == null)
+          if (_context.Masterjabatan == null)
           {
               return NotFound();
           }
 
-            var query = _context.Masterdivisi
+            var query = _context.Masterjabatan
                     .AsNoTracking()
                     .Include(x => x.Masterpegawais)
                     .AsQueryable();
@@ -57,43 +57,43 @@ namespace DoranOfficeBackend.Controller
             return await query.ToListAsync();
         }
 
-        // GET: api/Masterdivisi/5
+        // GET: api/Masterjabatan/5
         [HttpGet("{kode}")]
-        public async Task<ActionResult<Masterdivisi>> GetMasterdivisi(int kode)
+        public async Task<ActionResult<Masterjabatan>> GetMasterjabatan(int kode)
         {
-          if (_context.Masterdivisi == null)
+          if (_context.Masterjabatan == null)
           {
               return NotFound();
           }
-            var masterdivisi = await _context.Masterdivisi
+            var masterjabatan = await _context.Masterjabatan
                     .Include(x => x.Masterpegawais)
                     .AsNoTracking()
                     .Where(x => x.Kode == kode)
                     .FirstOrDefaultAsync();
 
-            if (masterdivisi == null)
+            if (masterjabatan == null)
             {
                 return NotFound();
             }
 
-            return masterdivisi;
+            return masterjabatan;
         }
 
-        // PUT: api/Masterdivisi/5
+        // PUT: api/Masterjabatan/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{kode}")]
-        public async Task<ActionResult<Masterdivisi>> PutMasterdivisi(int kode, [FromBody] SaveMasterdivisiDto dto)
+        public async Task<ActionResult<Masterjabatan>> PutMasterjabatan(int kode, [FromBody] SaveMasterjabatanDto dto)
         {
 
-            var masterdivisi = await _context.Masterdivisi.FindAsync(kode);
-            if (masterdivisi == null)
+            var masterjabatan = await _context.Masterjabatan.FindAsync(kode);
+            if (masterjabatan == null)
             {
                 return NotFound();
             }
 
             try
             {
-                _mapper.Map(dto, masterdivisi);
+                _mapper.Map(dto, masterjabatan);
                 var result = await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -101,62 +101,62 @@ namespace DoranOfficeBackend.Controller
                 throw;
             }
 
-            return Ok(masterdivisi);
+            return Ok(masterjabatan);
         }
 
-        // POST: api/Masterdivisi
+        // POST: api/Masterjabatan
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Masterdivisi>> PostMasterdivisi([FromBody] SaveMasterdivisiDto dto)
+        public async Task<ActionResult<Masterjabatan>> PostMasterjabatan([FromBody] SaveMasterjabatanDto dto)
         {
             if (_context.Sales == null)
             {
                 return Problem("Entity set 'MyDbContext.Sales'  is null.");
             }
 
-            var entity = _mapper.Map<Masterdivisi>(dto);
-            _context.Masterdivisi.Add(entity);
+            var entity = _mapper.Map<Masterjabatan>(dto);
+            _context.Masterjabatan.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMasterdivisi", new { id = entity.Id }, entity);
+            return CreatedAtAction("GetMasterjabatan", new { id = entity.Id }, entity);
         }
 
-        // DELETE: api/Masterdivisi/5
+        // DELETE: api/Masterjabatan/5
         [HttpDelete("{kode}")]
-        public async Task<IActionResult> DeleteMasterdivisi(int kode)
+        public async Task<IActionResult> DeleteMasterjabatan(int kode)
         {
-            if (_context.Masterdivisi == null)
+            if (_context.Masterjabatan == null)
             {
                 return NotFound();
             }
-            var masterdivisi = await _context.Masterdivisi.FindAsync(kode);
-            if (masterdivisi == null)
+            var masterjabatan = await _context.Masterjabatan.FindAsync(kode);
+            if (masterjabatan == null)
             {
                 return NotFound();
             }
 
-            _context.Masterdivisi.Remove(masterdivisi);
+            _context.Masterjabatan.Remove(masterjabatan);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         [HttpDelete("{kode}/restore")]
-        public async Task<ActionResult<Masterdivisi>> RestoreDeleteMasterdivisi(int kode)
+        public async Task<ActionResult<Masterjabatan>> RestoreDeleteMasterjabatan(int kode)
         {
-            if (_context.Masterdivisi == null)
+            if (_context.Masterjabatan == null)
             {
                 return NotFound();
             }
-            var masterdivisi = await _context.Masterdivisi.FindAsync(kode);
-            if (masterdivisi == null)
+            var masterjabatan = await _context.Masterjabatan.FindAsync(kode);
+            if (masterjabatan == null)
             {
                 return NotFound();
             }
 
-            await _context.RestoreSoftDeleteAsync<Masterdivisi>(masterdivisi);
+            await _context.RestoreSoftDeleteAsync<Masterjabatan>(masterjabatan);
 
-            return Ok(masterdivisi);
+            return Ok(masterjabatan);
         }
     }
 }
