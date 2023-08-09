@@ -161,7 +161,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Mastercicilan> Mastercicilans { get; set; } = null!;
         public virtual DbSet<Masterdivisi> Masterdivisi { get; set; } = null!;
         public virtual DbSet<Mastergrupnilai> Mastergrupnilais { get; set; } = null!;
-        public virtual DbSet<Mastergudang> Mastergudangs { get; set; } = null!;
+        public virtual DbSet<Mastergudang> Mastergudang { get; set; } = null!;
         public virtual DbSet<Masterharilibur> Masterhariliburs { get; set; } = null!;
         public virtual DbSet<Masterinventari> Masterinventaris { get; set; } = null!;
         public virtual DbSet<Masterjabatan> Masterjabatan { get; set; } = null!;

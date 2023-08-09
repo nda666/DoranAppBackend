@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace DoranOfficeBackend.Extentsions
 {
-    public static class SoftDeleteExtensions
+    public static class SoftDeleteExtension
     {
         public static IQueryable<TEntity> WhereNotDeleted<TEntity>(this IQueryable<TEntity> query)
         where TEntity : class, ISoftDelete

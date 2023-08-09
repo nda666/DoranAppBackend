@@ -10,6 +10,9 @@ using DoranOfficeBackend.Interceptors;
 using DoranOfficeBackend.Mappings;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.ReDoc;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
+using DoranOfficeBackend.Extentsions;
 
 namespace DoranOfficeBackend
 {
@@ -34,7 +37,8 @@ namespace DoranOfficeBackend
                 typeof(MasterTimSalesMapping),
                 typeof(SalesMapping),
                 typeof(HkategoribarangMapping),
-                typeof(MasterdivisiMapping)
+                typeof(MasterdivisiMapping),
+                typeof(MastergudangMapping)
                 );
 
             //services.AddControllers().AddJsonOptions(options =>
@@ -51,6 +55,11 @@ namespace DoranOfficeBackend
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
+                options.CustomOperationIds(apiDesc =>
+                {
+                    return apiDesc.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name.CamelToWords() : null;
+                });
+
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
@@ -142,7 +151,7 @@ namespace DoranOfficeBackend
 
 
             app.UseSession();
-
+            app.ConfigureExceptionHandler();
             app.UseMiddleware<JwtMiddleware>();
             app.UseHttpsRedirection();
             app.UseRouting();
