@@ -21,7 +21,6 @@ namespace DoranOfficeBackend.Middleware
 
             var token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-            Console.WriteLine("Token: " + token);
             if (token != null)
             {
                 try
@@ -37,7 +36,7 @@ namespace DoranOfficeBackend.Middleware
                         ValidateAudience = false,
                     }, out SecurityToken validatedToken);
                     var jwtToken = (JwtSecurityToken)validatedToken;
-                    Console.WriteLine("JWT: " + jwtToken.Claims.First(x => x.Type == "Id").Value);
+                   
                     var userId = jwtToken.Claims.First(x => x.Type == "Id").Value;
 
                     var user = dbContext.Masterusers.FirstOrDefault(x => x.Kodeku.ToString() == userId);

@@ -3,6 +3,7 @@ using System;
 using DoranOfficeBackend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoranOfficeBackend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class DoranDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230812033236_FixPkHkelompokbarang")]
+    partial class FixPkHkelompokbarang
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1758,13 +1760,8 @@ namespace DoranOfficeBackend.Migrations
                     b.ToTable("dtargetomzettokopcs", (string)null);
                 });
 
-            modelBuilder.Entity("DoranOfficeBackend.Models.Dtrans", b =>
+            modelBuilder.Entity("DoranOfficeBackend.Models.Dtran", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
                     b.Property<int>("Harga")
                         .HasColumnType("int(11)")
                         .HasColumnName("harga");
@@ -1819,12 +1816,6 @@ namespace DoranOfficeBackend.Migrations
                     b.Property<int>("Untung")
                         .HasColumnType("int(11)")
                         .HasColumnName("untung");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Kodebarang");
-
-                    b.HasIndex("Kodeh");
 
                     b.ToTable("dtrans", (string)null);
                 });
@@ -3738,28 +3729,16 @@ namespace DoranOfficeBackend.Migrations
                     b.ToTable("hsidikjari", (string)null);
                 });
 
-            modelBuilder.Entity("DoranOfficeBackend.Models.Htrans", b =>
+            modelBuilder.Entity("DoranOfficeBackend.Models.Htran", b =>
                 {
                     b.Property<int>("KodeH")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int(11)")
                         .HasColumnName("kodeH");
 
-                    b.Property<sbyte>("Admingantiharga")
-                        .HasColumnType("tinyint(4)")
-                        .HasColumnName("admingantiharga")
-                        .HasComment("Penanda Bila Admin ada ganti harga");
-
                     b.Property<bool>("Adminkiriman")
                         .HasColumnType("tinyint(1)")
                         .HasColumnName("adminkiriman");
-
-                    b.Property<sbyte>("AkanDjJurnalkan")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(4)")
-                        .HasColumnName("akanDjJurnalkan")
-                        .HasDefaultValueSql("'1'")
-                        .HasComment("1=AKAN MASUK JURNAL PENJUALAN. 0=TIDAK MASUK JURNAL PENJUALAN");
 
                     b.Property<string>("BagiKomisi")
                         .IsRequired()
@@ -3777,11 +3756,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("varchar(30)")
                         .HasColumnName("barcodeonline")
                         .HasDefaultValueSql("''''''''''''''");
-
-                    b.Property<int>("Cadanganppn")
-                        .HasColumnType("int(11)")
-                        .HasColumnName("cadanganppn")
-                        .HasComment("UNTUK SIMPAN CADANGAN PPN SEBELUM DILAKUKAN PERUBAHAN BESAR");
 
                     b.Property<string>("CustOlkodepos")
                         .IsRequired()
@@ -3823,14 +3797,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("int(11)")
                         .HasColumnName("dikirim");
 
-                    b.Property<int>("Diskon")
-                        .HasColumnType("int(11)")
-                        .HasColumnName("diskon");
-
-                    b.Property<long>("Dpp")
-                        .HasColumnType("bigint(20)")
-                        .HasColumnName("dpp");
-
                     b.Property<string>("HistoryNya")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -3848,8 +3814,8 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnName("infopenting")
                         .HasDefaultValueSql("''''''");
 
-                    b.Property<int>("InsertName")
-                        .HasColumnType("int(11)")
+                    b.Property<sbyte>("InsertName")
+                        .HasColumnType("tinyint(4)")
                         .HasColumnName("insertName");
 
                     b.Property<DateTime?>("InsertTime")
@@ -3862,8 +3828,8 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("int(11)")
                         .HasColumnName("jumKoli");
 
-                    b.Property<long>("Jumlah")
-                        .HasColumnType("bigint(20)")
+                    b.Property<int>("Jumlah")
+                        .HasColumnType("int(11)")
                         .HasColumnName("jumlah");
 
                     b.Property<int>("JumlahKomisi")
@@ -3878,11 +3844,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnName("jumlahOnString")
                         .HasDefaultValueSql("'''0'''");
 
-                    b.Property<int>("Jumlahbarangbiaya")
-                        .HasColumnType("int(11)")
-                        .HasColumnName("jumlahbarangbiaya")
-                        .HasComment("TOTAL DARI BRG2 YG BERUPA BIAYA NON JURNAL PENJUALAN");
-
                     b.Property<string>("Keterangan")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -3895,8 +3856,8 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("int(11)")
                         .HasColumnName("kodePelanggan");
 
-                    b.Property<int>("KodeSales")
-                        .HasColumnType("int(11)")
+                    b.Property<sbyte>("KodeSales")
+                        .HasColumnType("tinyint(4)")
                         .HasColumnName("kodeSales");
 
                     b.Property<int>("Kodegudang")
@@ -3914,7 +3875,7 @@ namespace DoranOfficeBackend.Migrations
                         .HasDefaultValueSql("''''''");
 
                     b.Property<int>("Kodeonline")
-                        .HasColumnType("int(16)")
+                        .HasColumnType("int(11)")
                         .HasColumnName("kodeonline");
 
                     b.Property<int?>("Kodeorderapps")
@@ -3980,11 +3941,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("tinyint(4)")
                         .HasColumnName("ppndiarsip");
 
-                    b.Property<int>("Ppnreal")
-                        .HasColumnType("int(11)")
-                        .HasColumnName("ppnreal")
-                        .HasComment("PPN 100% UNTUK SEMUA");
-
                     b.Property<string>("Retur")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -4019,11 +3975,6 @@ namespace DoranOfficeBackend.Migrations
                     b.Property<int>("TambahanLainnya")
                         .HasColumnType("int(11)")
                         .HasColumnName("tambahanLainnya");
-
-                    b.Property<sbyte>("Terbitfakturppn")
-                        .HasColumnType("tinyint(4)")
-                        .HasColumnName("terbitfakturppn")
-                        .HasComment("0=TIDAK_TERBIT. 1=TERBIT_FAKTUR_PPN");
 
                     b.Property<DateTime>("TglBagiKomisi")
                         .ValueGeneratedOnAdd()
@@ -4085,12 +4036,8 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnType("int(11)")
                         .HasColumnName("untung");
 
-                    b.Property<int>("UntungbelumpotOl")
-                        .HasColumnType("int(11)")
-                        .HasColumnName("untungbelumpotOL");
-
-                    b.Property<int>("UpdateName")
-                        .HasColumnType("int(11)")
+                    b.Property<sbyte>("UpdateName")
+                        .HasColumnType("tinyint(4)")
                         .HasColumnName("updateName");
 
                     b.Property<DateTime>("UpdateTime")
@@ -4101,16 +4048,6 @@ namespace DoranOfficeBackend.Migrations
 
                     b.HasKey("KodeH")
                         .HasName("PRIMARY");
-
-                    b.HasIndex(new[] { "AkanDjJurnalkan" }, "akanDjJurnalkan");
-
-                    b.HasIndex(new[] { "Jumlah" }, "jumlah");
-
-                    b.HasIndex(new[] { "KodePelanggan" }, "kodePelanggan");
-
-                    b.HasIndex(new[] { "KodeSales" }, "kodeSales");
-
-                    b.HasIndex(new[] { "Kodegudang" }, "kodegudang");
 
                     b.HasIndex(new[] { "NoSeriOnline" }, "noSeriOnline");
 
@@ -4206,8 +4143,7 @@ namespace DoranOfficeBackend.Migrations
 
                     b.HasIndex(new[] { "KodeGudangTujuan" }, "kodeGudangTujuan");
 
-                    b.HasIndex(new[] { "Kodegudang" }, "kodegudang")
-                        .HasDatabaseName("kodegudang1");
+                    b.HasIndex(new[] { "Kodegudang" }, "kodegudang");
 
                     b.ToTable("htransit", (string)null);
                 });
@@ -4794,7 +4730,7 @@ namespace DoranOfficeBackend.Migrations
                     b.HasComment("table untuk log saat terakhir ubah nomor hp pelanggan");
                 });
 
-            modelBuilder.Entity("DoranOfficeBackend.Models.LokasiKota", b =>
+            modelBuilder.Entity("DoranOfficeBackend.Models.LokasiKotum", b =>
                 {
                     b.Property<int>("Kode")
                         .ValueGeneratedOnAdd()
@@ -5865,8 +5801,8 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnName("fototoko")
                         .HasDefaultValueSql("''''''");
 
-                    b.Property<sbyte>("InsertName")
-                        .HasColumnType("tinyint")
+                    b.Property<bool>("InsertName")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("insertName");
 
                     b.Property<DateTime>("InsertTime")
@@ -6138,8 +6074,8 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnName("tokotelp")
                         .HasDefaultValueSql("''''''");
 
-                    b.Property<sbyte>("UpdateName")
-                        .HasColumnType("tinyint")
+                    b.Property<bool>("UpdateName")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("updateName");
 
                     b.Property<DateTime>("UpdateTime")
@@ -8814,36 +8750,6 @@ namespace DoranOfficeBackend.Migrations
                     b.ToTable("ttmasuk", (string)null);
                 });
 
-            modelBuilder.Entity("DoranOfficeBackend.Models.Dtrans", b =>
-                {
-                    b.HasOne("DoranOfficeBackend.Models.Masterbarang", "Masterbarang")
-                        .WithMany("Dtrans")
-                        .HasForeignKey("Kodebarang")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DoranOfficeBackend.Models.Htrans", "Htrans")
-                        .WithMany("Dtrans")
-                        .HasForeignKey("Kodeh")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Htrans");
-
-                    b.Navigation("Masterbarang");
-                });
-
-            modelBuilder.Entity("DoranOfficeBackend.Models.Htrans", b =>
-                {
-                    b.HasOne("DoranOfficeBackend.Models.Masterpelanggan", "Masterpelanggan")
-                        .WithMany("Htrans")
-                        .HasForeignKey("KodePelanggan")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Masterpelanggan");
-                });
-
             modelBuilder.Entity("DoranOfficeBackend.Models.Masterpegawai", b =>
                 {
                     b.HasOne("DoranOfficeBackend.Models.Masterdivisi", "Masterdivisi")
@@ -8861,17 +8767,6 @@ namespace DoranOfficeBackend.Migrations
                     b.Navigation("Masterdivisi");
 
                     b.Navigation("Masterjabatan");
-                });
-
-            modelBuilder.Entity("DoranOfficeBackend.Models.Masterpelanggan", b =>
-                {
-                    b.HasOne("DoranOfficeBackend.Models.LokasiKota", "LokasiKota")
-                        .WithMany("Masterpelanggans")
-                        .HasForeignKey("Kota")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LokasiKota");
                 });
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Mastertimsales", b =>
@@ -8915,21 +8810,6 @@ namespace DoranOfficeBackend.Migrations
                     b.Navigation("SalesManager");
                 });
 
-            modelBuilder.Entity("DoranOfficeBackend.Models.Htrans", b =>
-                {
-                    b.Navigation("Dtrans");
-                });
-
-            modelBuilder.Entity("DoranOfficeBackend.Models.LokasiKota", b =>
-                {
-                    b.Navigation("Masterpelanggans");
-                });
-
-            modelBuilder.Entity("DoranOfficeBackend.Models.Masterbarang", b =>
-                {
-                    b.Navigation("Dtrans");
-                });
-
             modelBuilder.Entity("DoranOfficeBackend.Models.Masterchannelsales", b =>
                 {
                     b.Navigation("Mastertimsales");
@@ -8943,11 +8823,6 @@ namespace DoranOfficeBackend.Migrations
             modelBuilder.Entity("DoranOfficeBackend.Models.Masterjabatan", b =>
                 {
                     b.Navigation("Masterpegawais");
-                });
-
-            modelBuilder.Entity("DoranOfficeBackend.Models.Masterpelanggan", b =>
-                {
-                    b.Navigation("Htrans");
                 });
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Mastertimsales", b =>

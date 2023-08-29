@@ -16,8 +16,7 @@ namespace DoranOfficeBackend.Controller
         [HttpGet]
         public async Task<String> Get()
         {
-            Console.WriteLine("Start HOme");
-            return "Hai";
+            return "Go go go!!!! goooooooooooOOOOO!!! yes DASHYAT";
         }
     }
 }

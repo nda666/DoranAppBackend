@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Swashbuckle.AspNetCore.Annotations;
 
-namespace DoranOfficeBackend.Models
+namespace DoranOfficeBackend.Dtos.Sethargalevel
 {
-    public partial class Sethargalevel
+    public class SaveSethargalevelDto
     {
-        public int Kode { get; set; }
+        ///<summary>Nama hkategoribarang</summary>
         public string Nama { get; set; } = null!;
         public float AcuanTambah { get; set; }
         public float AcuanPotong { get; set; }

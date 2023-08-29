@@ -4,7 +4,7 @@ namespace DoranOfficeBackend.Dtos.HkategoriBarang
 {
     public class SaveHkategoribarangDto
     {
-        [SwaggerSchema(Description = "Nama")]
+        ///<summary>Nama hkategoribarang</summary>
         public string Nama { get; set; }
         public bool Perlusetharga { get; set; }
         public bool Cektahunan { get; set; }

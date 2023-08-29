@@ -7,7 +7,7 @@ namespace DoranOfficeBackend.Models
     {
         public short BrgKode { get; set; }
         public string BrgNama { get; set; } = null!;
-        public sbyte BrgAktif { get; set; }
+        public bool BrgAktif { get; set; }
         public bool InsertName { get; set; }
         public DateTime InsertTime { get; set; }
         public bool UpdateName { get; set; }
@@ -40,5 +40,9 @@ namespace DoranOfficeBackend.Models
         /// Keperluan Apps PastiSukses untuk cek apakah brg ini perlu diorder toko atau belum. 1=Perlu. 0=TidakPerlu.
         /// </summary>
         public sbyte Kpikelengkapantoko { get; set; }
+
+        public virtual ICollection<Dtrans> Dtrans { get; set; }
+
+        public virtual Dkategoribarang? Dkategoribarang { get; set; }
     }
 }

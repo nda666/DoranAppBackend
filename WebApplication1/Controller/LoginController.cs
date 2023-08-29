@@ -10,6 +10,7 @@ namespace DoranOfficeBackend.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class LoginController : ControllerBase
     {
         private readonly MyDbContext _context;
@@ -32,11 +33,10 @@ namespace DoranOfficeBackend.Controller
               return Problem("Entity set 'DoranOfficeContext.Users'  is null.");
           }
             
-            try
-            {
-                var user = _context.Masterusers.Where(user => user.Usernameku == login.username).First();
+            //try
+            //{
+                var user = _context.Masterusers.Where(user => user.Usernameku.ToLower() == login.username.ToLower()).First();
 
-                ConsoleDump.Extensions.Dump(123123);
 
                 if (login.password != user.Passwordku)
                 {
@@ -68,11 +68,11 @@ namespace DoranOfficeBackend.Controller
                 });
 
                 return user;
-            } catch (InvalidOperationException ex){
-                ConsoleDump.Extensions.Dump(ex);
-                Console.WriteLine("123123 " + ex.Message);
-                return Unauthorized();
-            }
+            //} catch (InvalidOperationException ex){
+            //    ConsoleDump.Extensions.Dump(ex);
+            //    Console.WriteLine("123123 " + ex.Message);
+            //    return Unauthorized();
+            //}
             
         }
 

@@ -3,6 +3,7 @@ using System;
 using DoranOfficeBackend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoranOfficeBackend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class DoranDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230822031416_AddPkToDtrans")]
+    partial class AddPkToDtrans
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1821,10 +1823,6 @@ namespace DoranOfficeBackend.Migrations
                         .HasColumnName("untung");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Kodebarang");
-
-                    b.HasIndex("Kodeh");
 
                     b.ToTable("dtrans", (string)null);
                 });
@@ -8814,36 +8812,6 @@ namespace DoranOfficeBackend.Migrations
                     b.ToTable("ttmasuk", (string)null);
                 });
 
-            modelBuilder.Entity("DoranOfficeBackend.Models.Dtrans", b =>
-                {
-                    b.HasOne("DoranOfficeBackend.Models.Masterbarang", "Masterbarang")
-                        .WithMany("Dtrans")
-                        .HasForeignKey("Kodebarang")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DoranOfficeBackend.Models.Htrans", "Htrans")
-                        .WithMany("Dtrans")
-                        .HasForeignKey("Kodeh")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Htrans");
-
-                    b.Navigation("Masterbarang");
-                });
-
-            modelBuilder.Entity("DoranOfficeBackend.Models.Htrans", b =>
-                {
-                    b.HasOne("DoranOfficeBackend.Models.Masterpelanggan", "Masterpelanggan")
-                        .WithMany("Htrans")
-                        .HasForeignKey("KodePelanggan")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Masterpelanggan");
-                });
-
             modelBuilder.Entity("DoranOfficeBackend.Models.Masterpegawai", b =>
                 {
                     b.HasOne("DoranOfficeBackend.Models.Masterdivisi", "Masterdivisi")
@@ -8915,19 +8883,9 @@ namespace DoranOfficeBackend.Migrations
                     b.Navigation("SalesManager");
                 });
 
-            modelBuilder.Entity("DoranOfficeBackend.Models.Htrans", b =>
-                {
-                    b.Navigation("Dtrans");
-                });
-
             modelBuilder.Entity("DoranOfficeBackend.Models.LokasiKota", b =>
                 {
                     b.Navigation("Masterpelanggans");
-                });
-
-            modelBuilder.Entity("DoranOfficeBackend.Models.Masterbarang", b =>
-                {
-                    b.Navigation("Dtrans");
                 });
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Masterchannelsales", b =>
@@ -8943,11 +8901,6 @@ namespace DoranOfficeBackend.Migrations
             modelBuilder.Entity("DoranOfficeBackend.Models.Masterjabatan", b =>
                 {
                     b.Navigation("Masterpegawais");
-                });
-
-            modelBuilder.Entity("DoranOfficeBackend.Models.Masterpelanggan", b =>
-                {
-                    b.Navigation("Htrans");
                 });
 
             modelBuilder.Entity("DoranOfficeBackend.Models.Mastertimsales", b =>

@@ -3,26 +3,49 @@ using System.Collections.Generic;
 
 namespace DoranOfficeBackend.Models
 {
-    public partial class Htran
+    public partial class Htrans
     {
         public int KodeH { get; set; }
         public DateTime TglTrans { get; set; }
         public int KodePelanggan { get; set; }
-        public int Jumlah { get; set; }
+        public long Jumlah { get; set; }
+        /// <summary>
+        /// TOTAL DARI BRG2 YG BERUPA BIAYA NON JURNAL PENJUALAN
+        /// </summary>
+        public int Jumlahbarangbiaya { get; set; }
         public int TambahanLainnya { get; set; }
+        public int Diskon { get; set; }
+        public long Dpp { get; set; }
         public int Ppn { get; set; }
+        /// <summary>
+        /// PPN 100% UNTUK SEMUA
+        /// </summary>
+        public int Ppnreal { get; set; }
+        /// <summary>
+        /// UNTUK SIMPAN CADANGAN PPN SEBELUM DILAKUKAN PERUBAHAN BESAR
+        /// </summary>
+        public int Cadanganppn { get; set; }
+        /// <summary>
+        /// 0=TIDAK_TERBIT. 1=TERBIT_FAKTUR_PPN
+        /// </summary>
+        public sbyte Terbitfakturppn { get; set; }
+        /// <summary>
+        /// 1=AKAN MASUK JURNAL PENJUALAN. 0=TIDAK MASUK JURNAL PENJUALAN
+        /// </summary>
+        public sbyte AkanDjJurnalkan { get; set; }
         public string Keterangan { get; set; } = null!;
-        public sbyte InsertName { get; set; }
+        public int InsertName { get; set; }
         public DateTime? InsertTime { get; set; }
-        public sbyte UpdateName { get; set; }
+        public int UpdateName { get; set; }
         public DateTime UpdateTime { get; set; }
         /// <summary>
         /// 3:belum,2:yanti,1:audit,0:jhonny
         /// </summary>
         public string HistoryNya { get; set; } = null!;
         public int JumlahKomisi { get; set; }
-        public sbyte KodeSales { get; set; }
+        public int KodeSales { get; set; }
         public int Untung { get; set; }
+        public int UntungbelumpotOl { get; set; }
         /// <summary>
         /// 1 = lunas, 0 = belum lunas
         /// </summary>
@@ -73,6 +96,10 @@ namespace DoranOfficeBackend.Models
         public DateTime Tglcek { get; set; }
         public int? Kodeorderapps { get; set; }
         /// <summary>
+        /// Penanda Bila Admin ada ganti harga
+        /// </summary>
+        public sbyte Admingantiharga { get; set; }
+        /// <summary>
         /// BUAT KEPERLUAN CROWN UPDATE STATUS TERKIRIM DI APPS DORAN.ID
         /// </summary>
         public sbyte Sudahupdateorderapps { get; set; }
@@ -80,5 +107,9 @@ namespace DoranOfficeBackend.Models
         /// UNTUK UPDATE NMR HP
         /// </summary>
         public sbyte Sudahupdatephone { get; set; }
+
+        public ICollection<Dtrans> Dtrans { get; set; }
+
+        public virtual Masterpelanggan? Masterpelanggan { get; set; }
     }
 }

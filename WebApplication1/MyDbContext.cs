@@ -16,27 +16,25 @@ namespace DoranOfficeBackend
         private static readonly SoftDeleteInterceptor softDeleteInterceptor
        = new SoftDeleteInterceptor();
 
+     
         public MyDbContext(IConfiguration configuration)
         {
             this._configuration = configuration;
         }
 
-        public MyDbContext(DbContextOptions<MyDbContext> options, IConfiguration configuration)
+
+        public MyDbContext(DbContextOptions options, bool IsMigration)
             : base(options)
         {
-            this._configuration = configuration;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         {
-            if (!optionsBuilder.IsConfigured)
-            {
+            if (!optionsBuilder.IsConfigured) { 
                 var mysqlConn = this._configuration.GetConnectionString("DefaultConnection");
                 optionsBuilder.UseMySQL(mysqlConn);
-               
-            }
-
+        }
             optionsBuilder
                 .AddInterceptors(
                 timestampInterceptor,
@@ -92,7 +90,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Dresipengiriman> Dresipengirimen { get; set; } = null!;
         public virtual DbSet<Dresipengirimankepelanggan> Dresipengirimankepelanggans { get; set; } = null!;
         public virtual DbSet<Dtargetomzettokopc> Dtargetomzettokopcs { get; set; } = null!;
-        public virtual DbSet<Dtran> Dtrans { get; set; } = null!;
+        public virtual DbSet<Dtrans> Dtrans { get; set; } = null!;
         public virtual DbSet<Dtransit> Dtransits { get; set; } = null!;
         public virtual DbSet<Dupdate> Dupdates { get; set; } = null!;
         public virtual DbSet<Emailpromohippo> Emailpromohippos { get; set; } = null!;
@@ -114,6 +112,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Historylimit> Historylimits { get; set; } = null!;
         public virtual DbSet<Hjamkerja> Hjamkerjas { get; set; } = null!;
         public virtual DbSet<Hkategoribarang> Hkategoribarangs { get; set; } = null!;
+        public virtual DbSet<Hkelompokbarang> Hkelompokbarang { get; set; } = null!;
         public virtual DbSet<Hkirimretur> Hkirimreturs { get; set; } = null!;
         public virtual DbSet<Hkomisi> Hkomisis { get; set; } = null!;
         public virtual DbSet<Hlevelgaji> Hlevelgajis { get; set; } = null!;
@@ -132,7 +131,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Hpromo> Hpromos { get; set; } = null!;
         public virtual DbSet<Hrefund> Hrefunds { get; set; } = null!;
         public virtual DbSet<Hsidikjari> Hsidikjaris { get; set; } = null!;
-        public virtual DbSet<Htran> Htrans { get; set; } = null!;
+        public virtual DbSet<Htrans> Htrans { get; set; } = null!;
         public virtual DbSet<Htransit> Htransits { get; set; } = null!;
         public virtual DbSet<Htuga> Htugas { get; set; } = null!;
         public virtual DbSet<Hupdate> Hupdates { get; set; } = null!;
@@ -149,13 +148,13 @@ namespace DoranOfficeBackend
         public virtual DbSet<LogUpdatePhone> LogUpdatePhones { get; set; } = null!;
         public virtual DbSet<Logfile> Logfiles { get; set; } = null!;
         public virtual DbSet<Logfileserver> Logfileservers { get; set; } = null!;
-        public virtual DbSet<LokasiKotum> LokasiKota { get; set; } = null!;
+        public virtual DbSet<LokasiKota> LokasiKota { get; set; } = null!;
         public virtual DbSet<LokasiProvinsi> LokasiProvinsis { get; set; } = null!;
         public virtual DbSet<Manageriallaporan> Manageriallaporans { get; set; } = null!;
         public virtual DbSet<MasterPelangganGabungan> MasterPelangganGabungans { get; set; } = null!;
         public virtual DbSet<Masteragama> Masteragamas { get; set; } = null!;
         public virtual DbSet<Masterbank> Masterbanks { get; set; } = null!;
-        public virtual DbSet<Masterbarang> Masterbarangs { get; set; } = null!;
+        public virtual DbSet<Masterbarang> Masterbarang { get; set; } = null!;
         public virtual DbSet<Mastercatatan> Mastercatatans { get; set; } = null!;
         public virtual DbSet<Masterchannelsales> Masterchannelsales { get; set; } = null!;
         public virtual DbSet<Mastercicilan> Mastercicilans { get; set; } = null!;
@@ -170,7 +169,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Masterleveltokopedium> Masterleveltokopedia { get; set; } = null!;
         public virtual DbSet<Masternilai> Masternilais { get; set; } = null!;
         public virtual DbSet<Masterpegawai> Masterpegawais { get; set; } = null!;
-        public virtual DbSet<Masterpelanggan> Masterpelanggans { get; set; } = null!;
+        public virtual DbSet<Masterpelanggan> Masterpelanggan { get; set; } = null!;
         public virtual DbSet<Masterpemasukan> Masterpemasukans { get; set; } = null!;
         public virtual DbSet<Masterpengeluaran> Masterpengeluarans { get; set; } = null!;
         public virtual DbSet<Masterpoinaward> Masterpoinawards { get; set; } = null!;
@@ -192,8 +191,8 @@ namespace DoranOfficeBackend
         public virtual DbSet<Profileperush> Profileperushes { get; set; } = null!;
         public virtual DbSet<Rumushargaonline> Rumushargaonlines { get; set; } = null!;
         public virtual DbSet<Sales> Sales { get; set; } = null!;
-        public virtual DbSet<Sethargajual> Sethargajuals { get; set; } = null!;
-        public virtual DbSet<Sethargalevel> Sethargalevels { get; set; } = null!;
+        public virtual DbSet<Sethargajual> Sethargajual { get; set; } = null!;
+        public virtual DbSet<Sethargalevel> Sethargalevel { get; set; } = null!;
         public virtual DbSet<Sethargatoko> Sethargatokos { get; set; } = null!;
         public virtual DbSet<Simpanbonusjete> Simpanbonusjetes { get; set; } = null!;
         public virtual DbSet<Simpandendalainnya> Simpandendalainnyas { get; set; } = null!;
@@ -1209,7 +1208,7 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Dkategoribarang>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.Koded);
 
                 entity.ToTable("dkategoribarang");
 
@@ -1863,11 +1862,14 @@ namespace DoranOfficeBackend
                     .HasColumnName("target");
             });
 
-            modelBuilder.Entity<Dtran>(entity =>
+            modelBuilder.Entity<Dtrans>(entity =>
             {
-                entity.HasNoKey();
-
+                entity.HasKey(e => e.Id);
                 entity.ToTable("dtrans");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Harga)
                     .HasColumnType("int(11)")
@@ -2770,6 +2772,45 @@ namespace DoranOfficeBackend
                     .HasColumnName("nama");
             });
 
+            modelBuilder.Entity<Hkelompokbarang>(entity =>
+            {
+
+                entity.ToTable("hkelompokbarang");
+                entity.HasKey(x => x.Kode);
+                entity.Property(e => e.Kode)
+                   .HasColumnType("int(11)")
+                   .HasColumnName("kode")
+                   .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Nama)
+                    .HasMaxLength(20)
+                    .HasColumnName("nama")
+                    .HasDefaultValueSql("''''''");
+
+                entity.Property(e => e.Aktif)
+                    .HasColumnType("tinyint(4)")
+                    .HasColumnName("aktif")
+                    .HasDefaultValueSql("'1'");
+
+                entity.Property<Guid>(e => e.Id)
+                      .ValueGeneratedOnAdd()
+                      .HasColumnType("char(36)")
+                      .HasColumnName("id");
+
+
+                entity.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                entity.Property<DateTime?>("UpdatedAt")
+                       .HasColumnType("datetime(6)")
+                       .HasColumnName("updated_at");
+
+                entity.Property<DateTime?>("DeletedAt")
+                    .HasColumnType("datetime(6)")
+                    .HasColumnName("deleted_at");
+            });
+
             modelBuilder.Entity<Hkategoribarang>(entity =>
             {
 
@@ -2803,7 +2844,7 @@ namespace DoranOfficeBackend
                     .HasColumnName("perlusetharga")
                     .HasDefaultValueSql("'1'");
 
-                
+
                 entity.HasKey(x => x.Kodeh);
             });
 
@@ -3626,12 +3667,22 @@ namespace DoranOfficeBackend
                     .HasColumnName("kodepegawai");
             });
 
-            modelBuilder.Entity<Htran>(entity =>
+            modelBuilder.Entity<Htrans>(entity =>
             {
                 entity.HasKey(e => e.KodeH)
-                    .HasName("PRIMARY");
+                     .HasName("PRIMARY");
 
                 entity.ToTable("htrans");
+
+                entity.HasIndex(e => e.AkanDjJurnalkan, "akanDjJurnalkan");
+
+                entity.HasIndex(e => e.Jumlah, "jumlah");
+
+                entity.HasIndex(e => e.KodePelanggan, "kodePelanggan");
+
+                entity.HasIndex(e => e.KodeSales, "kodeSales");
+
+                entity.HasIndex(e => e.Kodegudang, "kodegudang");
 
                 entity.HasIndex(e => e.NoSeriOnline, "noSeriOnline");
 
@@ -3641,7 +3692,18 @@ namespace DoranOfficeBackend
                     .HasColumnType("int(11)")
                     .HasColumnName("kodeH");
 
+                entity.Property(e => e.Admingantiharga)
+                    .HasColumnType("tinyint(4)")
+                    .HasColumnName("admingantiharga")
+                    .HasComment("Penanda Bila Admin ada ganti harga");
+
                 entity.Property(e => e.Adminkiriman).HasColumnName("adminkiriman");
+
+                entity.Property(e => e.AkanDjJurnalkan)
+                    .HasColumnType("tinyint(4)")
+                    .HasColumnName("akanDjJurnalkan")
+                    .HasDefaultValueSql("'1'")
+                    .HasComment("1=AKAN MASUK JURNAL PENJUALAN. 0=TIDAK MASUK JURNAL PENJUALAN");
 
                 entity.Property(e => e.BagiKomisi)
                     .HasMaxLength(1)
@@ -3653,6 +3715,11 @@ namespace DoranOfficeBackend
                     .HasMaxLength(30)
                     .HasColumnName("barcodeonline")
                     .HasDefaultValueSql("''''''''''''''");
+
+                entity.Property(e => e.Cadanganppn)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("cadanganppn")
+                    .HasComment("UNTUK SIMPAN CADANGAN PPN SEBELUM DILAKUKAN PERUBAHAN BESAR");
 
                 entity.Property(e => e.CustOlkodepos)
                     .HasMaxLength(20)
@@ -3680,6 +3747,14 @@ namespace DoranOfficeBackend
                     .HasColumnType("int(11)")
                     .HasColumnName("dikirim");
 
+                entity.Property(e => e.Diskon)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("diskon");
+
+                entity.Property(e => e.Dpp)
+                    .HasColumnType("bigint(20)")
+                    .HasColumnName("dpp");
+
                 entity.Property(e => e.HistoryNya)
                     .HasMaxLength(1)
                     .HasColumnName("historyNya")
@@ -3692,7 +3767,7 @@ namespace DoranOfficeBackend
                     .HasDefaultValueSql("''''''");
 
                 entity.Property(e => e.InsertName)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("insertName");
 
                 entity.Property(e => e.InsertTime)
@@ -3705,7 +3780,7 @@ namespace DoranOfficeBackend
                     .HasColumnName("jumKoli");
 
                 entity.Property(e => e.Jumlah)
-                    .HasColumnType("int(11)")
+                    .HasColumnType("bigint(20)")
                     .HasColumnName("jumlah");
 
                 entity.Property(e => e.JumlahKomisi)
@@ -3717,6 +3792,11 @@ namespace DoranOfficeBackend
                     .HasColumnName("jumlahOnString")
                     .HasDefaultValueSql("'''0'''");
 
+                entity.Property(e => e.Jumlahbarangbiaya)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("jumlahbarangbiaya")
+                    .HasComment("TOTAL DARI BRG2 YG BERUPA BIAYA NON JURNAL PENJUALAN");
+
                 entity.Property(e => e.Keterangan)
                     .HasMaxLength(400)
                     .HasColumnName("keterangan")
@@ -3727,7 +3807,7 @@ namespace DoranOfficeBackend
                     .HasColumnName("kodePelanggan");
 
                 entity.Property(e => e.KodeSales)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("kodeSales");
 
                 entity.Property(e => e.Kodegudang)
@@ -3741,7 +3821,7 @@ namespace DoranOfficeBackend
                     .HasDefaultValueSql("''''''");
 
                 entity.Property(e => e.Kodeonline)
-                    .HasColumnType("int(11)")
+                    .HasColumnType("int(16)")
                     .HasColumnName("kodeonline");
 
                 entity.Property(e => e.Kodeorderapps)
@@ -3794,6 +3874,11 @@ namespace DoranOfficeBackend
                     .HasColumnType("tinyint(4)")
                     .HasColumnName("ppndiarsip");
 
+                entity.Property(e => e.Ppnreal)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("ppnreal")
+                    .HasComment("PPN 100% UNTUK SEMUA");
+
                 entity.Property(e => e.Retur)
                     .HasMaxLength(1)
                     .HasColumnName("retur")
@@ -3821,6 +3906,11 @@ namespace DoranOfficeBackend
                 entity.Property(e => e.TambahanLainnya)
                     .HasColumnType("int(11)")
                     .HasColumnName("tambahanLainnya");
+
+                entity.Property(e => e.Terbitfakturppn)
+                    .HasColumnType("tinyint(4)")
+                    .HasColumnName("terbitfakturppn")
+                    .HasComment("0=TIDAK_TERBIT. 1=TERBIT_FAKTUR_PPN");
 
                 entity.Property(e => e.TglBagiKomisi)
                     .HasColumnType("date")
@@ -3872,8 +3962,12 @@ namespace DoranOfficeBackend
                     .HasColumnType("int(11)")
                     .HasColumnName("untung");
 
+                entity.Property(e => e.UntungbelumpotOl)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("untungbelumpotOL");
+
                 entity.Property(e => e.UpdateName)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("updateName");
 
                 entity.Property(e => e.UpdateTime)
@@ -4464,7 +4558,7 @@ namespace DoranOfficeBackend
                     .HasDefaultValueSql("'''0000-00-00'''");
             });
 
-            modelBuilder.Entity<LokasiKotum>(entity =>
+            modelBuilder.Entity<LokasiKota>(entity =>
             {
                 entity.HasKey(e => e.Kode)
                     .HasName("PRIMARY");
@@ -5223,7 +5317,7 @@ namespace DoranOfficeBackend
                 entity.HasIndex(e => e.Kota, "kode");
 
                 entity.Property(e => e.Kode)
-                    .HasColumnType("smallint(6)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("kode");
 
                 entity.Property(e => e.Adminhp)
@@ -7780,6 +7874,42 @@ namespace DoranOfficeBackend
                 entity.HasOne(e => e.Sales)
                   .WithOne(c => c.Masteruser)
                   .HasForeignKey<Masteruser>("Kodesales");
+            });
+
+            modelBuilder.Entity<Masterpelanggan>(entity =>
+            {
+                entity.HasOne(e => e.LokasiKota)
+                  .WithMany(c => c.Masterpelanggans)
+                  .HasForeignKey(e => e.Kota);
+            });
+
+            modelBuilder.Entity<Htrans>(entity =>
+            {
+                entity.HasMany(e => e.Dtrans)
+                  .WithOne(e => e.Htrans)
+                  .HasForeignKey(e => e.Kodeh)
+                  .HasPrincipalKey(e => e.KodeH);
+
+                entity.HasOne(e => e.Masterpelanggan)
+                  .WithMany(e => e.Htrans)
+                  .HasForeignKey(e => e.KodePelanggan)
+                  .HasPrincipalKey(e => e.Kode);
+            });
+
+            modelBuilder.Entity<Dtrans>(entity =>
+            {
+                entity.HasOne(e => e.Masterbarang)
+                  .WithMany(e => e.Dtrans)
+                  .HasForeignKey(e => e.Kodebarang)
+                  .HasPrincipalKey(e => e.BrgKode);
+            });
+
+            modelBuilder.Entity<Masterbarang>(entity =>
+            {
+                entity.HasOne(e => e.Dkategoribarang)
+                  .WithMany(e => e.Masterbarang)
+                  .HasForeignKey(e => e.KategoriBrg)
+                  .HasPrincipalKey(e => e.Koded);
             });
 
         }

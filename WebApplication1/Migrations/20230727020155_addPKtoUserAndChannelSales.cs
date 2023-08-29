@@ -12,9 +12,7 @@ namespace DoranOfficeBackend.Migrations
         {
 
 
-            migrationBuilder.Sql("ALTER TABLE masterchannelsales ADD CONSTRAINT PK_masterchannelsales PRIMARY KEY(kode)");
-
-            migrationBuilder.Sql("ALTER TABLE masteruser ADD CONSTRAINT PK_masteruser PRIMARY KEY(kodeku)");
+            //migrationBuilder.Sql("ALTER TABLE masterchannelsales ADD CONSTRAINT PK_masterchannelsales PRIMARY KEY(kode)");
 
             migrationBuilder.AlterColumn<int>(
                name: "kodeku",

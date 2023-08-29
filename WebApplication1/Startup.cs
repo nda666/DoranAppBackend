@@ -13,6 +13,7 @@ using Swashbuckle.AspNetCore.ReDoc;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using DoranOfficeBackend.Extentsions;
+using AutoMapper;
 
 namespace DoranOfficeBackend
 {
@@ -21,25 +22,17 @@ namespace DoranOfficeBackend
     {
         public Startup(IConfiguration configuration) => Configuration = configuration;
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MyDbContext>(options =>
             {
-               
                 options.AddInterceptors(new TimestampInterceptor()).UseMySQL(Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddAutoMapper(
-                typeof(Startup), 
-                typeof(MasterTimSalesMapping),
-                typeof(SalesMapping),
-                typeof(HkategoribarangMapping),
-                typeof(MasterdivisiMapping),
-                typeof(MastergudangMapping)
-                );
+            services.AddAutoMapperFromNamespace("DoranOfficeBackend.Mappings");
 
             //services.AddControllers().AddJsonOptions(options =>
             //{
@@ -74,6 +67,9 @@ namespace DoranOfficeBackend
                 });
                 options.OperationFilter<SwaggerFromQuery>();
 
+                var xmlCommentsPath = System.String.Format(@"{0}\DoranOfficeBackend.xml", System.AppDomain.CurrentDomain.BaseDirectory);
+                options.IncludeXmlComments(xmlCommentsPath);
+
             });
 
             services.AddAuthentication(options =>
@@ -102,8 +98,8 @@ namespace DoranOfficeBackend
 
             // [Required]: Get a connection string to your server data source
             // var connectionString = Configuration.GetSection("ConnectionStrings")["SqlConnection"];
-            var connectionString = Configuration.GetSection("ConnectionStrings")["DefaultConnection"];
-
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            
             var options = new SyncOptions
             {
                 BatchSize = 2000,
@@ -111,7 +107,6 @@ namespace DoranOfficeBackend
 
             // [Required] Tables involved in the sync process:
             var tables = new string[] { "masterchannelsales" };
-
             // [Required]: Add a SqlSyncProvider acting as the server hub.
             services.AddSyncServer<MySqlSyncProvider>(
                 connectionString:connectionString,
@@ -141,9 +136,12 @@ namespace DoranOfficeBackend
                 app.UseSwagger(c =>
                 {
                     c.SerializeAsV2 = true;
+
                 });
+                app.UseSwaggerUI();
                 app.UseReDoc(c =>
                 {
+                    c.ConfigObject.ExpandResponses = "all";
                     c.RoutePrefix = "docs";
                     c.SpecUrl("/swagger/v1/swagger.json");
                 });
@@ -153,7 +151,7 @@ namespace DoranOfficeBackend
             app.UseSession();
             app.ConfigureExceptionHandler();
             app.UseMiddleware<JwtMiddleware>();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -171,5 +169,7 @@ namespace DoranOfficeBackend
 
             //app.Run();
         }
+
+       
     }
 }

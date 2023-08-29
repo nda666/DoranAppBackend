@@ -6,12 +6,14 @@ using DoranOfficeBackend.Dtos.Mastertimsales;
 using DoranOfficeBackend.Extentsions;
 using DoranOfficeBackend.Models;
 using AutoMapper;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace DoranOfficeBackend.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
     [Auth]
+    [Produces("application/json")]
     public class MastertimsalesController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -108,7 +110,8 @@ namespace DoranOfficeBackend.Controller
         // POST: api/SalesTeams
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Mastertimsales>> PostSalesTeam([FromBody]SaveMastertimsalesDto dto)
+        [SwaggerOperationFilter(typeof(SaveMastertimsalesDto))]
+        public async Task<ActionResult<Mastertimsales>> PostSalesTeam([FromBody, SwaggerRequestBody("Save master tim sales payload", Required = true)] SaveMastertimsalesDto dto)
         {
             if (_context.Mastertimsales == null)
             {

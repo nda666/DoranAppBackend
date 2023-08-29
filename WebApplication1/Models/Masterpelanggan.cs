@@ -5,15 +5,15 @@ namespace DoranOfficeBackend.Models
 {
     public partial class Masterpelanggan
     {
-        public short Kode { get; set; }
+        public int Kode { get; set; }
         public string Nama { get; set; } = null!;
         public string Namaformal { get; set; } = null!;
         public string Lokasi { get; set; } = null!;
-        public sbyte Aktif { get; set; }
+        public bool Aktif { get; set; }
         public int Kodelevel { get; set; }
-        public bool InsertName { get; set; }
+        public sbyte InsertName { get; set; }
         public DateTime InsertTime { get; set; }
-        public bool UpdateName { get; set; }
+        public sbyte UpdateName { get; set; }
         public DateTime UpdateTime { get; set; }
         public sbyte KursKomisi { get; set; }
         public int BatasOmzet { get; set; }
@@ -88,5 +88,9 @@ namespace DoranOfficeBackend.Models
         /// </summary>
         public int Kodelevelharga { get; set; }
         public sbyte KodelevelhargaJete { get; set; }
+
+        public virtual LokasiKota? LokasiKota { get; set; }
+
+        public virtual ICollection<Htrans>? Htrans { get; set; }
     }
 }

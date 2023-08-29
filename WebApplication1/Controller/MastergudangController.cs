@@ -17,6 +17,8 @@ namespace DoranOfficeBackend.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Auth]
+    [Produces("application/json")]
     public class MastergudangController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -149,6 +151,7 @@ namespace DoranOfficeBackend.Controller
             var mastergudang = await checkMastergudang(kode);
 
             mastergudang.Aktif = dto.Aktif;
+            ConsoleDump.Extensions.Dump(dto, "ACCCCC");
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetMastergudangByKode", new { id = mastergudang.Id }, mastergudang);
         }

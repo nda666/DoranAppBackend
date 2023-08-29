@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using MySql.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
@@ -9,6 +10,15 @@ namespace DoranOfficeBackend.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<int>(
+            name: "kode",
+            table: "mastergudang",
+            type: "int(11)",
+            nullable: false,
+            oldClrType: typeof(int),
+            oldType: "int(11)")
+            .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn);
+
             migrationBuilder.AlterColumn<short>(
                 name: "boletransit",
                 table: "mastergudang",
@@ -47,6 +57,14 @@ namespace DoranOfficeBackend.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<int>(
+            name: "kode",
+            table: "mastergudang",
+            type: "int(11)",
+            nullable: false,
+            oldClrType: typeof(int),
+            oldType: "int(11)");
+
             migrationBuilder.DropColumn(
                 name: "created_at",
                 table: "mastergudang");

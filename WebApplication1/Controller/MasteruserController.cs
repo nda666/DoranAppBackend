@@ -10,6 +10,7 @@ namespace DoranOfficeBackend.Controller
     [Route("api/[controller]")]
     [ApiController]
     [Auth]
+    [Produces("application/json")]
     public class MasteruserController : ControllerBase
     {
         private readonly MyDbContext _context;

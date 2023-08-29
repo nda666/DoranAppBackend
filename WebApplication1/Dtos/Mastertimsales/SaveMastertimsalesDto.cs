@@ -1,8 +1,11 @@
-﻿namespace DoranOfficeBackend.Dtos.Mastertimsales
+﻿using Swashbuckle.AspNetCore.Annotations;
+
+namespace DoranOfficeBackend.Dtos.Mastertimsales
 {
+    [SwaggerSchema(Required = new[] { "Nama" , "Kodechannel" })]
     public class SaveMastertimsalesDto
     {
-        [Swashbuckle.AspNetCore.Annotations.SwaggerRequestBody(Description = "Nama Mastertimsales", Required = true)]
+        [SwaggerRequestBody("Add a new Pet to the store")]
         public string Nama { get; set; } = null!;
         public long Targetjete { get; set; }
         public long Targetomzet { get; set; }
@@ -10,10 +13,7 @@
         public bool Aktif { get; set; }
         public bool SyaratKomisi { get; set; }
 
-        [
-            Swashbuckle.AspNetCore.Annotations.SwaggerRequestBody(
-            Description = "Kode channel from masterchannelsales", Required = true)
-        ]
+        [SwaggerSchema("Kode channel from masterchannelsale")]
         public int Kodechannel { get; set; }
     }
 }

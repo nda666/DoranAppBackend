@@ -17,7 +17,7 @@ namespace DoranOfficeBackend.Controller
     [Route("api/[controller]")]
     [ApiController]
     [Auth]
-
+    [Produces("application/json")]
     public class SalesController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -29,7 +29,7 @@ namespace DoranOfficeBackend.Controller
             _context = context;
         }
 
-        // GET: api/Sales
+            // GET: api/Sales
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SalesDto>>> GetSales([FromQuery] FindSalesDto dto)
         {
@@ -38,10 +38,34 @@ namespace DoranOfficeBackend.Controller
               return NotFound();
           }
 
+            var query = baseSelect(dto);
+
+            var result = await query.ToListAsync();
+
+            return _mapper.Map<SalesDto[]>(result);
+        }
+
+        [HttpGet("nama")]
+        public async Task<ActionResult> GetSalesNama([FromQuery] FindSalesDto dto)
+        {
+            if (_context.Masterbarang == null)
+            {
+                return NotFound();
+            }
+
+            var baseQuery = baseSelect(dto);
+            var data = await baseQuery.Select(x => new { x.Kode, x.Nama }).ToListAsync();
+
+            return Ok(data);
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public IQueryable<Sales> baseSelect(FindSalesDto dto)
+        {
             var query = _context.Sales.AsNoTracking()
-                    .Include(x => x.SalesManager)
-                    .Include(x => x.Mastertimsales)
-                    .AsQueryable();
+                   .Include(x => x.SalesManager)
+                   .Include(x => x.Mastertimsales)
+                   .AsQueryable();
             if (!string.IsNullOrEmpty(dto.Nama))
             {
                 query = query.Where(r => EF.Functions.Like(r.Nama, $"%{dto.Nama}%"));
@@ -61,25 +85,23 @@ namespace DoranOfficeBackend.Controller
             if (dto.Manager.HasValue)
             {
                 query = query.Where(r => r.Manager == dto.Manager);
-                
+
             }
 
             if (dto.Deleted == true)
             {
                 query = query.WhereDeleted();
-            } else
-            {
-                query =  query.WhereNotDeleted();
             }
-
-            var result = await query.ToListAsync();
-
-            return _mapper.Map<SalesDto[]>(result);
+            else
+            {
+                query = query.WhereNotDeleted();
+            }
+            return query;
         }
 
         // GET: api/Sales/5
         [HttpGet("{kode}")]
-        public async Task<ActionResult<SalesDto>> GetSales(int kode)
+        public async Task<ActionResult<SalesDto>> GetSalesByKode(int kode)
         {
           if (_context.Sales == null)
           {
@@ -141,7 +163,7 @@ namespace DoranOfficeBackend.Controller
             _context.Sales.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSales", new { id = entity.Id }, entity);
+            return CreatedAtAction("GetSalesByKode", new { id = entity.Id }, entity);
         }
 
         // DELETE: api/Sales/5

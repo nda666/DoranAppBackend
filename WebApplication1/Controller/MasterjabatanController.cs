@@ -10,11 +10,14 @@ using DoranOfficeBackend.Models;
 using AutoMapper;
 using DoranOfficeBackend.Dtos.Masterjabatan;
 using DoranOfficeBackend.Extentsions;
+using DoranOfficeBackend.Attributes;
 
 namespace DoranOfficeBackend.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Auth]
+    [Produces("application/json")]
     public class MasterjabatanController : ControllerBase
     {
         private readonly IMapper _mapper;
