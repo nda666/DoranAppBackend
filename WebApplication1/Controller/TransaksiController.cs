@@ -35,14 +35,12 @@ namespace DoranOfficeBackend.Controller
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HtransResultDto>>> GetTransaksi([FromQuery] FindTransaksiDto dto)
         {
-            var htransQ = _context.Htrans.AsNoTracking()
-                .Include(e => e.Dtrans)
-                .ThenInclude(e => e.Masterbarang)
-                .Include(e => e.Masterpelanggan)
-                .ThenInclude(e => e.LokasiKota)
+            
+            var htransQ = _context.Htrans.AsSplitQuery()
+                .AsNoTracking()
                 .AsQueryable();
 
-            if (dto.Kodegudang.HasValue)
+            if (dto.Kodegudang.HasValue && dto.Kodegudang >= 0)
             {
                 htransQ = htransQ.Where(x => x.Kodegudang == dto.Kodegudang);
             }
@@ -61,14 +59,22 @@ namespace DoranOfficeBackend.Controller
             {
                 htransQ = htransQ.Where(x => x.TglTrans <= dto.MaxDate.Value);
             }
-            htransQ = htransQ.OrderByDescending(x => x.TglTrans);
+
+
             var htransPagingQ = htransQ;
+            var totalRow = await htransPagingQ.CountAsync();
+
+            htransQ = htransQ.OrderByDescending(x => x.TglTrans);
             htransQ = htransQ.Skip((dto.Page - 1) * dto.PageSize)
                     .Take(dto.PageSize);
+            htransQ = htransQ.Include(e => e.Dtrans)
+                .ThenInclude(e => e.Masterbarang)
+                .AsSingleQuery()
+                .Include(e => e.Masterpelanggan)
+                .ThenInclude(e => e.LokasiKota);
 
-            var htrans = htransQ.ToList();
-            var totalRow = htransPagingQ.Count();
-            var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize); ;
+            var htrans = await htransQ.ToListAsync();
+            var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize); 
             var result = new HtransResultDto
             {
                 Data = htrans,

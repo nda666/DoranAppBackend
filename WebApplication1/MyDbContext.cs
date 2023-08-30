@@ -33,7 +33,9 @@ namespace DoranOfficeBackend
         {
             if (!optionsBuilder.IsConfigured) { 
                 var mysqlConn = this._configuration.GetConnectionString("DefaultConnection");
-                optionsBuilder.UseMySQL(mysqlConn);
+                optionsBuilder
+                    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))   
+                    .UseMySQL(mysqlConn, opts => opts.CommandTimeout(180));
         }
             optionsBuilder
                 .AddInterceptors(
@@ -7883,17 +7885,22 @@ namespace DoranOfficeBackend
                   .HasForeignKey(e => e.Kota);
             });
 
-            modelBuilder.Entity<Htrans>(entity =>
+            modelBuilder.Entity<Dtrans>(entity =>
             {
-                entity.HasMany(e => e.Dtrans)
-                  .WithOne(e => e.Htrans)
-                  .HasForeignKey(e => e.Kodeh)
-                  .HasPrincipalKey(e => e.KodeH);
+                entity.HasOne(e => e.Htrans)
+                 .WithMany(e => e.Dtrans)
+                 .HasForeignKey(e => e.Kodeh)
+                 .HasPrincipalKey(e => e.KodeH)
+                 .IsRequired(false);
+            });
 
+                modelBuilder.Entity<Htrans>(entity =>
+            {
                 entity.HasOne(e => e.Masterpelanggan)
                   .WithMany(e => e.Htrans)
                   .HasForeignKey(e => e.KodePelanggan)
-                  .HasPrincipalKey(e => e.Kode);
+                  .HasPrincipalKey(e => e.Kode)
+                  .IsRequired(false);
             });
 
             modelBuilder.Entity<Dtrans>(entity =>
