@@ -35,7 +35,7 @@ namespace DoranOfficeBackend.Controller
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HtransResultDto>>> GetTransaksi([FromQuery] FindTransaksiDto dto)
         {
-            
+
             var htransQ = _context.Htrans.AsSplitQuery()
                 .AsNoTracking()
                 .AsQueryable();
@@ -74,7 +74,7 @@ namespace DoranOfficeBackend.Controller
                 .ThenInclude(e => e.LokasiKota);
 
             var htrans = await htransQ.ToListAsync();
-            var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize); 
+            var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
             var result = new HtransResultDto
             {
                 Data = htrans,
@@ -87,7 +87,7 @@ namespace DoranOfficeBackend.Controller
         }
 
 
-            private Masteruser? getUser()
+        private Masteruser? getUser()
         {
             var user = (Masteruser)HttpContext.Items["User"];
             if (user == null)
@@ -117,18 +117,49 @@ namespace DoranOfficeBackend.Controller
             await _context.SaveChangesAsync();
 
             var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
+            await InsertToDtrans(entity.KodeH, dtrans);
+           
+            return Ok(lastKodeh);
+
+        }
+    
+        [HttpPut("{kode}")]
+        public async Task<ActionResult> UpdateTransaksi(int kode, [FromBody] SaveTransaksiDto dto)
+        {
+            var htrans = await _context.Htrans.Where(e => e.KodeH == kode).FirstOrDefaultAsync();
+            if (htrans == null)
+            {
+                return NotFound();
+            }
+            _mapper.Map(dto, htrans);
+            var user = getUser();
+           
+            htrans.UpdateName = (sbyte)user?.Kodeku;
+            htrans.UpdateTime = DateTime.Now;
+            await _context.SaveChangesAsync();
+            var deleteDtrans = _context.Dtrans.Where(e => e.Kodeh == kode);
+            if (deleteDtrans.Any())
+            {
+                _context.Dtrans.RemoveRange(deleteDtrans);
+                await _context.SaveChangesAsync();
+            }
+            var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
+            await InsertToDtrans(kode, dtrans);
+            return Ok(htrans);
+        }
+
+        private async Task InsertToDtrans(int kodeh, List<Dtrans> dtrans)
+        {
             for (short i = 0; i < dtrans.Count; i++)
             {
                 dtrans[i].Koded = (short)(i + 1);
-                dtrans[i].Kodeh = entity.KodeH;
+                dtrans[i].Kodeh = kodeh;
             }
 
             string insertQuery = "INSERT INTO dtrans (kodeh,koded,kodebarang,jumlah,harga,nmrsn) VALUES ";
             string values = string.Join(", ", dtrans.Select(item => $"({item.Kodeh},{item.Koded},{item.Kodebarang},{item.Jumlah},{item.Harga},'{item.Nmrsn}')"));
             insertQuery += values;
-            _context.Database.ExecuteSqlRaw(insertQuery);
-            return Ok(lastKodeh);
-
+            await _context.Database.ExecuteSqlRawAsync(insertQuery);
         }
     }
 }
