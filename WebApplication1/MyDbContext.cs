@@ -173,7 +173,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Masterpegawai> Masterpegawais { get; set; } = null!;
         public virtual DbSet<Masterpelanggan> Masterpelanggan { get; set; } = null!;
         public virtual DbSet<Masterpemasukan> Masterpemasukans { get; set; } = null!;
-        public virtual DbSet<Masterpengeluaran> Masterpengeluarans { get; set; } = null!;
+        public virtual DbSet<Masterpengeluaran> Masterpengeluaran { get; set; } = null!;
         public virtual DbSet<Masterpoinaward> Masterpoinawards { get; set; } = null!;
         public virtual DbSet<Mastersupplier> Mastersuppliers { get; set; } = null!;
         public virtual DbSet<Mastersuppliercina> Mastersuppliercinas { get; set; } = null!;

@@ -12,7 +12,7 @@ namespace DoranOfficeBackend.Models
         public bool Cargo { get; set; }
         public sbyte Kodeareapengiriman { get; set; }
         public string Telpekspedisi { get; set; } = null!;
-        public sbyte Aktif { get; set; }
+        public bool Aktif { get; set; }
         /// <summary>
         /// 0=UK, 1=Cicilan
         /// </summary>
