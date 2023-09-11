@@ -6,11 +6,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoranOfficeBackend.Models
 {
-    public partial class Mastergudang: ITimestamps, ISoftDelete
+    //public partial class Mastergudang: ITimestamps, ISoftDelete
+    public partial class Mastergudang
     {
-        [Column("id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
+        //[Column("id")]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public Guid Id { get; set; }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,13 +21,15 @@ namespace DoranOfficeBackend.Models
         public sbyte? Urut { get; set; }
         public bool Boletransit { get; set; }
 
-        [Column("created_at")]
-        public DateTime? CreatedAt { get; set; }
+        //[Column("created_at")]
+        //public DateTime? CreatedAt { get; set; }
 
-        [Column("updated_at")]
-        public DateTime? UpdatedAt { get; set; }
+        //[Column("updated_at")]
+        //public DateTime? UpdatedAt { get; set; }
 
-        [Column("deleted_at")]
-        public DateTime? DeletedAt { get; set; }
+        //[Column("deleted_at")]
+        //public DateTime? DeletedAt { get; set; }
+
+        public virtual ICollection<Htrans> Htrans { get; set; }
     }
 }

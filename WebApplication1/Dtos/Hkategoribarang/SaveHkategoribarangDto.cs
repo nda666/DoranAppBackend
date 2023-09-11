@@ -1,6 +1,6 @@
 ﻿using Swashbuckle.AspNetCore.Annotations;
 
-namespace DoranOfficeBackend.Dtos.HkategoriBarang
+namespace DoranOfficeBackend.Dtos.Hkategoribarang
 {
     public class SaveHkategoribarangDto
     {

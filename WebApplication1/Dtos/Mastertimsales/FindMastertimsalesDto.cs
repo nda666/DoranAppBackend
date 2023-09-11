@@ -15,5 +15,7 @@ namespace DoranOfficeBackend.Dtos.Mastertimsales
 
         [SwaggerSchema(Description = "Cari by deleted")]
         public string? Deleted { get; set; }
+
+        public bool? WithSales { get; set; }
     }
 }

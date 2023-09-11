@@ -40,14 +40,14 @@ namespace DoranOfficeBackend.Controller
                 query = query.Where(r => r.Aktif == dto.Aktif);
             }
 
-            if (dto.Deleted.HasValue)
-            {
-                query = dto.Deleted == true ? query.WhereDeleted() : query;
-            }
-            else
-            {
-                query = query.WhereNotDeleted();
-            }
+            //if (dto.Deleted.HasValue)
+            //{
+            //    query = dto.Deleted == true ? query.WhereDeleted() : query;
+            //}
+            //else
+            //{
+            //    query = query.WhereNotDeleted();
+            //}
 
             return await query.ToListAsync();
         }

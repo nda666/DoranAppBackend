@@ -25,18 +25,20 @@ namespace DoranOfficeBackend.Controller
             _context = context;
         }
 
-        // GET: api/SalesTeams
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Mastertimsales>>> GetMastertimsales([FromQuery] FindMastertimsalesDto dto)
+        private IQueryable<Mastertimsales> GetMastertimsalesBaseQuery(FindMastertimsalesDto dto)
         {
-            if (_context.Mastertimsales == null)
-            {
-                return NotFound();
-            }
             var query = _context.Mastertimsales
                 .Include(x => x.Masterchannelsales)
                 .AsNoTracking()
                 .AsQueryable();
+
+            if (dto.WithSales == true)
+            {
+                query = query.Include(e => e.Sales
+                .Where(s => s.Aktif == true)
+                .OrderBy(s => s.Nama)
+                );
+            }
 
             if (!string.IsNullOrEmpty(dto.Nama))
             {
@@ -53,16 +55,28 @@ namespace DoranOfficeBackend.Controller
                 query = query.Where(r => r.ToString() == dto.Kodechannel);
             }
 
-            if (!string.IsNullOrEmpty(dto.Deleted))
+            //if (!string.IsNullOrEmpty(dto.Deleted))
+            //{
+            //    query = query.WhereDeleted();
+            //}
+            //else
+            //{
+            //    query = query.WhereNotDeleted();
+            //}
+
+            return query;
+        }
+
+        // GET: api/SalesTeams
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Mastertimsales>>> GetMastertimsales([FromQuery] FindMastertimsalesDto dto)
+        {
+            if (_context.Mastertimsales == null)
             {
-                query = query.WhereDeleted();
-            }
-            else
-            {
-                query = query.WhereNotDeleted();
+                return NotFound();
             }
 
-            return await query.ToListAsync();
+            return await this.GetMastertimsalesBaseQuery(dto).ToListAsync();
         }
 
         // GET: api/SalesTeams/5
@@ -121,7 +135,7 @@ namespace DoranOfficeBackend.Controller
             _context.Mastertimsales.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMastertimsales", new { id = entity.Id }, entity);
+            return CreatedAtAction("GetMastertimsales", new { kode = entity.Kode }, entity);
         }
 
         // DELETE: api/SalesTeams/5
@@ -144,23 +158,23 @@ namespace DoranOfficeBackend.Controller
             return NoContent();
         }
 
-        // DELETE: api/SalesChannels/5
-        [HttpDelete("{kode}/restore")]
-        public async Task<IActionResult> RestoreDeleteSalesChannel(sbyte kode)
-        {
+        //// DELETE: api/SalesChannels/5
+        //[HttpDelete("{kode}/restore")]
+        //public async Task<IActionResult> RestoreDeleteSalesChannel(sbyte kode)
+        //{
 
-            if (_context.Mastertimsales == null)
-            {
-                return NotFound();
-            }
-            var salesTeam = await _context.Mastertimsales.FindAsync(kode);
-            if (salesTeam == null)
-            {
-                return NotFound();
-            }
-            await _context.RestoreSoftDeleteAsync<Mastertimsales>(salesTeam);
+        //    if (_context.Mastertimsales == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var salesTeam = await _context.Mastertimsales.FindAsync(kode);
+        //    if (salesTeam == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    await _context.RestoreSoftDeleteAsync<Mastertimsales>(salesTeam);
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
     }
 }

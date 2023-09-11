@@ -88,14 +88,14 @@ namespace DoranOfficeBackend.Controller
 
             }
 
-            if (dto.Deleted == true)
-            {
-                query = query.WhereDeleted();
-            }
-            else
-            {
-                query = query.WhereNotDeleted();
-            }
+            //if (dto.Deleted == true)
+            //{
+            //    query = query.WhereDeleted();
+            //}
+            //else
+            //{
+            //    query = query.WhereNotDeleted();
+            //}
             return query;
         }
 
@@ -163,7 +163,7 @@ namespace DoranOfficeBackend.Controller
             _context.Sales.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSalesByKode", new { id = entity.Id }, entity);
+            return CreatedAtAction("GetSalesByKode", new { kode = entity.Kode }, entity);
         }
 
         // DELETE: api/Sales/5
@@ -186,22 +186,22 @@ namespace DoranOfficeBackend.Controller
             return Ok(sales);
         }
 
-        [HttpDelete("{kode}/restore")]
-        public async Task<ActionResult<Sales>> RestoreDeleteSales(int kode)
-        {
-            if (_context.Mastertimsales == null)
-            {
-                return NotFound();
-            }
-            var sales = await _context.Sales.FindAsync(kode);
-            if (sales == null)
-            {
-                return NotFound();
-            }
+        //[HttpDelete("{kode}/restore")]
+        //public async Task<ActionResult<Sales>> RestoreDeleteSales(int kode)
+        //{
+        //    if (_context.Mastertimsales == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var sales = await _context.Sales.FindAsync(kode);
+        //    if (sales == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            await _context.RestoreSoftDeleteAsync<Sales>(sales);
+        //    await _context.RestoreSoftDeleteAsync<Sales>(sales);
 
-            return Ok(sales);
-        }
+        //    return Ok(sales);
+        //}
     }
 }

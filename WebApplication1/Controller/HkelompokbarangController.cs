@@ -53,14 +53,14 @@ namespace DoranOfficeBackend.Controller
                 query = query.Where(x => x.Aktif == dto.Aktif);
             }
 
-            if (dto.Deleted == true)
-            {
-                query = query.WhereDeleted();
-            }
-            else
-            {
-                query = query.WhereNotDeleted();
-            }
+            //if (dto.Deleted == true)
+            //{
+            //    query = query.WhereDeleted();
+            //}
+            //else
+            //{
+            //    query = query.WhereNotDeleted();
+            //}
 
             return await query.ToListAsync();
         }
@@ -125,7 +125,7 @@ namespace DoranOfficeBackend.Controller
             _context.Hkelompokbarang.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetHkelompokbarangByKode", new { id = entity.Id }, entity);
+            return CreatedAtAction("GetHkelompokbarangByKode", new { kode = entity.Kode }, entity);
         }
 
         // DELETE: api/Hkelompokbarang/5
@@ -144,19 +144,19 @@ namespace DoranOfficeBackend.Controller
             return NoContent();
         }
 
-        [HttpDelete("{kode}/restore")]
-        public async Task<ActionResult<Hkelompokbarang>> RestoreDeleteHkelompokbarang(int kode)
-        {
-            if (_context.Hkelompokbarang == null)
-            {
-                return NotFound();
-            }
-            var hkelompokbarang = await checkHkelompokbarang(kode);
+        //[HttpDelete("{kode}/restore")]
+        //public async Task<ActionResult<Hkelompokbarang>> RestoreDeleteHkelompokbarang(int kode)
+        //{
+        //    if (_context.Hkelompokbarang == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var hkelompokbarang = await checkHkelompokbarang(kode);
 
-            await _context.RestoreSoftDeleteAsync<Hkelompokbarang>(hkelompokbarang);
+        //    await _context.RestoreSoftDeleteAsync<Hkelompokbarang>(hkelompokbarang);
 
-            return Ok(hkelompokbarang);
-        }
+        //    return Ok(hkelompokbarang);
+        //}
 
         private async Task<Hkelompokbarang> checkHkelompokbarang(int kode)
         {

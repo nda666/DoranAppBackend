@@ -16,7 +16,7 @@ namespace DoranOfficeBackend.Models
         public short Koded { get; set; }
         public short Kodebarang { get; set; }
         public short Jumlah { get; set; }
-        public int Harga { get; set; }
+        public long Harga { get; set; }
         public int Komisi { get; set; }
         public int Untung { get; set; }
         public sbyte PoinToko { get; set; }

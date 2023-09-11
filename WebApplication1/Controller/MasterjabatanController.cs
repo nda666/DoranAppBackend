@@ -48,14 +48,14 @@ namespace DoranOfficeBackend.Controller
                  query = query.Where(x => x.Nama.Contains(dto.Nama));
             }
 
-            if (dto.Deleted == true)
-            {
-                query = query.WhereDeleted();
-            }
-            else
-            {
-                query = query.WhereNotDeleted();
-            }
+            //if (dto.Deleted == true)
+            //{
+            //    query = query.WhereDeleted();
+            //}
+            //else
+            //{
+            //    query = query.WhereNotDeleted();
+            //}
 
             return await query.ToListAsync();
         }
@@ -121,7 +121,7 @@ namespace DoranOfficeBackend.Controller
             _context.Masterjabatan.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMasterjabatan", new { id = entity.Id }, entity);
+            return CreatedAtAction("GetMasterjabatan", new { kode = entity.Kode }, entity);
         }
 
         // DELETE: api/Masterjabatan/5
@@ -144,22 +144,22 @@ namespace DoranOfficeBackend.Controller
             return NoContent();
         }
 
-        [HttpDelete("{kode}/restore")]
-        public async Task<ActionResult<Masterjabatan>> RestoreDeleteMasterjabatan(int kode)
-        {
-            if (_context.Masterjabatan == null)
-            {
-                return NotFound();
-            }
-            var masterjabatan = await _context.Masterjabatan.FindAsync(kode);
-            if (masterjabatan == null)
-            {
-                return NotFound();
-            }
+        //[HttpDelete("{kode}/restore")]
+        //public async Task<ActionResult<Masterjabatan>> RestoreDeleteMasterjabatan(int kode)
+        //{
+        //    if (_context.Masterjabatan == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var masterjabatan = await _context.Masterjabatan.FindAsync(kode);
+        //    if (masterjabatan == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            await _context.RestoreSoftDeleteAsync<Masterjabatan>(masterjabatan);
+        //    await _context.RestoreSoftDeleteAsync<Masterjabatan>(masterjabatan);
 
-            return Ok(masterjabatan);
-        }
+        //    return Ok(masterjabatan);
+        //}
     }
 }

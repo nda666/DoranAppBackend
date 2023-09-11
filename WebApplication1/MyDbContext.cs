@@ -151,7 +151,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Logfile> Logfiles { get; set; } = null!;
         public virtual DbSet<Logfileserver> Logfileservers { get; set; } = null!;
         public virtual DbSet<LokasiKota> LokasiKota { get; set; } = null!;
-        public virtual DbSet<LokasiProvinsi> LokasiProvinsis { get; set; } = null!;
+        public virtual DbSet<LokasiProvinsi> LokasiProvinsi { get; set; } = null!;
         public virtual DbSet<Manageriallaporan> Manageriallaporans { get; set; } = null!;
         public virtual DbSet<MasterPelangganGabungan> MasterPelangganGabungans { get; set; } = null!;
         public virtual DbSet<Masteragama> Masteragamas { get; set; } = null!;
@@ -1874,7 +1874,7 @@ namespace DoranOfficeBackend
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Harga)
-                    .HasColumnType("int(11)")
+                    .HasColumnType("bigint(20)")
                     .HasColumnName("harga");
 
                 entity.Property(e => e.HargaOk)
@@ -2794,23 +2794,7 @@ namespace DoranOfficeBackend
                     .HasColumnName("aktif")
                     .HasDefaultValueSql("'1'");
 
-                entity.Property<Guid>(e => e.Id)
-                      .ValueGeneratedOnAdd()
-                      .HasColumnType("char(36)")
-                      .HasColumnName("id");
-
-
-                entity.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
-
-                entity.Property<DateTime?>("UpdatedAt")
-                       .HasColumnType("datetime(6)")
-                       .HasColumnName("updated_at");
-
-                entity.Property<DateTime?>("DeletedAt")
-                    .HasColumnType("datetime(6)")
-                    .HasColumnName("deleted_at");
+               
             });
 
             modelBuilder.Entity<Hkategoribarang>(entity =>
@@ -7901,6 +7885,18 @@ namespace DoranOfficeBackend
                   .HasForeignKey(e => e.KodePelanggan)
                   .HasPrincipalKey(e => e.Kode)
                   .IsRequired(false);
+
+                entity.HasOne(e => e.Sales)
+                 .WithMany(e => e.Htrans)
+                 .HasForeignKey(e => e.KodeSales)
+                 .HasPrincipalKey(e => e.Kode)
+                 .IsRequired(false);
+
+                entity.HasOne(e => e.Mastergudang)
+                 .WithMany(e => e.Htrans)
+                 .HasForeignKey(e => e.Kodegudang)
+                 .HasPrincipalKey(e => e.Kode)
+                 .IsRequired(false);
             });
 
             modelBuilder.Entity<Dtrans>(entity =>
@@ -7917,6 +7913,24 @@ namespace DoranOfficeBackend
                   .WithMany(e => e.Masterbarang)
                   .HasForeignKey(e => e.KategoriBrg)
                   .HasPrincipalKey(e => e.Koded);
+            });
+
+            modelBuilder.Entity<LokasiKota>(entity =>
+            {
+                entity.HasOne(e => e.LokasiProvinsi)
+                .WithMany(c => c.LokasiKota)
+                .HasForeignKey(e => e.Provinsi)
+                .HasPrincipalKey(e => e.Kode)
+                .IsRequired(false);
+            });
+
+            modelBuilder.Entity<Dkategoribarang>(entity =>
+            {
+                entity.HasOne(e => e.Hkategoribarang)
+                .WithMany(c => c.Dkategoribarang)
+                .HasForeignKey(e => e.Kodeh)
+                .HasPrincipalKey(e => e.Kodeh)
+                .IsRequired(false);
             });
 
         }

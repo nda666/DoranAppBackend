@@ -48,14 +48,14 @@ namespace DoranOfficeBackend.Controller
                  query = query.Where(x => x.Nama.Contains(dto.Nama));
             }
 
-            if (dto.Deleted == true)
-            {
-                query = query.WhereDeleted();
-            }
-            else
-            {
-                query = query.WhereNotDeleted();
-            }
+            //if (dto.Deleted == true)
+            //{
+            //    query = query.WhereDeleted();
+            //}
+            //else
+            //{
+            //    query = query.WhereNotDeleted();
+            //}
 
             return await query.ToListAsync();
         }
@@ -121,7 +121,7 @@ namespace DoranOfficeBackend.Controller
             _context.Masterdivisi.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMasterdivisi", new { id = entity.Id }, entity);
+            return CreatedAtAction("GetMasterdivisi", new { kode = entity.Kode }, entity);
         }
 
         // DELETE: api/Masterdivisi/5
@@ -144,22 +144,22 @@ namespace DoranOfficeBackend.Controller
             return NoContent();
         }
 
-        [HttpDelete("{kode}/restore")]
-        public async Task<ActionResult<Masterdivisi>> RestoreDeleteMasterdivisi(int kode)
-        {
-            if (_context.Masterdivisi == null)
-            {
-                return NotFound();
-            }
-            var masterdivisi = await _context.Masterdivisi.FindAsync(kode);
-            if (masterdivisi == null)
-            {
-                return NotFound();
-            }
+        //[HttpDelete("{kode}/restore")]
+        //public async Task<ActionResult<Masterdivisi>> RestoreDeleteMasterdivisi(int kode)
+        //{
+        //    if (_context.Masterdivisi == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var masterdivisi = await _context.Masterdivisi.FindAsync(kode);
+        //    if (masterdivisi == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            await _context.RestoreSoftDeleteAsync<Masterdivisi>(masterdivisi);
+        //    await _context.RestoreSoftDeleteAsync<Masterdivisi>(masterdivisi);
 
-            return Ok(masterdivisi);
-        }
+        //    return Ok(masterdivisi);
+        //}
     }
 }

@@ -35,49 +35,96 @@ namespace DoranOfficeBackend.Controller
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HtransResultDto>>> GetTransaksi([FromQuery] FindTransaksiDto dto)
         {
-
-            var htransQ = _context.Htrans.AsSplitQuery()
+            ConsoleDump.Extensions.Dump(dto);
+            var htransQ = _context.Htrans
                 .AsNoTracking()
                 .AsQueryable();
+
+
+            if (dto.MinDate.HasValue)
+            {
+                var minDate = new DateTime(dto.MinDate.Value.Year, dto.MinDate.Value.Month, dto.MinDate.Value.Day, 0, 0, 0);
+                htransQ = htransQ.Where(x => x.TglTrans >= minDate);
+            }
+
+            if (dto.MaxDate.HasValue)
+            {
+                var maxDate = new DateTime(dto.MaxDate.Value.Year, dto.MaxDate.Value.Month, dto.MaxDate.Value.Day, 23, 59, 59);
+                htransQ = htransQ.Where(x => x.TglTrans <= maxDate);
+            }
+
+            if (dto.Kodeh.HasValue)
+            {
+                htransQ = htransQ.Where(x => x.KodeH == dto.Kodeh);
+            }
 
             if (dto.Kodegudang.HasValue && dto.Kodegudang >= 0)
             {
                 htransQ = htransQ.Where(x => x.Kodegudang == dto.Kodegudang);
             }
 
-            if (!String.IsNullOrWhiteSpace(dto.NamaPelanggan))
+            if (dto.KodeSales.HasValue)
             {
-                htransQ = htransQ.Where(x => x.NamaCust.ToLower().Contains(dto.NamaPelanggan));
+                htransQ = htransQ.Where(x => x.KodeSales == dto.KodeSales);
             }
 
-            if (dto.MinDate.HasValue)
+            if (dto.KodePelanggan.HasValue)
             {
-                htransQ = htransQ.Where(x => x.TglTrans >= dto.MinDate.Value);
+                htransQ = htransQ.Where(x => x.KodePelanggan == dto.KodePelanggan);
             }
 
-            if (dto.MaxDate.HasValue)
+            if (dto.KodeKota.HasValue)
             {
-                htransQ = htransQ.Where(x => x.TglTrans <= dto.MaxDate.Value);
+                htransQ = htransQ.Where(x => x.Masterpelanggan.Kota == dto.KodeKota);
             }
 
+            if (dto.KodeProvinsi.HasValue)
+            {
+                htransQ = htransQ.Where(x => x.Masterpelanggan.LokasiKota.Provinsi == dto.KodeProvinsi);
+            }
+
+            if (!String.IsNullOrEmpty(dto.NamaPelanggan))
+            {
+                htransQ = htransQ.Where(x => EF.Functions.Like(x.Masterpelanggan.Nama, $"%{dto.NamaPelanggan}%"));
+            }
+
+            if (!String.IsNullOrEmpty(dto.Kodenota))
+            {
+                htransQ = htransQ.Where(x => x.Kodenota == dto.Kodenota);
+            }
+
+            if (!String.IsNullOrEmpty(dto.Lunas))
+            {
+                htransQ = htransQ.Where(x => x.Lunas == dto.Lunas);
+            }
 
             var htransPagingQ = htransQ;
             var totalRow = await htransPagingQ.CountAsync();
 
             htransQ = htransQ.OrderByDescending(x => x.TglTrans);
-            htransQ = htransQ.Skip((dto.Page - 1) * dto.PageSize)
+
+            if (dto.Limit.HasValue)
+            {
+                htransQ = htransQ.Take(dto.Limit.Value);
+            }
+            int skip = (dto.Page - 1) * dto.PageSize;
+            htransQ = htransQ.Skip(skip)
                     .Take(dto.PageSize);
             htransQ = htransQ.Include(e => e.Dtrans)
                 .ThenInclude(e => e.Masterbarang)
-                .AsSingleQuery()
+                .AsSplitQuery()
                 .Include(e => e.Masterpelanggan)
-                .ThenInclude(e => e.LokasiKota);
+                .ThenInclude(e => e.LokasiKota)
+                .AsSplitQuery()
+                .Include(e => e.Sales)
+                .Include(e => e.Mastergudang);
 
             var htrans = await htransQ.ToListAsync();
+            ICollection<HtransResult> htransResults = _mapper.Map<ICollection<HtransResult>>(htrans);
             var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
             var result = new HtransResultDto
             {
-                Data = htrans,
+                Data = htransResults,
                 Page = dto.Page,
                 PageSize = dto.PageSize,
                 TotalPage = totalPage,
@@ -95,7 +142,6 @@ namespace DoranOfficeBackend.Controller
                 throw new Exception("User not found");
             }
             return user;
-
         }
 
         [HttpPost]
@@ -118,11 +164,11 @@ namespace DoranOfficeBackend.Controller
 
             var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
             await InsertToDtrans(entity.KodeH, dtrans);
-           
+
             return Ok(lastKodeh);
 
         }
-    
+
         [HttpPut("{kode}")]
         public async Task<ActionResult> UpdateTransaksi(int kode, [FromBody] SaveTransaksiDto dto)
         {
@@ -133,7 +179,7 @@ namespace DoranOfficeBackend.Controller
             }
             _mapper.Map(dto, htrans);
             var user = getUser();
-           
+
             htrans.UpdateName = (sbyte)user?.Kodeku;
             htrans.UpdateTime = DateTime.Now;
             await _context.SaveChangesAsync();

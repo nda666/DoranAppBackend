@@ -12,6 +12,7 @@ namespace DoranOfficeBackend.Models
         public int Kodecoa4 { get; set; }
         public sbyte AdaKertasOrder { get; set; }
 
+        public virtual LokasiProvinsi LokasiProvinsi { get; set; }
         public virtual ICollection<Masterpelanggan>? Masterpelanggans { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace DoranOfficeBackend.Dtos.Masterchannelsales
         public string? Nama { get; set; }
 
         [SwaggerSchema(Description = "Cari by aktif")]
-        public bool? Aktif { get; set; }
+        public bool? Aktif { get; set; } = true;
 
         [SwaggerSchema(Description = "Cari by Deleted/Not Deleted")]
         public string? Deleted { get; set; }

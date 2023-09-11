@@ -4,12 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoranOfficeBackend.Models
 {
-    public partial class Masteruser : ITimestamps, ISoftDelete
+    //public partial class Masteruser : ITimestamps, ISoftDelete
+    public partial class Masteruser
     {
 
-        [Key]
-        [Column("id")]
-        public Guid Id { get; set; }
+        //[Key]
+        //[Column("id")]
+        //public Guid Id { get; set; }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,14 +22,14 @@ namespace DoranOfficeBackend.Models
         public bool? Aktif { get; set; }
         public int Kodesales { get; set; }
 
-        [Column("created_at")]
-        public DateTime? CreatedAt { get; set; }
+        //[Column("created_at")]
+        //public DateTime? CreatedAt { get; set; }
 
-        [Column("updated_at")]
-        public DateTime? UpdatedAt { get; set; }
+        //[Column("updated_at")]
+        //public DateTime? UpdatedAt { get; set; }
 
-        [Column("deleted_at")]
-        public DateTime? DeletedAt { get; set; }
+        //[Column("deleted_at")]
+        //public DateTime? DeletedAt { get; set; }
 
         public Sales? Sales { get; set; }
     }

@@ -4,6 +4,8 @@ using DoranOfficeBackend.Attributes;
 using DoranOfficeBackend.Models;
 using DoranOfficeBackend.Extentsions;
 using DoranOfficeBackend.Dtos.Masterchannelsales;
+using DoranOfficeBackend.Dtos.Mastertimsales;
+using DoranOfficeBackend.Dtos.Sales;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -20,14 +22,8 @@ namespace DoranOfficeBackend.Controller
             _context = context;
         }
 
-        // GET: api/SalesChannels
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Masterchannelsales>>> GetMasterchannelsales([FromQuery]FindMasterchannelsalesDto findMasterchannelsalesDto)
+        private IQueryable<Masterchannelsales> BaseQuery(FindMasterchannelsalesDto findMasterchannelsalesDto)
         {
-            if (_context.Masterchannelsales == null)
-            {
-                return NotFound();
-            }
             var query = _context.Masterchannelsales.AsQueryable();
 
             if (!string.IsNullOrEmpty(findMasterchannelsalesDto.Nama))
@@ -39,14 +35,67 @@ namespace DoranOfficeBackend.Controller
             {
                 query = query.Where(r => r.Aktif == findMasterchannelsalesDto.Aktif);
             }
+            return query;
+        }
 
-            if (!string.IsNullOrEmpty(findMasterchannelsalesDto.Deleted))
+        // GET: api/SalesChannels
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Masterchannelsales>>> GetMasterchannelsales([FromQuery]FindMasterchannelsalesDto findMasterchannelsalesDto)
+        {
+            if (_context.Masterchannelsales == null)
             {
-                query = query.WhereDeleted();
-            } else
-            {
-                query = query.WhereNotDeleted();
+                return NotFound();
             }
+
+            var query = BaseQuery(findMasterchannelsalesDto);
+
+            //if (!string.IsNullOrEmpty(findMasterchannelsalesDto.Deleted))
+            //{
+            //    query = query.WhereDeleted();
+            //} else
+            //{
+            //    query = query.WhereNotDeleted();
+            //}
+
+            return await query.ToListAsync();
+        }
+
+        [HttpGet("withtimandsales", Name = "GetMasterchannelsalesWithTimAndSales")]
+        public async Task<ActionResult<IEnumerable<MasterchannelsalesOptionDto>>> GetMasterchannelsalesWithTimAndSales([FromQuery] FindMasterchannelsalesDto findMasterchannelsalesDto)
+        {
+            if (_context.Masterchannelsales == null)
+            {
+                return NotFound();
+            }
+
+            var query = BaseQuery(findMasterchannelsalesDto)
+                .Include(e => e.Mastertimsales.Where(s => s.Aktif == true))
+                .ThenInclude(e => e.Sales.Where(s => s.Aktif == true))
+                .Select(e => new MasterchannelsalesOptionDto
+                {
+                    Kode = e.Kode,
+                    Nama = e.Nama,
+                    Mastertimsales = e.Mastertimsales.Select(m => new MastertimsalesOptionDto
+                    {
+                        Kode = m.Kode,
+                        Nama = m.Nama,
+                        Kodechannel = m.Kodechannel,
+                        Sales = m.Sales.Select(s => new SalesOptionDto
+                        {
+                            Kode = s.Kode,
+                            Nama = s.Nama,
+                            Kodetimsales = s.Kodetimsales,
+                        }).ToList()
+                    }).ToList()
+                });
+
+            //if (!string.IsNullOrEmpty(findMasterchannelsalesDto.Deleted))
+            //{
+            //    query = query.WhereDeleted();
+            //} else
+            //{
+            //    query = query.WhereNotDeleted();
+            //}
 
             return await query.ToListAsync();
         }
@@ -124,21 +173,21 @@ namespace DoranOfficeBackend.Controller
             return NoContent();
         }
 
-        // DELETE: api/SalesChannels/5
-        [HttpDelete("{id}/restore")]
-        public async Task<IActionResult> RestoreDeleteSalesChannel(sbyte id)
-        {
-            var salesChannel = await _context.Masterchannelsales.FindAsync(new
-            {
-                kode = id
-            });
-            if (salesChannel == null)
-            {
-                return NotFound();
-            }
-            await _context.RestoreSoftDeleteAsync<Masterchannelsales>(salesChannel);
+        //// DELETE: api/SalesChannels/5
+        //[HttpDelete("{id}/restore")]
+        //public async Task<IActionResult> RestoreDeleteSalesChannel(sbyte id)
+        //{
+        //    var salesChannel = await _context.Masterchannelsales.FindAsync(new
+        //    {
+        //        kode = id
+        //    });
+        //    if (salesChannel == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    await _context.RestoreSoftDeleteAsync<Masterchannelsales>(salesChannel);
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
     }
 }

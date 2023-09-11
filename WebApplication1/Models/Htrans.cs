@@ -82,7 +82,7 @@ namespace DoranOfficeBackend.Models
         public int Notrans { get; set; }
         public int Noretur { get; set; }
         public string Kodenota { get; set; } = null!;
-        public int Kodeonline { get; set; }
+        public long Kodeonline { get; set; }
         public string NamaCust { get; set; } = null!;
         public string NmrHp { get; set; } = null!;
         public string CustOlkota { get; set; } = null!;
@@ -111,5 +111,8 @@ namespace DoranOfficeBackend.Models
         public ICollection<Dtrans> Dtrans { get; set; }
 
         public virtual Masterpelanggan? Masterpelanggan { get; set; }
+        public virtual Mastergudang? Mastergudang { get; set; }
+
+        public virtual Sales? Sales { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DoranOfficeBackend.Dtos.HkategoriBarang;
+using DoranOfficeBackend.Dtos.Hkategoribarang;
 using DoranOfficeBackend.Models;
 
 namespace DoranOfficeBackend.Mappings

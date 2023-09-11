@@ -30,22 +30,15 @@ namespace DoranOfficeBackend.Controller
             _context = context;
         }
 
-        // GET: api/Mastergudang
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Mastergudang>>> GetMastergudangByKode([FromQuery] FindMastergudangDto dto)
+        private IQueryable<Mastergudang> BaseQuery (FindMastergudangDto dto)
         {
-          if (_context.Mastergudang == null)
-          {
-              return NotFound();
-          }
-
             var query = _context.Mastergudang
                     .AsNoTracking()
                     .AsQueryable();
 
             if (!String.IsNullOrWhiteSpace(dto.Nama))
             {
-                 query = query.Where(x => x.Nama.Contains(dto.Nama));
+                query = query.Where(x => x.Nama.Contains(dto.Nama));
             }
 
             if (dto.Urut.HasValue)
@@ -63,21 +56,51 @@ namespace DoranOfficeBackend.Controller
                 query = query.Where(x => x.Aktif == dto.Aktif);
             }
 
-            if (dto.Deleted == true)
-            {
-                query = query.WhereDeleted();
-            }
-            else
-            {
-                query = query.WhereNotDeleted();
-            }
+            //if (dto.Deleted == true)
+            //{
+            //    query = query.WhereDeleted();
+            //}
+            //else
+            //{
+            //    query = query.WhereNotDeleted();
+            //}
+            return query;
+        }
+
+        // GET: api/Mastergudang
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Mastergudang>>> GetMastergudangByKode([FromQuery] FindMastergudangDto dto)
+        {
+          if (_context.Mastergudang == null)
+          {
+              return NotFound();
+          }
+            var query = BaseQuery(dto);
 
             return await query.ToListAsync();
         }
 
+        // GET: api/Mastergudang/options
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<MastergudangOptionDto>>> GetMastergudangOptions([FromQuery] FindMastergudangDto dto)
+        {
+            if (_context.Mastergudang == null)
+            {
+                return NotFound();
+            }
+            var query = BaseQuery(dto).Select( e => new MastergudangOptionDto
+            {
+                Kode = e.Kode,
+                Nama = e.Nama
+            });
+
+            return await query.ToListAsync();
+        }
+
+
         // GET: api/Mastergudang/5
         [HttpGet("{kode}")]
-        public async Task<ActionResult<Mastergudang>> GetMastergudang(int kode)
+        public async Task<ActionResult<Mastergudang>> GetMastergudangByKode(int kode)
         {
           if (_context.Mastergudang == null)
           {
@@ -135,7 +158,7 @@ namespace DoranOfficeBackend.Controller
             _context.Mastergudang.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMastergudangByKode", new { id = entity.Id }, entity);
+            return CreatedAtAction("GetMastergudangByKode", new { kode = entity.Kode }, entity);
         }
 
         // POST: api/Mastergudang/{kode}/set-active
@@ -153,7 +176,7 @@ namespace DoranOfficeBackend.Controller
             mastergudang.Aktif = dto.Aktif;
             ConsoleDump.Extensions.Dump(dto, "ACCCCC");
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetMastergudangByKode", new { id = mastergudang.Id }, mastergudang);
+            return CreatedAtAction("GetMastergudangByKode", new { kode = mastergudang.Kode }, mastergudang);
         }
 
         // POST: api/Mastergudang/{kode}/transit
@@ -170,7 +193,7 @@ namespace DoranOfficeBackend.Controller
 
             mastergudang.Boletransit = dto.Boletransit;
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetMastergudangByKode", new { id = mastergudang.Id }, mastergudang);
+            return CreatedAtAction("GetMastergudangByKode", new { kode = mastergudang.Kode }, mastergudang);
         }
 
         // DELETE: api/Mastergudang/5
@@ -189,19 +212,19 @@ namespace DoranOfficeBackend.Controller
             return NoContent();
         }
 
-        [HttpDelete("{kode}/restore")]
-        public async Task<ActionResult<Mastergudang>> RestoreDeleteMastergudang(int kode)
-        {
-            if (_context.Mastergudang == null)
-            {
-                return NotFound();
-            }
-            var mastergudang = await checkMastergudang(kode);
+        //[HttpDelete("{kode}/restore")]
+        //public async Task<ActionResult<Mastergudang>> RestoreDeleteMastergudang(int kode)
+        //{
+        //    if (_context.Mastergudang == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var mastergudang = await checkMastergudang(kode);
 
-            await _context.RestoreSoftDeleteAsync<Mastergudang>(mastergudang);
+        //    await _context.RestoreSoftDeleteAsync<Mastergudang>(mastergudang);
 
-            return Ok(mastergudang);
-        }
+        //    return Ok(mastergudang);
+        //}
 
         private async Task<Mastergudang> checkMastergudang(int kode)
         {

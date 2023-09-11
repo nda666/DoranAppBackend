@@ -6,11 +6,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoranOfficeBackend.Models
 {
-    public partial class Sales : ITimestamps, ISoftDelete
+    //public partial class Sales : ITimestamps, ISoftDelete
+    public partial class Sales
     {
-        [Column("id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
+        //[Column("id")]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public Guid Id { get; set; }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -48,19 +49,21 @@ namespace DoranOfficeBackend.Models
         public bool Emailresikiriman { get; set; }
         public int BonusJete { get; set; }
 
-        [Column("created_at")]
-        public DateTime? CreatedAt { get; set; }
+        //[Column("created_at")]
+        //public DateTime? CreatedAt { get; set; }
 
-        [Column("updated_at")]
-        public DateTime? UpdatedAt { get; set; }
+        //[Column("updated_at")]
+        //public DateTime? UpdatedAt { get; set; }
 
-        [Column("deleted_at")]
-        public DateTime? DeletedAt { get; set; }
+        //[Column("deleted_at")]
+        //public DateTime? DeletedAt { get; set; }
 
         public virtual Sales? SalesManager { get; set; } = null!;
 
         public virtual Masteruser? Masteruser { get; set; } = null!;
 
         public virtual Mastertimsales? Mastertimsales { get; set; } = null!;
+
+        public virtual ICollection<Htrans>? Htrans { get; set; }
     }
 }

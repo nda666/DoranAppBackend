@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using DoranOfficeBackend.Models;
 using DoranOfficeBackend.Attributes;
 using DoranOfficeBackend.Extentsions;
-using DoranOfficeBackend.Dtos.HkategoriBarang;
 using AutoMapper;
+using DoranOfficeBackend.Dtos.Hkategoribarang;
+using DoranOfficeBackend.Dtos.Dkategoribarang;
 
 namespace DoranOfficeBackend.Controller.HkategoriBarangsController
 {
@@ -22,15 +23,8 @@ namespace DoranOfficeBackend.Controller.HkategoriBarangsController
             _mapper = mapper;
         }
 
-        // GET: api/HkategoriBarangs
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Hkategoribarang>>> GetHkategoriBarang([FromQuery] FindHkategoribarangDto dto)
+        private IQueryable<Hkategoribarang> BaseQuery(FindHkategoribarangDto dto)
         {
-          if (_context.Hkategoribarangs == null)
-          {
-              return NotFound();
-          }
-           
             var query = _context.Hkategoribarangs.AsNoTracking().AsQueryable();
             if (!String.IsNullOrEmpty(dto.Nama))
             {
@@ -41,16 +35,46 @@ namespace DoranOfficeBackend.Controller.HkategoriBarangsController
             {
                 query = query.Where(r => r.Aktif == dto.Aktif);
             }
+            return query;
+        }
 
-            if (dto.Deleted.HasValue)
+        // GET: api/HkategoriBarangs
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Hkategoribarang>>> GetHkategoriBarang([FromQuery] FindHkategoribarangDto dto)
+        {
+          if (_context.Hkategoribarangs == null)
+          {
+              return NotFound();
+          }
+
+            var query = BaseQuery(dto);
+
+            return await query.ToListAsync();
+        }
+
+        // GET: api/HkategoriBarang/withdkategori
+        [HttpGet("with-dkategoribarang", Name = "GetHkategoriBarangWithDkategoribarang")]
+        public async Task<ActionResult<IEnumerable<HkategoribarangOptionDto>>> GetHkategoriBarangWithDkategoribarang([FromQuery] FindHkategoribarangDto dto)
+        {
+            if (_context.Hkategoribarangs == null)
             {
-                query = dto.Deleted == true ? query.WhereDeleted() : query;
+                return NotFound();
             }
-            else
-            {
-                query = query.WhereNotDeleted();
-            }
-            query = query.OrderByDescending(x => x.CreatedAt);
+
+            var query = BaseQuery(dto)
+                    .Include(e => e.Dkategoribarang)
+                    .OrderBy(e => e.Nama)
+                    .Select(e => new HkategoribarangOptionDto
+                    {
+                        Nama = e.Nama,
+                        Kodeh = e.Kodeh,
+                        Dkategoribarang = e.Dkategoribarang.Select(d => new DkategoribarangOptionDto
+                        {
+                            Kodeh = d.Koded,
+                            Koded = d.Koded,
+                            Nama = d.Nama
+                        }).ToList()
+                    });
 
             return await query.ToListAsync();
         }
@@ -132,23 +156,23 @@ namespace DoranOfficeBackend.Controller.HkategoriBarangsController
             return NoContent();
         }
 
-        // DELETE: api/HkategoriBarangs/5/restore
-        [HttpDelete("{kodeh}/restore")]
-        public async Task<ActionResult<Hkategoribarang>> RestoreHkategoriBarang(int kodeh)
-        {
-            if (_context.Hkategoribarangs == null)
-            {
-                return NotFound();
-            }
-            var hkategoriBarang = await _context.Hkategoribarangs.FindAsync(kodeh);
-            if (hkategoriBarang == null)
-            {
-                return NotFound();
-            }
+        //// DELETE: api/HkategoriBarangs/5/restore
+        //[HttpDelete("{kodeh}/restore")]
+        //public async Task<ActionResult<Hkategoribarang>> RestoreHkategoriBarang(int kodeh)
+        //{
+        //    if (_context.Hkategoribarangs == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var hkategoriBarang = await _context.Hkategoribarangs.FindAsync(kodeh);
+        //    if (hkategoriBarang == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-             await _context.RestoreSoftDeleteAsync<Hkategoribarang>(hkategoriBarang);
+        //     await _context.RestoreSoftDeleteAsync<Hkategoribarang>(hkategoriBarang);
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
     }
 }

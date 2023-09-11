@@ -7,11 +7,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoranOfficeBackend.Models
 {
-    public partial class Mastertimsales: ITimestamps, ISoftDelete
+    //public partial class Mastertimsales: ITimestamps, ISoftDelete
+    public partial class Mastertimsales
     {
-        [Column("id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
+        //[Column("id")]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public Guid Id { get; set; }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,18 +22,17 @@ namespace DoranOfficeBackend.Models
         public long Targetomzet { get; set; }
         public bool Tampiltahunlalu { get; set; }
         public bool Aktif { get; set; }
-
         public bool SyaratKomisi { get; set; }
         public int Kodechannel { get; set; }
 
-        [Column("created_at")]
-        public DateTime? CreatedAt { get; set; }
+        //[Column("created_at")]
+        //public DateTime? CreatedAt { get; set; }
 
-        [Column("updated_at")]
-        public DateTime? UpdatedAt { get; set; }
+        //[Column("updated_at")]
+        //public DateTime? UpdatedAt { get; set; }
 
-        [Column("deleted_at")]
-        public DateTime? DeletedAt { get; set; }
+        //[Column("deleted_at")]
+        //public DateTime? DeletedAt { get; set; }
 
         public virtual  Masterchannelsales? Masterchannelsales { get; set; }
 

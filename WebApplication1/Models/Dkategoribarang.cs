@@ -9,11 +9,13 @@ namespace DoranOfficeBackend.Models
         [Key]
         public int Koded { get; set; }
         public string Nama { get; set; } = null!;
-        public sbyte Kodeh { get; set; }
+        public int Kodeh { get; set; }
         public sbyte Munculdimasterbarangapps { get; set; }
         public sbyte Cnp { get; set; }
         public bool Sn { get; set; }
         public sbyte Perlusetharga { get; set; }
         public virtual ICollection<Masterbarang> Masterbarang { get; set; }
+
+        public virtual Hkategoribarang? Hkategoribarang { get; set; }
     }
 }

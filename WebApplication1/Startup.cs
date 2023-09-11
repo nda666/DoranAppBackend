@@ -14,6 +14,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using DoranOfficeBackend.Extentsions;
 using AutoMapper;
+using System.Data;
+using MySql.Data.MySqlClient;
 
 namespace DoranOfficeBackend
 {
@@ -31,7 +33,7 @@ namespace DoranOfficeBackend
             {
                 options.AddInterceptors(new TimestampInterceptor()).UseMySQL(Configuration.GetConnectionString("DefaultConnection"));
             });
-
+            services.AddTransient<IDbConnection>(db => new MySqlConnection(Configuration.GetConnectionString("DefaultConnection")));
             services.AddAutoMapperFromNamespace("DoranOfficeBackend.Mappings");
 
             //services.AddControllers().AddJsonOptions(options =>

@@ -18,6 +18,17 @@ namespace DoranOfficeBackend.Mappings
             CreateMap<SaveTransaksiDto, Htrans>()
                 .ForMember(dest => dest.Jumlah, opt => opt.MapFrom<TotalResolver>());
             CreateMap<DetailTransaksi, Dtrans>();
+
+
+            CreateMap<Masterbarang, MasterbarangResult>();
+            CreateMap<MasterbarangResult, Masterbarang>();
+            CreateMap<Masterpelanggan, CommonResult>();
+            CreateMap<LokasiKota, CommonResult>();
+            CreateMap<Sales, CommonResult>();
+            CreateMap<Mastergudang, CommonResult>();
+            CreateMap<Dtrans, DtransResult>();
+            CreateMap<DtransResult, Dtrans>();
+            CreateMap<Htrans, HtransResult>();
         }
     }
 }
