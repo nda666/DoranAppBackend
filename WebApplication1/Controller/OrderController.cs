@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DoranOfficeBackend;
 using DoranOfficeBackend.Models;
 using AutoMapper;
-using DoranOfficeBackend.Extentsions;
-using DoranOfficeBackend.Exceptions;
 using DoranOfficeBackend.Attributes;
-using DoranOfficeBackend.Dtos.Masterpelanggan;
+using DoranOfficeBackend.Dtos.Order;
 using DoranOfficeBackend.Dtos.Transaksi;
-using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -21,22 +13,22 @@ namespace DoranOfficeBackend.Controller
     [ApiController]
     [Auth]
     [Produces("application/json")]
-    public class TransaksiController : ControllerBase
+    public class OrderController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly MyDbContext _context;
 
-        public TransaksiController(IMapper mapper, MyDbContext context)
+        public OrderController(IMapper mapper, MyDbContext context)
         {
             _mapper = mapper;
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HorderResultDto>>> GetTransaksi([FromQuery] FindTransaksiDto dto)
+        public async Task<ActionResult<IEnumerable<Dtos.Order.HorderResultDto>>> GetOrder([FromQuery] FindOrderDto dto)
         {
             ConsoleDump.Extensions.Dump(dto);
-            var htransQ = _context.Htrans
+            var HorderQ = _context.Horder
                 .AsNoTracking()
                 .AsQueryable();
 
@@ -44,73 +36,73 @@ namespace DoranOfficeBackend.Controller
             if (dto.MinDate.HasValue)
             {
                 var minDate = new DateTime(dto.MinDate.Value.Year, dto.MinDate.Value.Month, dto.MinDate.Value.Day, 0, 0, 0);
-                htransQ = htransQ.Where(x => x.TglTrans >= minDate);
+                HorderQ = HorderQ.Where(x => x.Tglorder >= minDate);
             }
 
             if (dto.MaxDate.HasValue)
             {
                 var maxDate = new DateTime(dto.MaxDate.Value.Year, dto.MaxDate.Value.Month, dto.MaxDate.Value.Day, 23, 59, 59);
-                htransQ = htransQ.Where(x => x.TglTrans <= maxDate);
+                HorderQ = HorderQ.Where(x => x.Tglorder <= maxDate);
             }
 
             if (dto.Kodeh.HasValue)
             {
-                htransQ = htransQ.Where(x => x.KodeH == dto.Kodeh);
+                HorderQ = HorderQ.Where(x => x.Kodeh == dto.Kodeh);
             }
 
-            if (dto.Kodegudang.HasValue && dto.Kodegudang >= 0)
+            //if (dto.Kodegudang.HasValue && dto.Kodegudang >= 0)
+            //{
+            //    HorderQ = HorderQ.Where(x => x.Kodegudang == dto.Kodegudang);
+            //}
+
+            if (dto.Kodesales.HasValue)
             {
-                htransQ = htransQ.Where(x => x.Kodegudang == dto.Kodegudang);
+                HorderQ = HorderQ.Where(x => x.Kodesales == dto.Kodesales);
             }
 
-            if (dto.KodeSales.HasValue)
+            if (dto.Kodepelanggan.HasValue)
             {
-                htransQ = htransQ.Where(x => x.KodeSales == dto.KodeSales);
-            }
-
-            if (dto.KodePelanggan.HasValue)
-            {
-                htransQ = htransQ.Where(x => x.KodePelanggan == dto.KodePelanggan);
+                HorderQ = HorderQ.Where(x => x.Kodepelanggan == dto.Kodepelanggan);
             }
 
             if (dto.KodeKota.HasValue)
             {
-                htransQ = htransQ.Where(x => x.Masterpelanggan.Kota == dto.KodeKota);
+                HorderQ = HorderQ.Where(x => x.Masterpelanggan.Kota == dto.KodeKota);
             }
 
             if (dto.KodeProvinsi.HasValue)
             {
-                htransQ = htransQ.Where(x => x.Masterpelanggan.LokasiKota.Provinsi == dto.KodeProvinsi);
+                HorderQ = HorderQ.Where(x => x.Masterpelanggan.LokasiKota.Provinsi == dto.KodeProvinsi);
             }
 
             if (!String.IsNullOrEmpty(dto.NamaPelanggan))
             {
-                htransQ = htransQ.Where(x => EF.Functions.Like(x.Masterpelanggan.Nama, $"%{dto.NamaPelanggan}%"));
+                HorderQ = HorderQ.Where(x => EF.Functions.Like(x.Masterpelanggan.Nama, $"%{dto.NamaPelanggan}%"));
             }
 
             if (!String.IsNullOrEmpty(dto.Kodenota))
             {
-                htransQ = htransQ.Where(x => x.Kodenota == dto.Kodenota);
+                HorderQ = HorderQ.Where(x => x.Kode == dto.Kodenota);
             }
 
             if (!String.IsNullOrEmpty(dto.Lunas))
             {
-                htransQ = htransQ.Where(x => x.Lunas == dto.Lunas);
+                HorderQ = HorderQ.Where(x => x.Lunas == dto.Lunas);
             }
 
-            var htransPagingQ = htransQ;
-            var totalRow = await htransPagingQ.CountAsync();
+            var HorderPagingQ = HorderQ;
+            var totalRow = await HorderPagingQ.CountAsync();
 
-            htransQ = htransQ.OrderByDescending(x => x.TglTrans);
+            HorderQ = HorderQ.OrderByDescending(x => x.TglTrans);
 
             if (dto.Limit.HasValue)
             {
-                htransQ = htransQ.Take(dto.Limit.Value);
+                HorderQ = HorderQ.Take(dto.Limit.Value);
             }
             int skip = (dto.Page - 1) * dto.PageSize;
-            htransQ = htransQ.Skip(skip)
+            HorderQ = HorderQ.Skip(skip)
                     .Take(dto.PageSize);
-            htransQ = htransQ.Include(e => e.Dtrans)
+            HorderQ = HorderQ.Include(e => e.Dtrans)
                 .ThenInclude(e => e.Masterbarang)
                 .AsSplitQuery()
                 .Include(e => e.Masterpelanggan)
@@ -119,12 +111,12 @@ namespace DoranOfficeBackend.Controller
                 .Include(e => e.Sales)
                 .Include(e => e.Mastergudang);
 
-            var htrans = await htransQ.ToListAsync();
-            ICollection<HtransResult> htransResults = _mapper.Map<ICollection<HtransResult>>(htrans);
+            var Horder = await HorderQ.ToListAsync();
+            ICollection<HorderResult> HorderResults = _mapper.Map<ICollection<HorderResult>>(Horder);
             var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
             var result = new HorderResultDto
             {
-                Data = htransResults,
+                Data = HorderResults,
                 Page = dto.Page,
                 PageSize = dto.PageSize,
                 TotalPage = totalPage,
@@ -145,9 +137,9 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpPost]
-        public async Task<ActionResult> SaveTransaksi([FromBody] SaveTransaksiDto dto)
+        public async Task<ActionResult> SaveOrder([FromBody] SaveOrderDto dto)
         {
-            var lastKodeh = await _context.Htrans.Select(e => e.KodeH)
+            var lastKodeh = await _context.Horder.Select(e => e.KodeH)
                 .MaxAsync();
             var kodeh = 1;
             if (lastKodeh != null)
@@ -155,11 +147,11 @@ namespace DoranOfficeBackend.Controller
                 kodeh = lastKodeh + 1;
             }
             var user = getUser();
-            var entity = _mapper.Map<Htrans>(dto);
+            var entity = _mapper.Map<Horder>(dto);
             entity.KodeH = kodeh;
             entity.InsertName = (sbyte)user?.Kodeku;
             entity.InsertTime = DateTime.Now;
-            _context.Htrans.Add(entity);
+            _context.Horder.Add(entity);
             await _context.SaveChangesAsync();
 
             var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
@@ -170,18 +162,18 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpPut("{kode}")]
-        public async Task<ActionResult> UpdateTransaksi(int kode, [FromBody] SaveTransaksiDto dto)
+        public async Task<ActionResult> UpdateOrder(int kode, [FromBody] SaveOrderDto dto)
         {
-            var htrans = await _context.Htrans.Where(e => e.KodeH == kode).FirstOrDefaultAsync();
-            if (htrans == null)
+            var Horder = await _context.Horder.Where(e => e.KodeH == kode).FirstOrDefaultAsync();
+            if (Horder == null)
             {
                 return NotFound();
             }
-            _mapper.Map(dto, htrans);
+            _mapper.Map(dto, Horder);
             var user = getUser();
 
-            htrans.UpdateName = (sbyte)user?.Kodeku;
-            htrans.UpdateTime = DateTime.Now;
+            Horder.UpdateName = (sbyte)user?.Kodeku;
+            Horder.UpdateTime = DateTime.Now;
             await _context.SaveChangesAsync();
             var deleteDtrans = _context.Dtrans.Where(e => e.Kodeh == kode);
             if (deleteDtrans.Any())
@@ -191,7 +183,7 @@ namespace DoranOfficeBackend.Controller
             }
             var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
             await InsertToDtrans(kode, dtrans);
-            return Ok(htrans);
+            return Ok(Horder);
         }
 
         private async Task InsertToDtrans(int kodeh, List<Dtrans> dtrans)

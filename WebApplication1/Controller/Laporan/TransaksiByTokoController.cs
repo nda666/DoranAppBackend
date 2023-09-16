@@ -14,14 +14,14 @@ namespace DoranOfficeBackend.Controller.Laporan
 {
     [Route("api/laporan/[controller]")]
     [ApiController]
-    public class TransaksiByBarangController : ControllerBase
+    public class TransaksiByTokoController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly MyDbContext _context;
         private readonly IDbConnection _dbConnection;
 
 
-        public TransaksiByBarangController(IMapper mapper, MyDbContext context, IDbConnection dbConnection)
+        public TransaksiByTokoController(IMapper mapper, MyDbContext context, IDbConnection dbConnection)
         {
             _mapper = mapper;
             _context = context;
@@ -30,7 +30,7 @@ namespace DoranOfficeBackend.Controller.Laporan
 
         // GET: api/<ValuesController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<dynamic>>> Get([FromQuery] FindTransaksiByBarangDto dto)
+        public async Task<ActionResult<IEnumerable<dynamic>>> Get([FromQuery] FindTransaksiByTokoDto dto)
         {
             
             var minDate = dto.MinDate?.Date;
@@ -44,10 +44,12 @@ namespace DoranOfficeBackend.Controller.Laporan
             SUM(dtrans.jumlah) AS jumlah
         FROM dtrans
         JOIN htrans ON dtrans.kodeh = htrans.KodeH
-        LEFT JOIN sales on htrans.kodeSales = sales.kode
-        LEFT JOIN mastertimsales ON mastertimsales.kode = sales.kodetimsales
+         JOIN sales on htrans.kodeSales = sales.kode
+         JOIN mastertimsales ON mastertimsales.kode = sales.kodetimsales
+        JOIN masterpelanggan ON masterpelanggan.kode = htrans.kodePelanggan
+        JOIN lokasi_kota ON masterpelanggan.kota = lokasi_kota.kode
         JOIN masterbarang ON dtrans.kodebarang = masterbarang.brgKode
-        LEFT JOIN dkategoribarang ON dkategoribarang.koded = masterbarang.kategoriBrg
+        JOIN dkategoribarang ON dkategoribarang.koded = masterbarang.kategoriBrg
         /**join**/
         /**where**/
         /**groupby**/
@@ -56,18 +58,13 @@ namespace DoranOfficeBackend.Controller.Laporan
             switch (dto.TipeGroup)
             {
                 
-                case TransaksiByBarangTipeGroup.GROUP_BY_SUBBRAND:
-                    builder.Select("dkategoribarang.koded  as kode, dkategoribarang.nama");
-                    builder.GroupBy("masterbarang.kategoriBrg");
-                    break;
-                case TransaksiByBarangTipeGroup.GROUP_BY_BRAND:
-                    builder.Select("hkategoribarang.kodeh as kode, hkategoribarang.nama");
-                    builder.Join("hkategoribarang ON dkategoribarang.kodeh = hkategoribarang.kodeh");
-                    builder.GroupBy("dkategoribarang.kodeh");
+                case TransaksiByTokoTipeGroup.GROUP_BY_KOTA:
+                    builder.Select("lokasi_kota.kode, lokasi_kota.nama");
+                    builder.GroupBy("masterpelanggan.kota");
                     break;
                 default:
-                    builder.Select("masterbarang.brgKode as kode, masterbarang.brgNama as nama");
-                    builder.GroupBy("dtrans.kodebarang");
+                    builder.Select("masterpelanggan.kode, CONCAT(masterpelanggan.nama, ' - ', lokasi_kota.nama) as nama");
+                    builder.GroupBy("htrans.kodePelanggan");
                     break;
             }
 
@@ -115,14 +112,15 @@ namespace DoranOfficeBackend.Controller.Laporan
             {
                 builder.Where("htrans.kodegudang = @kodegudang", new { dto.Kodegudang });
             }
-            var retur = (dto.Retur == true ? 2 : 0).ToString();
-            builder.Where("htrans.retur = @retur", new { retur });
+            //var retur = (dto.Retur == true ? 2 : 0).ToString();
+            //builder.Where("htrans.retur = @retur", new { retur });
             
 
             using (var connection = _dbConnection)
             {
                 connection.Open();
-                var queryResult = await connection.QueryAsync<TransaksiByBarangResultDto>(template.RawSql, template.Parameters);
+                Console.WriteLine(template.RawSql);
+                var queryResult = await connection.QueryAsync<TransaksiByTokoResultDto>(template.RawSql, template.Parameters);
                
                 return queryResult.ToList();
             }
@@ -145,7 +143,7 @@ namespace DoranOfficeBackend.Controller.Laporan
             //    query = query.Where(x => x.Htrans.TglTrans <= maxDate);
             //}
             //var result = await query.GroupBy(e => e.Masterbarang)
-            //        .Select(e => new TransaksiByBarangResultDto
+            //        .Select(e => new TransaksiByTokoResultDto
             //        {
             //            Total = e.Sum(d => d.Jumlah * d.Harga),
             //            BrgKode = e.Key.BrgKode,

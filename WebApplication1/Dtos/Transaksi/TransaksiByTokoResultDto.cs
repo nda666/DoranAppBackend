@@ -1,6 +1,6 @@
-﻿namespace DoranOfficeBackend.Dtos.Transaksi
+namespace DoranOfficeBackend.Dtos.Transaksi
 {
-    public class TransaksiByBarangResultDto
+    public class TransaksiByTokoResultDto
     {
         public short Kode { get; set; }
         public string Nama { get; set; }

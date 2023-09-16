@@ -92,5 +92,7 @@ namespace DoranOfficeBackend.Models
         public virtual LokasiKota? LokasiKota { get; set; }
 
         public virtual ICollection<Htrans>? Htrans { get; set; }
+
+        public virtual ICollection<Horder>? Horder { get; set; }
     }
 }

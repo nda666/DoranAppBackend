@@ -14,6 +14,8 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="ConsoleDump" Version="0.7.0" />
     <PackageReference Include="Dapper" Version="2.0.151" />
+    <PackageReference Include="Dapper.Extensions.MiniProfiler" Version="4.2.4" />
+    <PackageReference Include="Dapper.Extensions.MySQL" Version="4.2.4" />
     <PackageReference Include="Dapper.FluentMap" Version="2.0.0" />
     <PackageReference Include="Dapper.SqlBuilder" Version="2.0.78" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.20.0" />
@@ -39,6 +41,7 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.32.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.15" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore" Version="6.0.15" />
+    <PackageReference Include="MiniProfiler" Version="4.3.8" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.16" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -48,6 +51,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Dtos\Order\SaveTransaksiDto.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Update="Dtos\Transaksi\SaveTransaksiDto.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>

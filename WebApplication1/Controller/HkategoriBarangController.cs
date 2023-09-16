@@ -17,6 +17,7 @@ namespace DoranOfficeBackend.Controller.HkategoriBarangsController
     {
         private readonly MyDbContext _context;
         private readonly IMapper _mapper;
+
         public HkategoriBarangController(IMapper mapper , MyDbContext context)
         {
             _context = context;

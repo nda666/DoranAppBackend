@@ -16,19 +16,31 @@ using DoranOfficeBackend.Extentsions;
 using AutoMapper;
 using System.Data;
 using MySql.Data.MySqlClient;
+using Dapper.Extensions.MySql;
+using System.Globalization;
 
 namespace DoranOfficeBackend
 {
 
     public class Startup
     {
-        public Startup(IConfiguration configuration) => Configuration = configuration;
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        {
+            Configuration = configuration;
+            CurrentEnvironment = env;
+        }
 
         public IConfiguration Configuration { get; set; }
+        public IWebHostEnvironment CurrentEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("id-ID");
+            });
+
             services.AddDbContext<MyDbContext>(options =>
             {
                 options.AddInterceptors(new TimestampInterceptor()).UseMySQL(Configuration.GetConnectionString("DefaultConnection"));
@@ -117,7 +129,11 @@ namespace DoranOfficeBackend
                 scopeName: "v2"
                 );
 
-           
+
+            if (CurrentEnvironment.IsDevelopment())
+            {
+                services.AddDapperForMySQL();
+            }
 
             //services.AddFluentValidationAutoValidation();
             //services.AddScoped<IValidator<SalesChannel>, SalesChannelValidator>();
@@ -131,6 +147,13 @@ namespace DoranOfficeBackend
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var supportedCultures = new[] { new CultureInfo("id-ID") };
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("id-ID"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            });
 
             if (env.IsDevelopment())
             {

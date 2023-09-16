@@ -1,20 +1,22 @@
 ﻿namespace DoranOfficeBackend.Dtos.Transaksi
 {
-    public enum TransaksiByBarangTipeGroup
+    public enum TransaksiBySalesTipeGroup
     {
-        GROUP_BY_BARANG=0,
-        GROUP_BY_BRAND=1,
-        GROUP_BY_SUBBRAND=2,
+        GROUP_BY_SALES=0,
+        GROUP_BY_CHANNEL=1,
     }
-    public class FindTransaksiByBarangDto
+    public enum TransaksiBySalesShowMode
     {
-        public TransaksiByBarangTipeGroup? TipeGroup { get; set; } = 0;
+        BY_OMZET = 0,
+        BY_PCS = 1
+    }
+    public class FindTransaksiBySalesDto
+    {
+        public TransaksiBySalesTipeGroup? TipeGroup { get; set; } = 0;
+        public TransaksiBySalesShowMode? ShowMode { get; set; } = 0;
+        public sbyte? JurnalPenjualan { get; set; }
         public int? Kodegudang { get; set; }
         public string? BrgNama { get; set; }
-        public string? BrgNama2 { get; set; }
-        public string? BrgNama3 { get; set; }
-        public string? BrgNama4 { get; set; }
-        public string? BrgNama5 { get; set; }
         public int? KodeKategori { get; set; }
         public int? KodeBrand { get; set; }
         public bool Retur { get; set; } = false;

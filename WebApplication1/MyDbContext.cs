@@ -121,7 +121,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Hlunasinmassal> Hlunasinmassals { get; set; } = null!;
         public virtual DbSet<Hnilaipegawai> Hnilaipegawais { get; set; } = null!;
         public virtual DbSet<Hongkircina> Hongkircinas { get; set; } = null!;
-        public virtual DbSet<Horder> Horders { get; set; } = null!;
+        public virtual DbSet<Horder> Horder { get; set; } = null!;
         public virtual DbSet<Hordercina> Hordercinas { get; set; } = null!;
         public virtual DbSet<Hpakaiinventari> Hpakaiinventaris { get; set; } = null!;
         public virtual DbSet<Hpenggantikirimretur> Hpenggantikirimreturs { get; set; } = null!;
@@ -7930,6 +7930,15 @@ namespace DoranOfficeBackend
                 .WithMany(c => c.Dkategoribarang)
                 .HasForeignKey(e => e.Kodeh)
                 .HasPrincipalKey(e => e.Kodeh)
+                .IsRequired(false);
+            });
+
+            modelBuilder.Entity<Horder>(entity =>
+            {
+                entity.HasOne(e => e.Masterpelanggan)
+                .WithMany(c => c.Horder)
+                .HasForeignKey(e => e.Kodepelanggan)
+                .HasPrincipalKey(e => e.Kode)
                 .IsRequired(false);
             });
 

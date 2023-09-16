@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace DoranOfficeBackend.Models
 {
+    public class MasterbarangOption
+    {
+        public short BrgKode { get; set; }
+        public string BrgNama { get; set; } = null!;
+    }
     public partial class Masterbarang
     {
         public short BrgKode { get; set; }

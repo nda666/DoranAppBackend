@@ -81,7 +81,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         // GET: api/Mastergudang/options
-        [HttpGet]
+        [HttpGet("options", Name = "GetMastergudangOptions")]
         public async Task<ActionResult<IEnumerable<MastergudangOptionDto>>> GetMastergudangOptions([FromQuery] FindMastergudangDto dto)
         {
             if (_context.Mastergudang == null)
@@ -92,7 +92,7 @@ namespace DoranOfficeBackend.Controller
             {
                 Kode = e.Kode,
                 Nama = e.Nama
-            });
+            }).OrderBy(e => e.Nama);
 
             return await query.ToListAsync();
         }

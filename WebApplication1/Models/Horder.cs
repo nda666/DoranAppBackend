@@ -40,5 +40,7 @@ namespace DoranOfficeBackend.Models
         /// UNTUK UPDATE NMR HP
         /// </summary>
         public sbyte Sudahupdatephone { get; set; }
+
+        public Masterpelanggan? Masterpelanggan { get; set; }
     }
 }

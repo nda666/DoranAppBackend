@@ -1,8 +1,8 @@
 ﻿using DoranOfficeBackend.Models;
 using _Masterbarang = DoranOfficeBackend.Models.Masterbarang;
-namespace DoranOfficeBackend.Dtos.Transaksi
+namespace DoranOfficeBackend.Dtos.Order
 {
-    public class HtransResult
+    public class HorderResult
     {
         public int KodeH { get; set; }
         public DateTime TglTrans { get; set; }
@@ -107,7 +107,7 @@ namespace DoranOfficeBackend.Dtos.Transaksi
         /// </summary>
         public sbyte Sudahupdatephone { get; set; }
 
-        public ICollection<DtransResult> Dtrans { get; set; }
+        public ICollection<DorderResult> Dtrans { get; set; }
 
         public virtual CommonResultDto? Masterpelanggan { get; set; }
         public virtual CommonResultDto? Mastergudang { get; set; }
@@ -115,7 +115,7 @@ namespace DoranOfficeBackend.Dtos.Transaksi
         public virtual CommonResultDto? Sales { get; set; }
     }
 
-    public class DtransResult
+    public class DorderResult
     {
         public int Id { get; set; }
         public int Kodeh { get; set; }
@@ -130,12 +130,13 @@ namespace DoranOfficeBackend.Dtos.Transaksi
         public sbyte Tukartipe { get; set; }
         public sbyte HargaOk { get; set; }
         public string Nmrsn { get; set; } = null!;
-        public virtual Masterbarang? Masterbarang { get; set; }
+        public virtual MasterbarangOption? Masterbarang { get; set; }
     }
 
     public class HorderResultDto : PaginationResultDto
     {
-        public ICollection<HtransResult> Data {get; set;}
+        public ICollection<HorderResult> Data {get; set;}
     }
+
 
 }
