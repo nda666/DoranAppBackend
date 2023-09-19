@@ -5,9 +5,10 @@ namespace DoranOfficeBackend.Models
 {
     public partial class Dorder
     {
+        public int Id { get; set; }
         public int Kodeh { get; set; }
         public short Koded { get; set; }
-        public int Kodebarang { get; set; }
+        public short Kodebarang { get; set; }
         public int Jumlah { get; set; }
         public string Keterangan { get; set; } = null!;
         public int Jumlahdikirim { get; set; }
@@ -25,5 +26,8 @@ namespace DoranOfficeBackend.Models
         public bool Disiapkan { get; set; }
         public int Harga { get; set; }
         public int Komisi { get; set; }
+        public virtual Horder? Horder { get; set; }
+        
+        public virtual Masterbarang? Masterbarang { get; set; }
     }
 }

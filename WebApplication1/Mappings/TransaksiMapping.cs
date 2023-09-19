@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DoranOfficeBackend.Dtos;
 using DoranOfficeBackend.Dtos.Transaksi;
 using DoranOfficeBackend.Models;
 
@@ -20,12 +21,12 @@ namespace DoranOfficeBackend.Mappings
             CreateMap<DetailTransaksi, Dtrans>();
 
 
-            CreateMap<Masterbarang, MasterbarangResult>();
-            CreateMap<MasterbarangResult, Masterbarang>();
-            CreateMap<Masterpelanggan, CommonResult>();
-            CreateMap<LokasiKota, CommonResult>();
-            CreateMap<Sales, CommonResult>();
-            CreateMap<Mastergudang, CommonResult>();
+            CreateMap<Masterbarang, MasterbarangOption>();
+            CreateMap<MasterbarangOption, Masterbarang>();
+            CreateMap<Masterpelanggan, CommonResultDto>();
+            CreateMap<LokasiKota, CommonResultDto>();
+            CreateMap<Sales, CommonResultDto>();
+            CreateMap<Mastergudang, CommonResultDto>();
             CreateMap<Dtrans, DtransResult>();
             CreateMap<DtransResult, Dtrans>();
             CreateMap<Htrans, HtransResult>();

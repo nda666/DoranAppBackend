@@ -22,5 +22,6 @@ namespace DoranOfficeBackend.Models
         public sbyte HarusInputNoHp { get; set; }
         public bool? AdaBarcode { get; set; }
         public sbyte OllangusungCetak { get; set; }
+        public ICollection<Horder> HorderEkspedisi { get; set; }
     }
 }

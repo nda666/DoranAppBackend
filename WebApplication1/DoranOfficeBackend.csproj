@@ -51,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Dtos\Order\SaveTransaksiDto.cs">
+    <Compile Update="Dtos\Order\SaveOrderDto.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Update="Dtos\Transaksi\SaveTransaksiDto.cs">

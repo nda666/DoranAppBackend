@@ -19,9 +19,6 @@ namespace DoranOfficeBackend.Models
         public int Kode { get; set; }
         public string Nama { get; set; } = null!;
 
-        [Column("aktif")]
-        public bool Aktif { get; set; }
-
         //[Column("created_at")]
         //public DateTime? CreatedAt { get; set; }
 

@@ -32,5 +32,9 @@ namespace DoranOfficeBackend.Models
         //public DateTime? DeletedAt { get; set; }
 
         public Sales? Sales { get; set; }
+
+        public virtual ICollection<Horder> HorderPenyiap { get; set; }
+        public virtual ICollection<Horder> HorderUserinsert { get; set; }
+        public virtual ICollection<Horder> HorderUserupdate { get; set; }
     }
 }

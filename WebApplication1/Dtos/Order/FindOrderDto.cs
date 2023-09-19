@@ -1,4 +1,4 @@
-﻿namespace DoranOfficeBackend.Dtos.Transaksi
+﻿namespace DoranOfficeBackend.Dtos.Order
 {
     /**
      * public class FindTransaksiDto

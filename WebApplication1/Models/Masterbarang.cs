@@ -47,6 +47,7 @@ namespace DoranOfficeBackend.Models
         public sbyte Kpikelengkapantoko { get; set; }
 
         public virtual ICollection<Dtrans> Dtrans { get; set; }
+        public virtual ICollection<Dorder> Dorder { get; set; }
 
         public virtual Dkategoribarang? Dkategoribarang { get; set; }
     }

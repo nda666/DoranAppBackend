@@ -33,7 +33,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HorderResultDto>>> GetTransaksi([FromQuery] FindTransaksiDto dto)
+        public async Task<ActionResult<IEnumerable<HtransResultDto>>> GetTransaksi([FromQuery] FindTransaksiDto dto)
         {
             ConsoleDump.Extensions.Dump(dto);
             var htransQ = _context.Htrans
@@ -122,7 +122,7 @@ namespace DoranOfficeBackend.Controller
             var htrans = await htransQ.ToListAsync();
             ICollection<HtransResult> htransResults = _mapper.Map<ICollection<HtransResult>>(htrans);
             var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
-            var result = new HorderResultDto
+            var result = new HtransResultDto
             {
                 Data = htransResults,
                 Page = dto.Page,

@@ -76,7 +76,7 @@ namespace DoranOfficeBackend.Controller
                 return NotFound();
             }
 
-            return await this.GetMastertimsalesBaseQuery(dto).ToListAsync();
+            return await GetMastertimsalesBaseQuery(dto).ToListAsync();
         }
 
         // GET: api/SalesTeams/5

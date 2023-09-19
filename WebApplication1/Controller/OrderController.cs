@@ -5,7 +5,7 @@ using DoranOfficeBackend.Models;
 using AutoMapper;
 using DoranOfficeBackend.Attributes;
 using DoranOfficeBackend.Dtos.Order;
-using DoranOfficeBackend.Dtos.Transaksi;
+using DocumentFormat.OpenXml.InkML;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -25,9 +25,8 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Dtos.Order.HorderResultDto>>> GetOrder([FromQuery] FindOrderDto dto)
+        public async Task<ActionResult<IEnumerable<HorderResultDto>>> GetOrder([FromQuery] FindOrderDto dto)
         {
-            ConsoleDump.Extensions.Dump(dto);
             var HorderQ = _context.Horder
                 .AsNoTracking()
                 .AsQueryable();
@@ -80,20 +79,10 @@ namespace DoranOfficeBackend.Controller
                 HorderQ = HorderQ.Where(x => EF.Functions.Like(x.Masterpelanggan.Nama, $"%{dto.NamaPelanggan}%"));
             }
 
-            if (!String.IsNullOrEmpty(dto.Kodenota))
-            {
-                HorderQ = HorderQ.Where(x => x.Kode == dto.Kodenota);
-            }
-
-            if (!String.IsNullOrEmpty(dto.Lunas))
-            {
-                HorderQ = HorderQ.Where(x => x.Lunas == dto.Lunas);
-            }
-
             var HorderPagingQ = HorderQ;
             var totalRow = await HorderPagingQ.CountAsync();
 
-            HorderQ = HorderQ.OrderByDescending(x => x.TglTrans);
+            HorderQ = HorderQ.OrderByDescending(x => x.Tglorder);
 
             if (dto.Limit.HasValue)
             {
@@ -102,17 +91,21 @@ namespace DoranOfficeBackend.Controller
             int skip = (dto.Page - 1) * dto.PageSize;
             HorderQ = HorderQ.Skip(skip)
                     .Take(dto.PageSize);
-            HorderQ = HorderQ.Include(e => e.Dtrans)
-                .ThenInclude(e => e.Masterbarang)
-                .AsSplitQuery()
-                .Include(e => e.Masterpelanggan)
-                .ThenInclude(e => e.LokasiKota)
-                .AsSplitQuery()
+            HorderQ = HorderQ
                 .Include(e => e.Sales)
-                .Include(e => e.Mastergudang);
+                .Include(e => e.Penyiap)
+                .Include(e => e.MasteruserInsert)
+                .Include(e => e.MasteruserUpdate)
+                .Include(e => e.Ekspedisi)
+                .Include(e => e.Dorder)
+                .ThenInclude(e=>e.Masterbarang)
+                .Include(e => e.Masterpelanggan)
+                .ThenInclude(e => e.LokasiKota);
 
             var Horder = await HorderQ.ToListAsync();
-            ICollection<HorderResult> HorderResults = _mapper.Map<ICollection<HorderResult>>(Horder);
+            ICollection <HorderResult> HorderResults = _mapper.Map<ICollection<HorderResult>>(Horder);
+
+            ConsoleDump.Extensions.Dump(HorderResults);
             var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
             var result = new HorderResultDto
             {
@@ -139,7 +132,8 @@ namespace DoranOfficeBackend.Controller
         [HttpPost]
         public async Task<ActionResult> SaveOrder([FromBody] SaveOrderDto dto)
         {
-            var lastKodeh = await _context.Horder.Select(e => e.KodeH)
+           
+            var lastKodeh = await _context.Horder.Select(e => e.Kodeh)
                 .MaxAsync();
             var kodeh = 1;
             if (lastKodeh != null)
@@ -148,23 +142,33 @@ namespace DoranOfficeBackend.Controller
             }
             var user = getUser();
             var entity = _mapper.Map<Horder>(dto);
-            entity.KodeH = kodeh;
-            entity.InsertName = (sbyte)user?.Kodeku;
-            entity.InsertTime = DateTime.Now;
+            entity.Kodeh = kodeh;
+            entity.Insertname = (sbyte)user?.Kodeku;
+            entity.Inserttime = DateTime.Now;
             _context.Horder.Add(entity);
-            await _context.SaveChangesAsync();
+            using (var transaction = _context.Database.BeginTransaction())//Begin Transaction
+            {
+                try
+                {
+                    await _context.SaveChangesAsync();
 
-            var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
-            await InsertToDtrans(entity.KodeH, dtrans);
-
-            return Ok(lastKodeh);
-
+                    var dorder = _mapper.Map<List<Dorder>>(dto.Details);
+                    await InsertToDorder(entity.Kodeh, dorder);
+                    transaction.Commit();
+                    return Ok(lastKodeh);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return BadRequest(ex.Message);
+                }
+            }
         }
 
         [HttpPut("{kode}")]
         public async Task<ActionResult> UpdateOrder(int kode, [FromBody] SaveOrderDto dto)
         {
-            var Horder = await _context.Horder.Where(e => e.KodeH == kode).FirstOrDefaultAsync();
+            var Horder = await _context.Horder.Where(e => e.Kodeh == kode).FirstOrDefaultAsync();
             if (Horder == null)
             {
                 return NotFound();
@@ -172,21 +176,34 @@ namespace DoranOfficeBackend.Controller
             _mapper.Map(dto, Horder);
             var user = getUser();
 
-            Horder.UpdateName = (sbyte)user?.Kodeku;
-            Horder.UpdateTime = DateTime.Now;
-            await _context.SaveChangesAsync();
-            var deleteDtrans = _context.Dtrans.Where(e => e.Kodeh == kode);
-            if (deleteDtrans.Any())
+            Horder.Updatename = (sbyte)user?.Kodeku;
+            Horder.Updatetime = DateTime.Now;
+            using (var transaction = _context.Database.BeginTransaction())//Begin Transaction
             {
-                _context.Dtrans.RemoveRange(deleteDtrans);
-                await _context.SaveChangesAsync();
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    var deleteDtrans = _context.Dtrans.Where(e => e.Kodeh == kode);
+                    if (deleteDtrans.Any())
+                    {
+                        _context.Dtrans.RemoveRange(deleteDtrans);
+                        await _context.SaveChangesAsync();
+                    }
+                    var dorder = _mapper.Map<List<Dorder>>(dto.Details);
+                    await InsertToDorder(kode, dorder);
+                    transaction.Commit();
+                    return Ok(Horder);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return BadRequest(ex.Message);
+                }
             }
-            var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
-            await InsertToDtrans(kode, dtrans);
-            return Ok(Horder);
         }
 
-        private async Task InsertToDtrans(int kodeh, List<Dtrans> dtrans)
+        private async Task InsertToDorder(int kodeh, List<Dorder> dtrans)
         {
             for (short i = 0; i < dtrans.Count; i++)
             {
@@ -194,8 +211,8 @@ namespace DoranOfficeBackend.Controller
                 dtrans[i].Kodeh = kodeh;
             }
 
-            string insertQuery = "INSERT INTO dtrans (kodeh,koded,kodebarang,jumlah,harga,nmrsn) VALUES ";
-            string values = string.Join(", ", dtrans.Select(item => $"({item.Kodeh},{item.Koded},{item.Kodebarang},{item.Jumlah},{item.Harga},'{item.Nmrsn}')"));
+            string insertQuery = "INSERT INTO dorder (kodeh,koded,kodebarang,jumlah,harga,keterangan) VALUES ";
+            string values = string.Join(", ", dtrans.Select(item => $"({item.Kodeh},{item.Koded},{item.Kodebarang},{item.Jumlah},{item.Harga},'{item.Keterangan}')"));
             insertQuery += values;
             await _context.Database.ExecuteSqlRawAsync(insertQuery);
         }

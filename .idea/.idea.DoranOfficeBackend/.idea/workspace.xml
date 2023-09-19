@@ -4,14 +4,27 @@
     <projectFile profileName="IIS Express">WebApplication1/DoranOfficeBackend.csproj</projectFile>
     <projectFile profileName="WebApplication1">WebApplication1/DoranOfficeBackend.csproj</projectFile>
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="c77e4c3c-8e05-4928-9ba4-87b9e6aeaeaf" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/Laporan/TransaksiByBarangController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/Laporan/TransaksiByBarangController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/MastergudangController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/MastergudangController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/DoranOfficeBackend.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/DoranOfficeBackend.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/FindTransaksiByBarangDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/FindTransaksiByBarangDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/TransaksiByBarangResultDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/TransaksiByBarangResultDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Startup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Startup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.DoranOfficeBackend/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DoranOfficeBackend/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Attributes/AuthAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Attributes/AuthAttribute.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/OrderController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/OrderController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/TransaksiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/TransaksiController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/FindOrderDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Order/FindOrderDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/SaveTransaksiDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Order/SaveTransaksiDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/TransaksiByBarangResultDto.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/TransaksiBySalesResultDto.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/TransaksiByTokoResultDto.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/HtransResultDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/HtransResultDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Mappings/TransaksiMapping.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Mappings/TransaksiMapping.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Dorder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Dorder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Horder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Horder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Masterbarang.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Masterbarang.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Sales.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Sales.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/MyDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/MyDbContext.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,31 +34,36 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 4
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="2VKTgvuYTscNSufMa6qOPSnCJgM" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "master",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\Administrator\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache",
-      "C:\\Users\\Administrator\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache",
-      "C:\\Users\\Administrator\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\TIAR\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\TIAR\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\TIAR\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.DoranOfficeBackend: WebApplication1">
     <configuration name="DoranOfficeBackend: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/WebApplication1/DoranOfficeBackend.csproj" />
@@ -87,6 +105,8 @@
       <option name="presentableId" value="Default" />
       <updated>1694583898655</updated>
       <workItem from="1694583916354" duration="183000" />
+      <workItem from="1694861135588" duration="844000" />
+      <workItem from="1695000225804" duration="8738000" />
     </task>
     <servers />
   </component>
@@ -95,5 +115,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

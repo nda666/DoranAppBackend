@@ -11,12 +11,12 @@ namespace DoranOfficeBackend
         private readonly IConfiguration _configuration;
 
         private static readonly TimestampInterceptor timestampInterceptor
-        = new TimestampInterceptor();
+            = new TimestampInterceptor();
 
         private static readonly SoftDeleteInterceptor softDeleteInterceptor
-       = new SoftDeleteInterceptor();
+            = new SoftDeleteInterceptor();
 
-     
+
         public MyDbContext(IConfiguration configuration)
         {
             this._configuration = configuration;
@@ -31,16 +31,17 @@ namespace DoranOfficeBackend
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         {
-            if (!optionsBuilder.IsConfigured) { 
+            if (!optionsBuilder.IsConfigured)
+            {
                 var mysqlConn = this._configuration.GetConnectionString("DefaultConnection");
                 optionsBuilder
-                    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))   
+                    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
                     .UseMySQL(mysqlConn, opts => opts.CommandTimeout(180));
-        }
+            }
             optionsBuilder
                 .AddInterceptors(
-                timestampInterceptor,
-                softDeleteInterceptor
+                    timestampInterceptor,
+                    softDeleteInterceptor
                 );
         }
 
@@ -1440,9 +1441,12 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Dorder>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.Id);
 
                 entity.ToTable("dorder");
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Disiapkan)
                     .HasColumnName("disiapkan")
@@ -1471,7 +1475,7 @@ namespace DoranOfficeBackend
                     .HasDefaultValueSql("''''''");
 
                 entity.Property(e => e.Kodebarang)
-                    .HasColumnType("int(11)")
+                    .HasColumnType("smallint(5)")
                     .HasColumnName("kodebarang");
 
                 entity.Property(e => e.Koded)
@@ -2780,9 +2784,9 @@ namespace DoranOfficeBackend
                 entity.ToTable("hkelompokbarang");
                 entity.HasKey(x => x.Kode);
                 entity.Property(e => e.Kode)
-                   .HasColumnType("int(11)")
-                   .HasColumnName("kode")
-                   .ValueGeneratedOnAdd();
+                    .HasColumnType("int(11)")
+                    .HasColumnName("kode")
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Nama)
                     .HasMaxLength(20)
@@ -2794,7 +2798,7 @@ namespace DoranOfficeBackend
                     .HasColumnName("aktif")
                     .HasDefaultValueSql("'1'");
 
-               
+
             });
 
             modelBuilder.Entity<Hkategoribarang>(entity =>
@@ -3074,7 +3078,7 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Horder>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.Kodeh);
 
                 entity.ToTable("horder");
 
@@ -3097,7 +3101,7 @@ namespace DoranOfficeBackend
                     .HasDefaultValueSql("''''''");
 
                 entity.Property(e => e.Insertname)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("insertname");
 
                 entity.Property(e => e.Inserttime)
@@ -3137,11 +3141,11 @@ namespace DoranOfficeBackend
                     .HasColumnName("kodepelanggan");
 
                 entity.Property(e => e.Kodepenyiap)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("kodepenyiap");
 
                 entity.Property(e => e.Kodesales)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("kodesales");
 
                 entity.Property(e => e.Lunas).HasColumnName("lunas");
@@ -3195,7 +3199,7 @@ namespace DoranOfficeBackend
                     .HasDefaultValueSql("'30'");
 
                 entity.Property(e => e.Updatename)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("updatename");
 
                 entity.Property(e => e.Updatetime)
@@ -3656,7 +3660,7 @@ namespace DoranOfficeBackend
             modelBuilder.Entity<Htrans>(entity =>
             {
                 entity.HasKey(e => e.KodeH)
-                     .HasName("PRIMARY");
+                    .HasName("PRIMARY");
 
                 entity.ToTable("htrans");
 
@@ -7827,119 +7831,164 @@ namespace DoranOfficeBackend
             modelBuilder.Entity<Masterpegawai>(e =>
             {
                 e.HasOne(e => e.Masterdivisi)
-                .WithMany(c => c.Masterpegawais)
-                .HasForeignKey(x => x.Kodedivisi)
-                .HasPrincipalKey(x => x.Kode);
+                    .WithMany(c => c.Masterpegawais)
+                    .HasForeignKey(x => x.Kodedivisi)
+                    .HasPrincipalKey(x => x.Kode);
 
                 e.HasOne(e => e.Masterjabatan)
-               .WithMany(c => c.Masterpegawais)
-               .HasForeignKey(x => x.Kodejabatan)
-               .HasPrincipalKey(x => x.Kode);
+                    .WithMany(c => c.Masterpegawais)
+                    .HasForeignKey(x => x.Kodejabatan)
+                    .HasPrincipalKey(x => x.Kode);
             });
 
             modelBuilder.Entity<Mastertimsales>(entity =>
             {
                 entity.HasOne(e => e.Masterchannelsales)
-                .WithMany(c => c.Mastertimsales)
-                .HasForeignKey("Kodechannel");
+                    .WithMany(c => c.Mastertimsales)
+                    .HasForeignKey("Kodechannel");
             });
 
             modelBuilder.Entity<Sales>(entity =>
             {
                 entity.HasOne(e => e.SalesManager)
-               .WithOne()
-               .HasForeignKey<Sales>(f => f.Kodemanager);
+                    .WithOne()
+                    .HasForeignKey<Sales>(f => f.Kodemanager);
 
                 entity.HasOne(e => e.Mastertimsales)
-                .WithMany(c => c.Sales)
-                .HasForeignKey("Kodetimsales");
+                    .WithMany(c => c.Sales)
+                    .HasForeignKey("Kodetimsales");
             });
 
             modelBuilder.Entity<Masteruser>(entity =>
             {
                 entity.HasOne(e => e.Sales)
-                  .WithOne(c => c.Masteruser)
-                  .HasForeignKey<Masteruser>("Kodesales");
+                    .WithOne(c => c.Masteruser)
+                    .HasForeignKey<Masteruser>("Kodesales");
             });
 
             modelBuilder.Entity<Masterpelanggan>(entity =>
             {
                 entity.HasOne(e => e.LokasiKota)
-                  .WithMany(c => c.Masterpelanggans)
-                  .HasForeignKey(e => e.Kota);
+                    .WithMany(c => c.Masterpelanggans)
+                    .HasForeignKey(e => e.Kota);
             });
 
             modelBuilder.Entity<Dtrans>(entity =>
             {
                 entity.HasOne(e => e.Htrans)
-                 .WithMany(e => e.Dtrans)
-                 .HasForeignKey(e => e.Kodeh)
-                 .HasPrincipalKey(e => e.KodeH)
-                 .IsRequired(false);
+                    .WithMany(e => e.Dtrans)
+                    .HasForeignKey(e => e.Kodeh)
+                    .HasPrincipalKey(e => e.KodeH)
+                    .IsRequired(false);
             });
 
-                modelBuilder.Entity<Htrans>(entity =>
+            modelBuilder.Entity<Htrans>(entity =>
             {
                 entity.HasOne(e => e.Masterpelanggan)
-                  .WithMany(e => e.Htrans)
-                  .HasForeignKey(e => e.KodePelanggan)
-                  .HasPrincipalKey(e => e.Kode)
-                  .IsRequired(false);
+                    .WithMany(e => e.Htrans)
+                    .HasForeignKey(e => e.KodePelanggan)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
 
                 entity.HasOne(e => e.Sales)
-                 .WithMany(e => e.Htrans)
-                 .HasForeignKey(e => e.KodeSales)
-                 .HasPrincipalKey(e => e.Kode)
-                 .IsRequired(false);
+                    .WithMany(e => e.Htrans)
+                    .HasForeignKey(e => e.KodeSales)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
 
                 entity.HasOne(e => e.Mastergudang)
-                 .WithMany(e => e.Htrans)
-                 .HasForeignKey(e => e.Kodegudang)
-                 .HasPrincipalKey(e => e.Kode)
-                 .IsRequired(false);
+                    .WithMany(e => e.Htrans)
+                    .HasForeignKey(e => e.Kodegudang)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
             });
 
             modelBuilder.Entity<Dtrans>(entity =>
             {
                 entity.HasOne(e => e.Masterbarang)
-                  .WithMany(e => e.Dtrans)
-                  .HasForeignKey(e => e.Kodebarang)
-                  .HasPrincipalKey(e => e.BrgKode);
+                    .WithMany(e => e.Dtrans)
+                    .HasForeignKey(e => e.Kodebarang)
+                    .HasPrincipalKey(e => e.BrgKode);
             });
 
             modelBuilder.Entity<Masterbarang>(entity =>
             {
                 entity.HasOne(e => e.Dkategoribarang)
-                  .WithMany(e => e.Masterbarang)
-                  .HasForeignKey(e => e.KategoriBrg)
-                  .HasPrincipalKey(e => e.Koded);
+                    .WithMany(e => e.Masterbarang)
+                    .HasForeignKey(e => e.KategoriBrg)
+                    .HasPrincipalKey(e => e.Koded);
             });
 
             modelBuilder.Entity<LokasiKota>(entity =>
             {
                 entity.HasOne(e => e.LokasiProvinsi)
-                .WithMany(c => c.LokasiKota)
-                .HasForeignKey(e => e.Provinsi)
-                .HasPrincipalKey(e => e.Kode)
-                .IsRequired(false);
+                    .WithMany(c => c.LokasiKota)
+                    .HasForeignKey(e => e.Provinsi)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
             });
 
             modelBuilder.Entity<Dkategoribarang>(entity =>
             {
                 entity.HasOne(e => e.Hkategoribarang)
-                .WithMany(c => c.Dkategoribarang)
-                .HasForeignKey(e => e.Kodeh)
-                .HasPrincipalKey(e => e.Kodeh)
-                .IsRequired(false);
+                    .WithMany(c => c.Dkategoribarang)
+                    .HasForeignKey(e => e.Kodeh)
+                    .HasPrincipalKey(e => e.Kodeh)
+                    .IsRequired(false);
             });
 
             modelBuilder.Entity<Horder>(entity =>
             {
                 entity.HasOne(e => e.Masterpelanggan)
-                .WithMany(c => c.Horder)
-                .HasForeignKey(e => e.Kodepelanggan)
-                .HasPrincipalKey(e => e.Kode)
-                .IsRequired(false);
+                    .WithMany(c => c.Horder)
+                    .HasForeignKey(e => e.Kodepelanggan)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
+
+                entity.HasMany(e => e.Dorder)
+                    .WithOne(c => c.Horder)
+                    .HasForeignKey(e => e.Kodeh)
+                    .HasPrincipalKey(e => e.Kodeh)
+                    .IsRequired(false);
+                
+                entity.HasOne(e => e.Sales)
+                    .WithMany(c => c.Horder)
+                    .HasForeignKey(e => e.Kodesales)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
+
+                entity.HasOne(e => e.Penyiap)
+                    .WithMany(c => c.HorderPenyiap)
+                    .HasForeignKey(e => e.Kodepenyiap)
+                    .HasPrincipalKey(e => e.Kodeku)
+                    .IsRequired(false);
+
+                entity.HasOne(e => e.Ekspedisi)
+                    .WithMany(c => c.HorderEkspedisi)
+                    .HasForeignKey(e => e.Kodeexp)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
+
+                entity.HasOne(e => e.MasteruserInsert)
+                    .WithMany(c => c.HorderUserinsert)
+                    .HasForeignKey(e => e.Insertname)
+                    .HasPrincipalKey(e => e.Kodeku)
+                    .IsRequired(false);
+
+                entity.HasOne(e => e.MasteruserUpdate)
+                    .WithMany(c => c.HorderUserupdate)
+                    .HasForeignKey(e => e.Updatename)
+                    .HasPrincipalKey(e => e.Kodeku)
+                    .IsRequired(false);
+            });
+            
+            modelBuilder.Entity<Dorder>(entity =>
+            {
+                entity.HasOne(e => e.Masterbarang)
+                    .WithMany(e => e.Dorder)
+                    .HasForeignKey(e => e.Kodebarang)
+                    .HasPrincipalKey(e => e.BrgKode)
+                    .IsRequired(false);
             });
 
         }
@@ -7956,6 +8005,5 @@ namespace DoranOfficeBackend
             Update(entity);
             return SaveChangesAsync();
         }
-
     }
 }

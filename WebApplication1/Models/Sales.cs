@@ -65,5 +65,7 @@ namespace DoranOfficeBackend.Models
         public virtual Mastertimsales? Mastertimsales { get; set; } = null!;
 
         public virtual ICollection<Htrans>? Htrans { get; set; }
+        
+        public virtual ICollection<Horder>? Horder { get; set; }
     }
 }

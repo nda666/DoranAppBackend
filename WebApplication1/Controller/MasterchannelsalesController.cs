@@ -31,10 +31,10 @@ namespace DoranOfficeBackend.Controller
                 query = query.Where(r => EF.Functions.Like(r.Nama, $"%{findMasterchannelsalesDto.Nama}%"));
             }
 
-            if (findMasterchannelsalesDto.Aktif.HasValue)
-            {
-                query = query.Where(r => r.Aktif == findMasterchannelsalesDto.Aktif);
-            }
+            //if (findMasterchannelsalesDto.Aktif.HasValue)
+            //{
+            //    query = query.Where(r => r.Aktif == findMasterchannelsalesDto.Aktif);
+            //}
             return query;
         }
 
@@ -131,7 +131,6 @@ namespace DoranOfficeBackend.Controller
             try
             {
                 dbSalesChannel.Nama = salesChannel.Nama;
-                dbSalesChannel.Aktif = salesChannel.Aktif;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException e)
@@ -150,7 +149,6 @@ namespace DoranOfficeBackend.Controller
            
            Masterchannelsales masterchannelsales = new Masterchannelsales();
             masterchannelsales.Nama = dto.Nama;
-            masterchannelsales.Aktif = dto.Aktif;
             _context.Masterchannelsales.Add(masterchannelsales);
             var res = await _context.SaveChangesAsync();
 

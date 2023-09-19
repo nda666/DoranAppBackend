@@ -130,10 +130,10 @@ namespace DoranOfficeBackend.Dtos.Transaksi
         public sbyte Tukartipe { get; set; }
         public sbyte HargaOk { get; set; }
         public string Nmrsn { get; set; } = null!;
-        public virtual Masterbarang? Masterbarang { get; set; }
+        public virtual MasterbarangOption? Masterbarang { get; set; }
     }
 
-    public class HorderResultDto : PaginationResultDto
+    public class HtransResultDto : PaginationResultDto
     {
         public ICollection<HtransResult> Data {get; set;}
     }
