@@ -80,7 +80,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Dkomisitargetomzet> Dkomisitargetomzets { get; set; } = null!;
         public virtual DbSet<Dlevelgaji> Dlevelgajis { get; set; } = null!;
         public virtual DbSet<Dnilaipegawai> Dnilaipegawais { get; set; } = null!;
-        public virtual DbSet<Dorder> Dorders { get; set; } = null!;
+        public virtual DbSet<Dorder> Dorder { get; set; } = null!;
         public virtual DbSet<Dordercina> Dordercinas { get; set; } = null!;
         public virtual DbSet<Dpenggantikirimretur> Dpenggantikirimreturs { get; set; } = null!;
         public virtual DbSet<Dpenyesuaian> Dpenyesuaians { get; set; } = null!;
@@ -189,7 +189,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Masteruserretur> Masteruserreturs { get; set; } = null!;
         public virtual DbSet<Memostok> Memostoks { get; set; } = null!;
         public virtual DbSet<Penandajurnal> Penandajurnals { get; set; } = null!;
-        public virtual DbSet<Penyiaporder> Penyiaporders { get; set; } = null!;
+        public virtual DbSet<Penyiaporder> Penyiaporder { get; set; } = null!;
         public virtual DbSet<Potonganbarangkurang> Potonganbarangkurangs { get; set; } = null!;
         public virtual DbSet<Profileperush> Profileperushes { get; set; } = null!;
         public virtual DbSet<Rumushargaonline> Rumushargaonlines { get; set; } = null!;
@@ -7957,10 +7957,10 @@ namespace DoranOfficeBackend
                     .HasPrincipalKey(e => e.Kode)
                     .IsRequired(false);
 
-                entity.HasOne(e => e.Penyiap)
-                    .WithMany(c => c.HorderPenyiap)
+                entity.HasOne(e => e.Penyiaporder)
+                    .WithMany(c => c.Horder)
                     .HasForeignKey(e => e.Kodepenyiap)
-                    .HasPrincipalKey(e => e.Kodeku)
+                    .HasPrincipalKey(e => e.Kode)
                     .IsRequired(false);
 
                 entity.HasOne(e => e.Ekspedisi)

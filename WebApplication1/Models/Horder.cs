@@ -15,10 +15,10 @@ namespace DoranOfficeBackend.Models
         /// <summary>
         /// 5=BelumdicekOL
         /// </summary>
-        public bool? Historynya { get; set; }
+        public sbyte? Historynya { get; set; }
         public int Kodepelanggan { get; set; }
         public int Kodesales { get; set; }
-        public int Kodepenyiap { get; set; }
+        public sbyte Kodepenyiap { get; set; }
         public bool Dicetak { get; set; }
         public bool Lunas { get; set; }
         public DateTime Tglcetak { get; set; }
@@ -45,7 +45,7 @@ namespace DoranOfficeBackend.Models
         public Masteruser? MasteruserInsert { get; set; }
         public Masteruser? MasteruserUpdate { get; set; }
         public Sales? Sales { get; set; }
-        public Masteruser? Penyiap { get; set; }
+        public Penyiaporder? Penyiaporder { get; set; }
         public Masterpengeluaran? Ekspedisi { get; set; }
     }
 }

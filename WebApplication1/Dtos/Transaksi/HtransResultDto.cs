@@ -1,4 +1,5 @@
-﻿using DoranOfficeBackend.Models;
+﻿using DoranOfficeBackend.Dtos.Masterpelanggan;
+using DoranOfficeBackend.Models;
 using _Masterbarang = DoranOfficeBackend.Models.Masterbarang;
 namespace DoranOfficeBackend.Dtos.Transaksi
 {
@@ -109,7 +110,7 @@ namespace DoranOfficeBackend.Dtos.Transaksi
 
         public ICollection<DtransResult> Dtrans { get; set; }
 
-        public virtual CommonResultDto? Masterpelanggan { get; set; }
+        public virtual MasterpelangganWithLokasiKotaOptionDto? Masterpelanggan { get; set; }
         public virtual CommonResultDto? Mastergudang { get; set; }
 
         public virtual CommonResultDto? Sales { get; set; }

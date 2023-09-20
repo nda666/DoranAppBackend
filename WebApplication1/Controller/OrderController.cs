@@ -6,6 +6,7 @@ using AutoMapper;
 using DoranOfficeBackend.Attributes;
 using DoranOfficeBackend.Dtos.Order;
 using DocumentFormat.OpenXml.InkML;
+using Humanizer;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -44,15 +45,46 @@ namespace DoranOfficeBackend.Controller
                 HorderQ = HorderQ.Where(x => x.Tglorder <= maxDate);
             }
 
+            if (!String.IsNullOrWhiteSpace(dto.NamaCust))
+            {
+                HorderQ = HorderQ.Where(x => EF.Functions.Like(x.NamaCust, $"%{dto.NamaCust}%"));
+            }
+
+            if (!String.IsNullOrWhiteSpace(dto.NamaPelanggan))
+            {
+                HorderQ = HorderQ.Where(x => EF.Functions.Like(x.Masterpelanggan.Nama, $"%{dto.NamaCust}%"));
+            }
+
             if (dto.Kodeh.HasValue)
             {
                 HorderQ = HorderQ.Where(x => x.Kodeh == dto.Kodeh);
             }
 
-            //if (dto.Kodegudang.HasValue && dto.Kodegudang >= 0)
-            //{
-            //    HorderQ = HorderQ.Where(x => x.Kodegudang == dto.Kodegudang);
-            //}
+            if (dto.Dicetak.HasValue)
+            {
+                HorderQ = HorderQ.Where(x => x.Dicetak == dto.Dicetak);
+            }
+
+            if (dto.LevelOrder == LevelOrderEnum.ADMIN)
+            {
+                
+                HorderQ = HorderQ.Where(x => x.Historynya >= 2 && x.Historynya <= 2);
+            }
+
+            if (dto.LevelOrder == LevelOrderEnum.GUDANG)
+            {
+                HorderQ = HorderQ.Where(x => x.Historynya >= 2 && x.Historynya >= 3);
+            }
+
+            if (dto.BelumCekOl)
+            {
+                HorderQ = HorderQ.Where(x => x.Historynya >= 5);
+            }
+
+            if (dto.SalesOl.HasValue)
+            {
+                HorderQ = HorderQ.Where(x => x.Sales.Salesol == dto.SalesOl);
+            }
 
             if (dto.Kodesales.HasValue)
             {
@@ -64,36 +96,18 @@ namespace DoranOfficeBackend.Controller
                 HorderQ = HorderQ.Where(x => x.Kodepelanggan == dto.Kodepelanggan);
             }
 
-            if (dto.KodeKota.HasValue)
-            {
-                HorderQ = HorderQ.Where(x => x.Masterpelanggan.Kota == dto.KodeKota);
-            }
-
-            if (dto.KodeProvinsi.HasValue)
-            {
-                HorderQ = HorderQ.Where(x => x.Masterpelanggan.LokasiKota.Provinsi == dto.KodeProvinsi);
-            }
-
-            if (!String.IsNullOrEmpty(dto.NamaPelanggan))
-            {
-                HorderQ = HorderQ.Where(x => EF.Functions.Like(x.Masterpelanggan.Nama, $"%{dto.NamaPelanggan}%"));
-            }
 
             var HorderPagingQ = HorderQ;
             var totalRow = await HorderPagingQ.CountAsync();
 
             HorderQ = HorderQ.OrderByDescending(x => x.Tglorder);
 
-            if (dto.Limit.HasValue)
-            {
-                HorderQ = HorderQ.Take(dto.Limit.Value);
-            }
             int skip = (dto.Page - 1) * dto.PageSize;
             HorderQ = HorderQ.Skip(skip)
                     .Take(dto.PageSize);
             HorderQ = HorderQ
                 .Include(e => e.Sales)
-                .Include(e => e.Penyiap)
+                .Include(e => e.Penyiaporder)
                 .Include(e => e.MasteruserInsert)
                 .Include(e => e.MasteruserUpdate)
                 .Include(e => e.Ekspedisi)
@@ -184,10 +198,10 @@ namespace DoranOfficeBackend.Controller
                 try
                 {
                     await _context.SaveChangesAsync();
-                    var deleteDtrans = _context.Dtrans.Where(e => e.Kodeh == kode);
-                    if (deleteDtrans.Any())
+                    var deleteDorder = _context.Dorder.Where(e => e.Kodeh == kode);
+                    if (deleteDorder.Any())
                     {
-                        _context.Dtrans.RemoveRange(deleteDtrans);
+                        _context.Dorder.RemoveRange(deleteDorder);
                         await _context.SaveChangesAsync();
                     }
                     var dorder = _mapper.Map<List<Dorder>>(dto.Details);
@@ -203,6 +217,19 @@ namespace DoranOfficeBackend.Controller
             }
         }
 
+        [HttpPut("{kode}/set-penyiap", Name = "SetPenyiapOrder")]
+        public async Task<ActionResult> SetPenyiapOrder(int kode, [FromBody] SetPenyiapOrderDto dto)
+        {
+            var Horder = await _context.Horder.Where(e => e.Kodeh == kode).FirstOrDefaultAsync();
+            if (Horder == null)
+            {
+                return NotFound();
+            }
+           
+            Horder.Kodepenyiap = dto.Kodepenyiap;
+            await _context.SaveChangesAsync();
+            return Ok(Horder);
+        }
         private async Task InsertToDorder(int kodeh, List<Dorder> dtrans)
         {
             for (short i = 0; i < dtrans.Count; i++)

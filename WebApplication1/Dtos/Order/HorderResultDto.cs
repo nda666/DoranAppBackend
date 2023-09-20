@@ -1,4 +1,5 @@
-﻿using DoranOfficeBackend.Dtos.Masteruser;
+﻿using DoranOfficeBackend.Dtos.Masterpelanggan;
+using DoranOfficeBackend.Dtos.Masteruser;
 using DoranOfficeBackend.Models;
 using _Masterbarang = DoranOfficeBackend.Models.Masterbarang;
 namespace DoranOfficeBackend.Dtos.Order
@@ -23,7 +24,7 @@ namespace DoranOfficeBackend.Dtos.Order
         public bool Lunas { get; set; }
         public DateTime Tglcetak { get; set; }
         public int Kodeexp { get; set; }
-        public bool Kirimmelalui { get; set; }
+        public sbyte Kirimmelalui { get; set; }
         public int Jumlah { get; set; }
         public sbyte StokSales { get; set; }
         public int Ppn { get; set; }
@@ -41,10 +42,10 @@ namespace DoranOfficeBackend.Dtos.Order
         /// </summary>
         public sbyte Sudahupdatephone { get; set; }
         public ICollection<DorderResult> Dorder { get; set; }
-        public virtual MasteruserOptionDto? Penyiap { get; set; }
+        public virtual CommonResultDto? Penyiaporder { get; set; }
         public virtual MasteruserOptionDto? MasteruserInsert { get; set; }
         public virtual MasteruserOptionDto? MasteruserUpdate { get; set; }
-        public virtual CommonResultDto? Masterpelanggan { get; set; }
+        public virtual MasterpelangganWithLokasiKotaOptionDto? Masterpelanggan { get; set; }
         public virtual CommonResultDto? Sales { get; set; }
         public virtual CommonResultDto? Ekspedisi { get; set; }
     }
