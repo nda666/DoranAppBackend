@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DoranOfficeBackend.Dtos;
+using DoranOfficeBackend.Dtos.Masterbarang;
 using DoranOfficeBackend.Dtos.Transaksi;
 using DoranOfficeBackend.Models;
 
@@ -21,8 +22,6 @@ namespace DoranOfficeBackend.Mappings
             CreateMap<DetailTransaksi, Dtrans>();
 
 
-            CreateMap<Masterbarang, MasterbarangOption>();
-            CreateMap<MasterbarangOption, Masterbarang>();
             CreateMap<Masterpelanggan, CommonResultDto>();
             CreateMap<LokasiKota, CommonResultDto>();
             CreateMap<Sales, CommonResultDto>();

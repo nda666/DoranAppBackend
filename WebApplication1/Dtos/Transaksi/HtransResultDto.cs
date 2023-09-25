@@ -1,4 +1,5 @@
-﻿using DoranOfficeBackend.Dtos.Masterpelanggan;
+﻿using DoranOfficeBackend.Dtos.Masterbarang;
+using DoranOfficeBackend.Dtos.Masterpelanggan;
 using DoranOfficeBackend.Models;
 using _Masterbarang = DoranOfficeBackend.Models.Masterbarang;
 namespace DoranOfficeBackend.Dtos.Transaksi
@@ -131,7 +132,7 @@ namespace DoranOfficeBackend.Dtos.Transaksi
         public sbyte Tukartipe { get; set; }
         public sbyte HargaOk { get; set; }
         public string Nmrsn { get; set; } = null!;
-        public virtual MasterbarangOption? Masterbarang { get; set; }
+        public virtual MasterbarangOptionDto? Masterbarang { get; set; }
     }
 
     public class HtransResultDto : PaginationResultDto

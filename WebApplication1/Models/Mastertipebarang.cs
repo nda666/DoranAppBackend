@@ -9,5 +9,7 @@ namespace DoranOfficeBackend.Models
         public string Nama { get; set; } = null!;
         public sbyte Shownya { get; set; }
         public sbyte Urut { get; set; }
+
+        public ICollection<Masterbarang> Masterbarang { get; set; }
     }
 }

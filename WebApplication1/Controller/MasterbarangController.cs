@@ -31,7 +31,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IQueryable<Masterbarang> baseSelect(FindMasterbarangDto dto)
+        private IQueryable<Masterbarang> baseSelect(FindMasterbarangDto dto)
         {
 
             var query = _context.Masterbarang
@@ -51,8 +51,8 @@ namespace DoranOfficeBackend.Controller
         }
 
         // GET: api/Masterbarang
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MasterbarangOptionDto>>> GetMasterbarang([FromQuery] FindMasterbarangDto dto)
+        [HttpGet("options", Name = "GetMasterbarangOptions")]
+        public async Task<ActionResult<IEnumerable<MasterbarangOptionDto>>> GetMasterbarangOptions([FromQuery] FindMasterbarangDto dto)
         {
             if (_context.Masterbarang == null)
             {
@@ -61,17 +61,16 @@ namespace DoranOfficeBackend.Controller
 
             var query = baseSelect(dto)
                 .Include(x => x.Dkategoribarang)
-                .Select(e => new MasterbarangOptionDto
+                .Select(e => new MasterbarangOptionWithSnDto
                 {
                     BrgKode = e.BrgKode,
                     BrgNama = e.BrgNama,
                     Sn = e.Dkategoribarang != null ? e.Dkategoribarang.Sn : false
                 });
-
             return await query.ToListAsync();
         }
 
-        [HttpGet("nama")]
+        [HttpGet("nama", Name = "GetMasterbarangNama")]
         public async Task<ActionResult> GetMasterbarangNama([FromQuery] FindMasterbarangDto dto)
         {
             if (_context.Masterbarang == null)

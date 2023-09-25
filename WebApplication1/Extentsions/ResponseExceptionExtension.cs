@@ -1,11 +1,8 @@
 ﻿using DoranOfficeBackend.Exceptions;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using System;
+using Serilog;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 namespace DoranOfficeBackend.Middleware
 {
     public static class ResponseExceptionExtension
@@ -26,7 +23,7 @@ namespace DoranOfficeBackend.Middleware
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                         }
-
+                        Log.Error(contextFeature.Error, contextFeature.Error.Message);
                         var errorResponse = new ErrorResponse
                         {
                             StatusCode = context.Response.StatusCode,

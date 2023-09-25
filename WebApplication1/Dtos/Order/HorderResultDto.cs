@@ -1,4 +1,5 @@
-﻿using DoranOfficeBackend.Dtos.Masterpelanggan;
+﻿using DoranOfficeBackend.Dtos.Masterbarang;
+using DoranOfficeBackend.Dtos.Masterpelanggan;
 using DoranOfficeBackend.Dtos.Masteruser;
 using DoranOfficeBackend.Models;
 using _Masterbarang = DoranOfficeBackend.Models.Masterbarang;
@@ -59,7 +60,7 @@ namespace DoranOfficeBackend.Dtos.Order
         public short Jumlah { get; set; }
         public long Harga { get; set; }
         public string Keterangan { get; set; } = null!;
-        public virtual MasterbarangOption? Masterbarang { get; set; }
+        public virtual MasterbarangOptionDto? Masterbarang { get; set; }
     }
 
     public class HorderResultDto : PaginationResultDto

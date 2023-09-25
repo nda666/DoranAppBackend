@@ -18,6 +18,13 @@ using System.Data;
 using MySql.Data.MySqlClient;
 using Dapper.Extensions.MySql;
 using System.Globalization;
+using Microsoft.AspNetCore.WebSockets;
+using Serilog;
+using Serilog.Sinks.SystemConsole;
+using Serilog.Sinks.File;
+using System.Configuration;
+using FluentValidation;
+using DoranOfficeBackend.Dtos.Transit;
 
 namespace DoranOfficeBackend
 {
@@ -135,6 +142,10 @@ namespace DoranOfficeBackend
                 services.AddDapperForMySQL();
             }
 
+            services.AddSingleton<WebSocketService>();
+
+            services.AddScoped<IValidator<SaveHeaderTransitDto>, SaveHeaderTransitValidation>();
+
             //services.AddFluentValidationAutoValidation();
             //services.AddScoped<IValidator<SalesChannel>, SalesChannelValidator>();
             //services.AddScoped<IValidator<User>, UserValidator>();
@@ -158,11 +169,7 @@ namespace DoranOfficeBackend
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger(c =>
-                {
-                    c.SerializeAsV2 = true;
-
-                });
+                app.UseSwagger();
                 app.UseSwaggerUI();
                 app.UseReDoc(c =>
                 {
@@ -172,7 +179,6 @@ namespace DoranOfficeBackend
                 });
             }
 
-
             app.UseSession();
             app.ConfigureExceptionHandler();
             app.UseMiddleware<JwtMiddleware>();
@@ -180,8 +186,16 @@ namespace DoranOfficeBackend
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
 
+            var webSocketOptions = new WebSocketOptions
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(1), // Set the keep-alive interval
+                ReceiveBufferSize = 4 * 1024, // Set the receive buffer size
+            };
+
+
+            app.UseWebSockets(webSocketOptions);
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
 
             //app.UseHttpsRedirection();
             //app.UseStaticFiles();

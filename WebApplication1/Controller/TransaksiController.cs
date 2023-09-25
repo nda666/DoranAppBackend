@@ -25,7 +25,6 @@ namespace DoranOfficeBackend.Controller
     {
         private readonly IMapper _mapper;
         private readonly MyDbContext _context;
-
         public TransaksiController(IMapper mapper, MyDbContext context)
         {
             _mapper = mapper;
@@ -147,26 +146,37 @@ namespace DoranOfficeBackend.Controller
         [HttpPost]
         public async Task<ActionResult> SaveTransaksi([FromBody] SaveTransaksiDto dto)
         {
-            var lastKodeh = await _context.Htrans.Select(e => e.KodeH)
-                .MaxAsync();
-            var kodeh = 1;
-            if (lastKodeh != null)
+            using (var transaction = _context.Database.BeginTransaction())//Begin Transaction
             {
-                kodeh = lastKodeh + 1;
+                try
+                {
+                    var lastKodeh = await _context.Htrans.Select(e => e.KodeH)
+                    .MaxAsync();
+                    var kodeh = 1;
+                    if (lastKodeh != null)
+                    {
+                        kodeh = lastKodeh + 1;
+                    }
+                    var user = getUser();
+                    var entity = _mapper.Map<Htrans>(dto);
+                    entity.KodeH = kodeh;
+                    entity.InsertName = (sbyte)user?.Kodeku;
+                    entity.InsertTime = DateTime.Now;
+                    _context.Htrans.Add(entity);
+                    await _context.SaveChangesAsync();
+
+                    var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
+                    await InsertToDtrans(entity.KodeH, dtrans);
+                    transaction.Commit();
+                    return Ok(lastKodeh);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+
             }
-            var user = getUser();
-            var entity = _mapper.Map<Htrans>(dto);
-            entity.KodeH = kodeh;
-            entity.InsertName = (sbyte)user?.Kodeku;
-            entity.InsertTime = DateTime.Now;
-            _context.Htrans.Add(entity);
-            await _context.SaveChangesAsync();
-
-            var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
-            await InsertToDtrans(entity.KodeH, dtrans);
-
-            return Ok(lastKodeh);
-
         }
 
         [HttpPut("{kode}")]
@@ -179,19 +189,31 @@ namespace DoranOfficeBackend.Controller
             }
             _mapper.Map(dto, htrans);
             var user = getUser();
-
-            htrans.UpdateName = (sbyte)user?.Kodeku;
-            htrans.UpdateTime = DateTime.Now;
-            await _context.SaveChangesAsync();
-            var deleteDtrans = _context.Dtrans.Where(e => e.Kodeh == kode);
-            if (deleteDtrans.Any())
+            using (var transaction = _context.Database.BeginTransaction())//Begin Transaction
             {
-                _context.Dtrans.RemoveRange(deleteDtrans);
-                await _context.SaveChangesAsync();
+                try
+                {
+
+                    htrans.UpdateName = (sbyte)user?.Kodeku;
+                    htrans.UpdateTime = DateTime.Now;
+                    await _context.SaveChangesAsync();
+                    var deleteDtrans = _context.Dtrans.Where(e => e.Kodeh == kode);
+                    if (deleteDtrans.Any())
+                    {
+                        _context.Dtrans.RemoveRange(deleteDtrans);
+                        await _context.SaveChangesAsync();
+                    }
+                    var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
+                    await InsertToDtrans(kode, dtrans);
+
+                    transaction.Commit();
+                    return Ok(htrans);
+                }
+                catch (Exception ex) {
+                    transaction.Rollback();
+                    throw;
+                }
             }
-            var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
-            await InsertToDtrans(kode, dtrans);
-            return Ok(htrans);
         }
 
         private async Task InsertToDtrans(int kodeh, List<Dtrans> dtrans)

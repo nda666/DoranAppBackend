@@ -10,5 +10,6 @@ namespace DoranOfficeBackend.Models
         public bool? Aktif { get; set; }
 
         public ICollection<Horder> Horder { get; set; }
+        public ICollection<Htransit> Htransit { get; set; }
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
+using Serilog;
 
 namespace DoranOfficeBackend
 {
@@ -35,6 +35,10 @@ namespace DoranOfficeBackend
                 {
                     webBuilder.UseStartup<Startup>();
                     //webBuilder.UseUrls("https://localhost:44376/");
+                }).UseSerilog((context, configuration) =>
+                {
+                    var config = context.Configuration;
+                    configuration.ReadFrom.Configuration(config);
                 });
     }
 

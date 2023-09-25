@@ -7,6 +7,7 @@ using DoranOfficeBackend.Attributes;
 using DoranOfficeBackend.Dtos.Order;
 using DocumentFormat.OpenXml.InkML;
 using Humanizer;
+using NuGet.Protocol;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -18,16 +19,19 @@ namespace DoranOfficeBackend.Controller
     {
         private readonly IMapper _mapper;
         private readonly MyDbContext _context;
+        private readonly WebSocketService _webSocket;
 
-        public OrderController(IMapper mapper, MyDbContext context)
+        public OrderController(IMapper mapper, MyDbContext context, WebSocketService webSocket)
         {
             _mapper = mapper;
             _context = context;
+            _webSocket = webSocket;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HorderResultDto>>> GetOrder([FromQuery] FindOrderDto dto)
         {
+            ConsoleDump.Extensions.Dump(_webSocket.GetClients());
             var HorderQ = _context.Horder
                 .AsNoTracking()
                 .AsQueryable();
@@ -119,7 +123,6 @@ namespace DoranOfficeBackend.Controller
             var Horder = await HorderQ.ToListAsync();
             ICollection <HorderResult> HorderResults = _mapper.Map<ICollection<HorderResult>>(Horder);
 
-            ConsoleDump.Extensions.Dump(HorderResults);
             var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
             var result = new HorderResultDto
             {
@@ -179,6 +182,13 @@ namespace DoranOfficeBackend.Controller
             }
         }
 
+        /// <summary>
+        /// Update Order by kode
+        /// </summary>
+        ///  
+        /// <param name="kode"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPut("{kode}")]
         public async Task<ActionResult> UpdateOrder(int kode, [FromBody] SaveOrderDto dto)
         {
@@ -206,15 +216,42 @@ namespace DoranOfficeBackend.Controller
                     }
                     var dorder = _mapper.Map<List<Dorder>>(dto.Details);
                     await InsertToDorder(kode, dorder);
+                    await _webSocket.SendToAll("order", _mapper.Map<HorderResult>(Horder));
+
                     transaction.Commit();
                     return Ok(Horder);
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
+                    ConsoleDump.Extensions.Dump(ex);
                     return BadRequest(ex.Message);
                 }
             }
+        }
+
+
+        /// <summary>
+        /// Update header Order by kode
+        /// </summary>
+        /// <param name="kode"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [HttpPut("{kode}/header", Name = "UpdateOrderHeader")]
+        public async Task<ActionResult> UpdateOrderHeader(int kode, [FromBody] SaveOrderHeaderDto dto)
+        {
+            var Horder = await _context.Horder.Where(e => e.Kodeh == kode).FirstOrDefaultAsync();
+            if (Horder == null)
+            {
+                return NotFound();
+            }
+            _mapper.Map(dto, Horder);
+            var user = getUser();
+
+            Horder.Updatename = (sbyte)user?.Kodeku;
+            Horder.Updatetime = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return Ok(Horder);
         }
 
         [HttpPut("{kode}/set-penyiap", Name = "SetPenyiapOrder")]

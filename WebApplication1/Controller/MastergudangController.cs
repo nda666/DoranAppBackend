@@ -88,11 +88,13 @@ namespace DoranOfficeBackend.Controller
             {
                 return NotFound();
             }
-            var query = BaseQuery(dto).Select( e => new MastergudangOptionDto
+            var query = BaseQuery(dto)
+                .OrderBy(e => e.Urut)
+                .Select( e => new MastergudangOptionDto
             {
                 Kode = e.Kode,
                 Nama = e.Nama
-            }).OrderBy(e => e.Nama);
+            });
 
             return await query.ToListAsync();
         }

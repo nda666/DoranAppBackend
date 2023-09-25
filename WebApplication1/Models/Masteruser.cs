@@ -35,5 +35,7 @@ namespace DoranOfficeBackend.Models
 
         public virtual ICollection<Horder> HorderUserinsert { get; set; }
         public virtual ICollection<Horder> HorderUserupdate { get; set; }
+        public virtual ICollection<Htransit> HtransitUserinsert { get; set; }
+        public virtual ICollection<Htransit> HtransitUserupdate { get; set; }
     }
 }

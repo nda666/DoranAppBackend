@@ -94,7 +94,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Dresipengirimankepelanggan> Dresipengirimankepelanggans { get; set; } = null!;
         public virtual DbSet<Dtargetomzettokopc> Dtargetomzettokopcs { get; set; } = null!;
         public virtual DbSet<Dtrans> Dtrans { get; set; } = null!;
-        public virtual DbSet<Dtransit> Dtransits { get; set; } = null!;
+        public virtual DbSet<Dtransit> Dtransit { get; set; } = null!;
         public virtual DbSet<Dupdate> Dupdates { get; set; } = null!;
         public virtual DbSet<Emailpromohippo> Emailpromohippos { get; set; } = null!;
         public virtual DbSet<Glassperwilayah> Glassperwilayahs { get; set; } = null!;
@@ -135,7 +135,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Hrefund> Hrefunds { get; set; } = null!;
         public virtual DbSet<Hsidikjari> Hsidikjaris { get; set; } = null!;
         public virtual DbSet<Htrans> Htrans { get; set; } = null!;
-        public virtual DbSet<Htransit> Htransits { get; set; } = null!;
+        public virtual DbSet<Htransit> Htransit { get; set; } = null!;
         public virtual DbSet<Htuga> Htugas { get; set; } = null!;
         public virtual DbSet<Hupdate> Hupdates { get; set; } = null!;
         public virtual DbSet<Hwunderlist> Hwunderlists { get; set; } = null!;
@@ -181,7 +181,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Mastertarget> Mastertargets { get; set; } = null!;
         public virtual DbSet<Mastertargettahunan> Mastertargettahunans { get; set; } = null!;
         public virtual DbSet<Mastertimsales> Mastertimsales { get; set; } = null!;
-        public virtual DbSet<Mastertipebarang> Mastertipebarangs { get; set; } = null!;
+        public virtual DbSet<Mastertipebarang> Mastertipebarang { get; set; } = null!;
         public virtual DbSet<Mastertipeinventari> Mastertipeinventaris { get; set; } = null!;
         public virtual DbSet<Mastertipetuga> Mastertipetugas { get; set; } = null!;
         public virtual DbSet<Mastertuga> Mastertugas { get; set; } = null!;
@@ -1870,9 +1870,9 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Dtrans>(entity =>
             {
-                entity.HasKey(e => e.Id);
+               
                 entity.ToTable("dtrans");
-
+                entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .ValueGeneratedOnAdd();
@@ -1930,9 +1930,11 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Dtransit>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("dtransit");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Jumlah)
                     .HasColumnType("smallint(6)")
@@ -3993,7 +3995,7 @@ namespace DoranOfficeBackend
                     .HasDefaultValueSql("'''0'''");
 
                 entity.Property(e => e.InsertName)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(10)")
                     .HasColumnName("insertName")
                     .HasDefaultValueSql("'0'");
 
@@ -4008,7 +4010,7 @@ namespace DoranOfficeBackend
                     .HasDefaultValueSql("''''''");
 
                 entity.Property(e => e.KodeGudangTujuan)
-                    .HasColumnType("smallint(6)")
+                    .HasColumnType("int(11)")
                     .HasColumnName("kodeGudangTujuan")
                     .HasDefaultValueSql("'0'");
 
@@ -4033,7 +4035,7 @@ namespace DoranOfficeBackend
                     .HasDefaultValueSql("'''0000-00-00'''");
 
                 entity.Property(e => e.UpdateName)
-                    .HasColumnType("tinyint(4)")
+                    .HasColumnType("int(10)")
                     .HasColumnName("updateName")
                     .HasDefaultValueSql("'0'");
 
@@ -7917,6 +7919,13 @@ namespace DoranOfficeBackend
                     .WithMany(e => e.Masterbarang)
                     .HasForeignKey(e => e.KategoriBrg)
                     .HasPrincipalKey(e => e.Koded);
+
+                entity.HasOne(e => e.Mastertipebarang)
+                   .WithMany(e => e.Masterbarang)
+                   .HasForeignKey(e => e.Tipebarang)
+                   .HasPrincipalKey(e => e.Kode)
+                   .IsRequired(false);
+
             });
 
             modelBuilder.Entity<LokasiKota>(entity =>
@@ -7950,7 +7959,7 @@ namespace DoranOfficeBackend
                     .HasForeignKey(e => e.Kodeh)
                     .HasPrincipalKey(e => e.Kodeh)
                     .IsRequired(false);
-                
+
                 entity.HasOne(e => e.Sales)
                     .WithMany(c => c.Horder)
                     .HasForeignKey(e => e.Kodesales)
@@ -7981,7 +7990,7 @@ namespace DoranOfficeBackend
                     .HasPrincipalKey(e => e.Kodeku)
                     .IsRequired(false);
             });
-            
+
             modelBuilder.Entity<Dorder>(entity =>
             {
                 entity.HasOne(e => e.Masterbarang)
@@ -7991,6 +8000,53 @@ namespace DoranOfficeBackend
                     .IsRequired(false);
             });
 
+            modelBuilder.Entity<Htransit>(entity =>
+            {
+                entity.HasMany(e => e.Dtransit)
+                   .WithOne(e => e.Htransit)
+                   .HasForeignKey(e => e.Kodet)
+                   .HasPrincipalKey(e => e.KodeT)
+                   .IsRequired(false);
+
+                entity.HasOne(e => e.Mastergudang)
+                    .WithMany(e => e.Htransit)
+                    .HasForeignKey(e => e.Kodegudang)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
+
+                entity.HasOne(e => e.MastergudangTujuan)
+                    .WithMany(e => e.HtransitTujuan)
+                    .HasForeignKey(e => e.KodeGudangTujuan)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
+
+                entity.HasOne(e => e.Penyiaporder)
+                    .WithMany(e => e.Htransit)
+                    .HasForeignKey(e => e.Kodepenyiap)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
+
+                entity.HasOne(e => e.MasteruserInsert)
+                    .WithMany(e => e.HtransitUserinsert)
+                    .HasForeignKey(e => e.InsertName)
+                    .HasPrincipalKey(e => e.Kodeku)
+                    .IsRequired(false);
+
+                entity.HasOne(e => e.MasteruserUpdate)
+                    .WithMany(e => e.HtransitUserupdate)
+                    .HasForeignKey(e => e.UpdateName)
+                    .HasPrincipalKey(e => e.Kodeku)
+                    .IsRequired(false);
+            });
+
+            modelBuilder.Entity<Dtransit>(entity =>
+            {
+                entity.HasOne(e => e.Masterbarang)
+                   .WithMany(e => e.Dtransit)
+                   .HasForeignKey(e => e.Kodebarang)
+                   .HasPrincipalKey(e => e.BrgKode)
+                   .IsRequired(false);
+            });
         }
 
         public void SoftDelete<TEntity>(TEntity entity) where TEntity : class, ISoftDelete

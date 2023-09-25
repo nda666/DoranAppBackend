@@ -19,6 +19,7 @@ namespace DoranOfficeBackend.Mappings
         public OrderMapping()
         {
             CreateMap<DetailOrder, Dorder>();
+            CreateMap<SaveOrderHeaderDto, Horder>();
             CreateMap<SaveOrderDto, Horder>()
                 .ForMember(dest => dest.Jumlah, opt => opt.MapFrom<TotalOrderResolver>());
          
