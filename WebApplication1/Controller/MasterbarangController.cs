@@ -52,7 +52,7 @@ namespace DoranOfficeBackend.Controller
 
         // GET: api/Masterbarang
         [HttpGet("options", Name = "GetMasterbarangOptions")]
-        public async Task<ActionResult<IEnumerable<MasterbarangOptionDto>>> GetMasterbarangOptions([FromQuery] FindMasterbarangDto dto)
+        public async Task<ActionResult<IEnumerable<MasterbarangOptionWithSnDto>>> GetMasterbarangOptions([FromQuery] FindMasterbarangDto dto)
         {
             if (_context.Masterbarang == null)
             {

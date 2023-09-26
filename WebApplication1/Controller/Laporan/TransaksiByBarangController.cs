@@ -30,7 +30,7 @@ namespace DoranOfficeBackend.Controller.Laporan
 
         // GET: api/<ValuesController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<dynamic>>> Get([FromQuery] FindTransaksiByBarangDto dto)
+        public async Task<ActionResult<IEnumerable<TransaksiByBarangResultDto>>> Get([FromQuery] FindTransaksiByBarangDto dto)
         {
             
             var minDate = dto.MinDate?.Date;

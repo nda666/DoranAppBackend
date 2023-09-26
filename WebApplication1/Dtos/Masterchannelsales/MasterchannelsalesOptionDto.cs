@@ -8,6 +8,6 @@ namespace DoranOfficeBackend.Dtos.Masterchannelsales
         public int Kode { get; set; }
         public string Nama { get; set; }
 
-        public List<MastertimsalesOptionDto> Mastertimsales = new List<MastertimsalesOptionDto>();
+        public ICollection<MastertimsalesOptionDto> Mastertimsales { get; set; } = new List<MastertimsalesOptionDto>();
     }
 }

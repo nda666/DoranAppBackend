@@ -5,24 +5,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DoranOfficeBackend.Middleware;
-using MySql.EntityFrameworkCore.Extensions;
 using DoranOfficeBackend.Interceptors;
-using DoranOfficeBackend.Mappings;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.ReDoc;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using DoranOfficeBackend.Extentsions;
-using AutoMapper;
 using System.Data;
 using MySql.Data.MySqlClient;
 using Dapper.Extensions.MySql;
 using System.Globalization;
-using Microsoft.AspNetCore.WebSockets;
-using Serilog;
-using Serilog.Sinks.SystemConsole;
-using Serilog.Sinks.File;
-using System.Configuration;
 using FluentValidation;
 using DoranOfficeBackend.Dtos.Transit;
 
@@ -86,7 +77,7 @@ namespace DoranOfficeBackend
                         Email = "adhabakhtiar@gmail.com"
                     },
                 });
-                options.OperationFilter<SwaggerFromQuery>();
+                //options.OperationFilter<SwaggerFromQuery>();
 
                 var xmlCommentsPath = System.String.Format(@"{0}\DoranOfficeBackend.xml", System.AppDomain.CurrentDomain.BaseDirectory);
                 options.IncludeXmlComments(xmlCommentsPath);
@@ -166,19 +157,6 @@ namespace DoranOfficeBackend
                 SupportedUICultures = supportedCultures
             });
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI();
-                app.UseReDoc(c =>
-                {
-                    c.ConfigObject.ExpandResponses = "all";
-                    c.RoutePrefix = "docs";
-                    c.SpecUrl("/swagger/v1/swagger.json");
-                });
-            }
-
             app.UseSession();
             app.ConfigureExceptionHandler();
             app.UseMiddleware<JwtMiddleware>();
@@ -194,9 +172,25 @@ namespace DoranOfficeBackend
             };
 
 
-            app.UseWebSockets(webSocketOptions);
+            //app.UseWebSockets(webSocketOptions);
             app.UseEndpoints(endpoints => endpoints.MapControllers());
 
+
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger(c =>
+                {
+                    c.SerializeAsV2 = true;
+                });
+                
+                app.UseReDoc(c =>
+                {
+                    c.RoutePrefix = "docs";
+                    c.SpecUrl("/swagger/v1/swagger.json");
+                });
+            }
             //app.UseHttpsRedirection();
             //app.UseStaticFiles();
 

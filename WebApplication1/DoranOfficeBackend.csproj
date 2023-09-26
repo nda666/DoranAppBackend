@@ -22,7 +22,7 @@
     <PackageReference Include="Dotmim.Sync.MySql" Version="0.9.8" />
     <PackageReference Include="Dotmim.Sync.SqlServer.ChangeTracking" Version="0.9.8" />
     <PackageReference Include="Dotmim.Sync.Web.Server" Version="0.9.8" />
-    <PackageReference Include="FluentValidation" Version="11.5.2" />
+    <PackageReference Include="FluentValidation" Version="11.7.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.16" />

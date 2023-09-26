@@ -12,6 +12,6 @@ namespace DoranOfficeBackend.Dtos.Mastertimsales
 
         public int Kodechannel { get; set; }
 
-        public List<SalesOptionDto> Sales { get; set; } = new List<SalesOptionDto>();
+        public ICollection<SalesOptionDto> Sales { get; set; } = new List<SalesOptionDto>();
     }
 }

@@ -16,6 +16,7 @@ using DoranOfficeBackend.Dtos.Transit;
 using Microsoft.AspNetCore.Mvc.Filters;
 using FluentValidation;
 using ConsoleDump;
+using DocumentFormat.OpenXml.InkML;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -37,7 +38,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HtransitResultDto>>> GetTransit([FromQuery] FindTransitDto dto)
+        public async Task<ActionResult<HtransitResultDto>> GetTransit([FromQuery] FindTransitDto dto)
         {
             ConsoleDump.Extensions.Dump(dto);
             var htransitQ = _context.Htransit
@@ -67,6 +68,11 @@ namespace DoranOfficeBackend.Controller
                 htransitQ = htransitQ.Where(x => x.Kodegudang == dto.Kodegudang);
             }
 
+            if (!String.IsNullOrWhiteSpace(dto.NamaGudangTujuan))
+            {
+                htransitQ = htransitQ.Where(x => x.MastergudangTujuan.Nama.Contains(dto.NamaGudangTujuan));
+            }
+
             if (dto.KodeGudangTujuan.HasValue)
             {
                 htransitQ = htransitQ.Where(x => x.KodeGudangTujuan == dto.KodeGudangTujuan);
@@ -87,17 +93,11 @@ namespace DoranOfficeBackend.Controller
 
             htransitQ = htransitQ.OrderByDescending(x => x.TglTrans);
 
-
-            int skip = (dto.Page - 1) * dto.PageSize;
+            var page = dto.Page <= 0 ? 1 : dto.Page;
+            int skip = (page - 1) * dto.PageSize;
             htransitQ = htransitQ.Skip(skip)
                     .Take(dto.PageSize);
-            htransitQ = htransitQ.Include(e => e.Dtransit)
-                .ThenInclude(e => e.Masterbarang)
-                .ThenInclude(e => e.Mastertipebarang)
-                .Include(e => e.MasteruserInsert)
-                .Include(e => e.Penyiaporder)
-                .Include(e => e.Mastergudang)
-                .Include(e => e.MastergudangTujuan);
+            htransitQ = SetHtransitRelations(htransitQ);
 
             var htransit = await htransitQ.ToListAsync();
             ICollection<HtransitResult> htransitResults = _mapper.Map<ICollection<HtransitResult>>(htransit);
@@ -105,7 +105,7 @@ namespace DoranOfficeBackend.Controller
             var result = new HtransitResultDto
             {
                 Data = htransitResults,
-                Page = dto.Page,
+                Page = page,
                 PageSize = dto.PageSize,
                 TotalPage = totalPage,
                 TotalRow = totalRow
@@ -115,15 +115,22 @@ namespace DoranOfficeBackend.Controller
             return Ok(result);
         }
 
-
-        private Masteruser? getUser()
+        [HttpGet("{kodet}", Name = "GetTransitByKodet")]
+        public async Task<ActionResult<HtransitResult>> GetTransitByKodet(int kodet)
         {
-            var user = (Masteruser)HttpContext.Items["User"];
-            if (user == null)
+            var htransitQ = _context.Htransit
+              .AsNoTracking()
+              .AsQueryable();
+            htransitQ = htransitQ.Where(x => x.KodeT == kodet);
+            htransitQ = SetHtransitRelations(htransitQ);
+            var htransit = await htransitQ.FirstAsync();
+            if (htransit == null)
             {
-                throw new Exception("User not found");
+                return NotFound();
             }
-            return user;
+
+            var htransitResult = _mapper.Map<HtransitResult>(htransit);   
+            return htransitResult;
         }
 
         [HttpPost]
@@ -192,6 +199,25 @@ namespace DoranOfficeBackend.Controller
             return Ok(htransit);
         }
 
+        [HttpDelete("{kodet}/delete-detail-by-koded", Name = "DeleteDetailByKoded")]
+        public async Task<ActionResult<HtransitResult>> DeleteDetailByKoded(int kodet, [FromBody] DeleteDetailByKodedDto dto)
+        {
+            ConsoleDump.Extensions.Dump(dto.Koded);
+            if (_context.Htransit == null)
+            {
+                return Problem("Entity set 'MyDbContext.Htransit'  is null.");
+            }
+            var detailsToDelete = _context.Dtransit
+                .Where(x => x.Kodet == kodet)
+                .Where(x => dto.Koded.Contains(x.Koded));
+            _context.Dtransit.RemoveRange(detailsToDelete);
+            await _context.SaveChangesAsync();
+            var htransitQ =  _context.Htransit.Where(x => x.KodeT == kodet);
+            htransitQ = SetHtransitRelations(htransitQ);
+            var htransit = await htransitQ.FirstOrDefaultAsync();
+            return Ok(_mapper.Map<HtransitResult>(htransit));
+        } 
+
         private async Task InsertToDtransit(int kodeh, List<Dtransit> dtransit)
         {
             for (short i = 0; i < dtransit.Count; i++)
@@ -205,5 +231,27 @@ namespace DoranOfficeBackend.Controller
             insertQuery += values;
             await _context.Database.ExecuteSqlRawAsync(insertQuery);
         }
+
+
+        private IQueryable<Htransit> SetHtransitRelations(IQueryable<Htransit> htransitQ)
+        {
+            return htransitQ.Include(e => e.Dtransit)
+                .ThenInclude(e => e.Masterbarang)
+                .ThenInclude(e => e.Mastertipebarang)
+                .Include(e => e.MasteruserInsert)
+                .Include(e => e.Penyiaporder)
+                .Include(e => e.Mastergudang)
+                .Include(e => e.MastergudangTujuan);
+        }
+        private Masteruser? getUser()
+        {
+            var user = (Masteruser)HttpContext.Items["User"];
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+            return user;
+        }
+
     }
 }
