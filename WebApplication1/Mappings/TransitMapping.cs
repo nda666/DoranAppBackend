@@ -16,6 +16,8 @@ namespace DoranOfficeBackend.Mappings
 
             CreateMap<SaveHeaderTransitDto, Htransit>();
             CreateMap<Htransit, HtransitResult>();
+
+            CreateMap<UpdateDetailByKodedDto, Dtransit>();
         }
     }
 }

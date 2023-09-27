@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using FluentValidation;
 using ConsoleDump;
 using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -199,8 +200,8 @@ namespace DoranOfficeBackend.Controller
             return Ok(htransit);
         }
 
-        [HttpDelete("{kodet}/delete-detail-by-koded", Name = "DeleteDetailByKoded")]
-        public async Task<ActionResult<HtransitResult>> DeleteDetailByKoded(int kodet, [FromBody] DeleteDetailByKodedDto dto)
+        [HttpDelete("{kodet}/delete-detail-", Name = "DeleteDetailTransit")]
+        public async Task<ActionResult<HtransitResult>> DeleteDetailTransit(int kodet, [FromBody] DeleteDetailByKodedDto dto)
         {
             ConsoleDump.Extensions.Dump(dto.Koded);
             if (_context.Htransit == null)
@@ -216,7 +217,58 @@ namespace DoranOfficeBackend.Controller
             htransitQ = SetHtransitRelations(htransitQ);
             var htransit = await htransitQ.FirstOrDefaultAsync();
             return Ok(_mapper.Map<HtransitResult>(htransit));
-        } 
+        }
+
+        [HttpPost("{kodet}", Name = "InsertDetailTransit")]
+        public async Task<ActionResult<HtransitResult>> InsertDetailTransit(int kodet, [FromBody] UpdateDetailByKodedDto dto)
+        {
+            if (_context.Htransit == null)
+            {
+                return Problem("Entity set 'MyDbContext.Htransit'  is null.");
+            }
+
+            ConsoleDump.Extensions.Dump(dto);
+            var lastDtransit = await _context.Dtransit
+                .Where(x => x.Kodet == kodet)
+                .OrderByDescending(x => x.Koded)
+                .FirstOrDefaultAsync();
+            short koded = 1;
+            if (lastDtransit != null)
+            {
+                koded = (short)(lastDtransit.Koded + 1);
+            }
+            var entity = _mapper.Map<Dtransit>(dto);
+            entity.Kodet = kodet;
+            entity.Koded = koded;
+            _context.Dtransit.Add(entity);
+            await _context.SaveChangesAsync();
+            var htransitQ = _context.Htransit.Where(x => x.KodeT == kodet);
+            htransitQ = SetHtransitRelations(htransitQ);
+            var htransit = await htransitQ.FirstOrDefaultAsync();
+            return Ok(_mapper.Map<HtransitResult>(htransit));
+        }
+
+        [HttpPut("{kodet}/{koded}", Name = "UpdateDetailTransit")]
+        public async Task<ActionResult<HtransitResult>> UpdateDetailTransit(int kodet, int koded, [FromBody] UpdateDetailByKodedDto dto)
+        {
+            if (_context.Htransit == null)
+            {
+                return Problem("Entity set 'MyDbContext.Htransit'  is null.");
+            }
+            var entity = await _context.Dtransit
+                .Where(x => x.Kodet == kodet)
+                .Where(x => x.Koded == koded)
+                .FirstAsync();
+
+            entity.Jumlah = dto.Jumlah;
+            entity.Kodebarang = dto.Kodebarang;
+            entity.NmrSn = dto.NmrSn;
+            await _context.SaveChangesAsync();
+            var htransitQ = _context.Htransit.Where(x => x.KodeT == kodet);
+            htransitQ = SetHtransitRelations(htransitQ);
+            var htransit = await htransitQ.FirstOrDefaultAsync();
+            return Ok(_mapper.Map<HtransitResult>(htransit));
+        }
 
         private async Task InsertToDtransit(int kodeh, List<Dtransit> dtransit)
         {
