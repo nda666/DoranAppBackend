@@ -43,6 +43,7 @@ namespace DoranOfficeBackend
                     timestampInterceptor,
                     softDeleteInterceptor
                 );
+            //optionsBuilder.UseLazyLoadingProxies();
         }
 
         public virtual DbSet<Absenspg> Absenspgs { get; set; } = null!;

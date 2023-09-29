@@ -176,8 +176,17 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpPut("{kode}")]
-        public async Task<ActionResult> UpdateTransit(int kode, [FromBody] SaveTransitDto dto)
+        public async Task<ActionResult<HtransitResult>> UpdateTransit(int kode, [FromBody] SaveHeaderTransitDto dto)
         {
+            var validationResult = await _validatorHeader.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = validationResult.Errors.Select(error => error.ErrorMessage).ToList();
+                errorMessages.Dump();
+                // Return a BadRequestObjectResult with the error messages
+                return StatusCode(422, new { Errors = errorMessages });
+            }
+
             var htransit = await _context.Htransit.Where(e => e.KodeT == kode).FirstOrDefaultAsync();
             if (htransit == null)
             {
@@ -189,15 +198,10 @@ namespace DoranOfficeBackend.Controller
             htransit.UpdateName = (sbyte)user?.Kodeku;
             htransit.UpdateTime = DateTime.Now;
             await _context.SaveChangesAsync();
-            var deleteDtransit = _context.Dtransit.Where(e => e.Kodet == kode);
-            if (deleteDtransit.Any())
-            {
-                _context.Dtransit.RemoveRange(deleteDtransit);
-                await _context.SaveChangesAsync();
-            }
-            var dtransit = _mapper.Map<List<Dtransit>>(dto.Details);
-            await InsertToDtransit(kode, dtransit);
-            return Ok(htransit);
+            var htransitQ = _context.Htransit.Where(x => x.KodeT == htransit.KodeT);
+            htransitQ = SetHtransitRelations(htransitQ);
+            var result = await htransitQ.FirstOrDefaultAsync();
+            return Ok(_mapper.Map<HtransitResult>(result));
         }
 
         [HttpDelete("{kodet}/delete-detail-", Name = "DeleteDetailTransit")]
@@ -227,7 +231,6 @@ namespace DoranOfficeBackend.Controller
                 return Problem("Entity set 'MyDbContext.Htransit'  is null.");
             }
 
-            ConsoleDump.Extensions.Dump(dto);
             var lastDtransit = await _context.Dtransit
                 .Where(x => x.Kodet == kodet)
                 .OrderByDescending(x => x.Koded)
