@@ -39,4 +39,5 @@
         public string? NamaManager { get; set; }
         public string? NamaTim { get; set; }
     }
+
 }

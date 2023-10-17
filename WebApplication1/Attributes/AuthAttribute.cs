@@ -12,7 +12,7 @@ namespace DoranOfficeBackend.Attributes
             if (context.HttpContext.Items["User"] == null)
             {
                 // not logged in
-                context.Result = new JsonResult(new { message = "Unauthorizedxxxx" }) { StatusCode = StatusCodes.Status401Unauthorized };
+                context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
             }
         }
     }

@@ -40,6 +40,7 @@ namespace DoranOfficeBackend.Models
         /// Keperluan Apps PastiSukses untuk cek apakah brg ini perlu diorder toko atau belum. 1=Perlu. 0=TidakPerlu.
         /// </summary>
         public sbyte Kpikelengkapantoko { get; set; }
+        public bool JurnalBiaya { get; set; }
 
         public virtual ICollection<Dtrans> Dtrans { get; set; }
         public virtual ICollection<Dorder> Dorder { get; set; }

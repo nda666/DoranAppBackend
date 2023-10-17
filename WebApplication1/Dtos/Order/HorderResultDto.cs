@@ -1,4 +1,5 @@
 ﻿using DoranOfficeBackend.Dtos.Masterbarang;
+using DoranOfficeBackend.Dtos.Mastergudang;
 using DoranOfficeBackend.Dtos.Masterpelanggan;
 using DoranOfficeBackend.Dtos.Masteruser;
 using DoranOfficeBackend.Models;
@@ -19,6 +20,7 @@ namespace DoranOfficeBackend.Dtos.Order
         /// </summary>
         public bool? Historynya { get; set; }
         public int Kodepelanggan { get; set; }
+        public int Kodegudang { get; set; }
         public int Kodesales { get; set; }
         public int Kodepenyiap { get; set; }
         public bool Dicetak { get; set; }
@@ -29,7 +31,7 @@ namespace DoranOfficeBackend.Dtos.Order
         public int Jumlah { get; set; }
         public sbyte StokSales { get; set; }
         public int Ppn { get; set; }
-        public bool? Tipetempo { get; set; }
+        public sbyte? Tipetempo { get; set; }
         public DateTime Tgltempo { get; set; }
         public string Infopenting { get; set; } = null!;
         public string NoSeriOnline { get; set; } = null!;
@@ -44,8 +46,9 @@ namespace DoranOfficeBackend.Dtos.Order
         public sbyte Sudahupdatephone { get; set; }
         public ICollection<DorderResult> Dorder { get; set; }
         public virtual CommonResultDto? Penyiaporder { get; set; }
+        public virtual MastergudangOptionDto? Mastergudang { get; set; }
         public virtual MasteruserOptionDto? MasteruserInsert { get; set; }
-        public virtual MasteruserOptionDto? MasteruserUpdate { get; set; }
+        public virtual MasteruserOptionDto? MasteruserUpdate { get; set; } = null;
         public virtual MasterpelangganWithLokasiKotaOptionDto? Masterpelanggan { get; set; }
         public virtual CommonResultDto? Sales { get; set; }
         public virtual CommonResultDto? Ekspedisi { get; set; }
@@ -60,6 +63,7 @@ namespace DoranOfficeBackend.Dtos.Order
         public short Jumlah { get; set; }
         public long Harga { get; set; }
         public string Keterangan { get; set; } = null!;
+        public sbyte Lunas { get; set; }
         public virtual MasterbarangOptionDto? Masterbarang { get; set; }
     }
 

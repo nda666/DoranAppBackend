@@ -52,15 +52,16 @@ namespace DoranOfficeBackend.Controller
             return await query.ToListAsync();
         }
 
+
         // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Masteruser>> GetUser(Guid id)
+        [HttpGet("{kode}")]
+        public async Task<ActionResult<Masteruser>> GetUser(int kode)
         {
             if (_context.Masterusers == null)
             {
                 return NotFound();
             }
-            var user = await _context.Masterusers.FindAsync(id);
+            var user = await _context.Masterusers.Where(e => e.Kodeku == kode).FirstOrDefaultAsync();
 
             if (user == null)
             {

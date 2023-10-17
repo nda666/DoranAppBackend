@@ -49,8 +49,8 @@ namespace DoranOfficeBackend
         public virtual DbSet<Absenspg> Absenspgs { get; set; } = null!;
         public virtual DbSet<Adaaktifita> Adaaktifitas { get; set; } = null!;
         public virtual DbSet<Alamattambahanpelanggan> Alamattambahanpelanggans { get; set; } = null!;
-        public virtual DbSet<Barangmasuk> Barangmasuks { get; set; } = null!;
-        public virtual DbSet<Barangsn> Barangsns { get; set; } = null!;
+        public virtual DbSet<Barangmasuk> Barangmasuk { get; set; } = null!;
+        public virtual DbSet<Barangsn> Barangsn { get; set; } = null!;
         public virtual DbSet<Barangstokterkait> Barangstokterkaits { get; set; } = null!;
         public virtual DbSet<Bathippo> Bathippos { get; set; } = null!;
         public virtual DbSet<Cekpotonganonline> Cekpotonganonlines { get; set; } = null!;
@@ -95,6 +95,8 @@ namespace DoranOfficeBackend
         public virtual DbSet<Dresipengirimankepelanggan> Dresipengirimankepelanggans { get; set; } = null!;
         public virtual DbSet<Dtargetomzettokopc> Dtargetomzettokopcs { get; set; } = null!;
         public virtual DbSet<Dtrans> Dtrans { get; set; } = null!;
+        public virtual DbSet<Dtransarsip> Dtransarsips { get; set; } = null!;
+        public virtual DbSet<Htransarsip> Htransarsips { get; set; } = null!;
         public virtual DbSet<Dtransit> Dtransit { get; set; } = null!;
         public virtual DbSet<Dupdate> Dupdates { get; set; } = null!;
         public virtual DbSet<Emailpromohippo> Emailpromohippos { get; set; } = null!;
@@ -138,7 +140,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Htrans> Htrans { get; set; } = null!;
         public virtual DbSet<Htransit> Htransit { get; set; } = null!;
         public virtual DbSet<Htuga> Htugas { get; set; } = null!;
-        public virtual DbSet<Hupdate> Hupdates { get; set; } = null!;
+        public virtual DbSet<Hupdate> Hupdate { get; set; } = null!;
         public virtual DbSet<Hwunderlist> Hwunderlists { get; set; } = null!;
         public virtual DbSet<Idolshop> Idolshops { get; set; } = null!;
         public virtual DbSet<Jadwalluarkotum> Jadwalluarkota { get; set; } = null!;
@@ -150,7 +152,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Laporanakuntansi> Laporanakuntansis { get; set; } = null!;
         public virtual DbSet<Laporanharian> Laporanharians { get; set; } = null!;
         public virtual DbSet<LogUpdatePhone> LogUpdatePhones { get; set; } = null!;
-        public virtual DbSet<Logfile> Logfiles { get; set; } = null!;
+        public virtual DbSet<Logfile> Logfile { get; set; } = null!;
         public virtual DbSet<Logfileserver> Logfileservers { get; set; } = null!;
         public virtual DbSet<LokasiKota> LokasiKota { get; set; } = null!;
         public virtual DbSet<LokasiProvinsi> LokasiProvinsi { get; set; } = null!;
@@ -177,7 +179,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Masterpemasukan> Masterpemasukans { get; set; } = null!;
         public virtual DbSet<Masterpengeluaran> Masterpengeluaran { get; set; } = null!;
         public virtual DbSet<Masterpoinaward> Masterpoinawards { get; set; } = null!;
-        public virtual DbSet<Mastersupplier> Mastersuppliers { get; set; } = null!;
+        public virtual DbSet<Mastersupplier> Mastersupplier { get; set; } = null!;
         public virtual DbSet<Mastersuppliercina> Mastersuppliercinas { get; set; } = null!;
         public virtual DbSet<Mastertarget> Mastertargets { get; set; } = null!;
         public virtual DbSet<Mastertargettahunan> Mastertargettahunans { get; set; } = null!;
@@ -192,7 +194,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Penandajurnal> Penandajurnals { get; set; } = null!;
         public virtual DbSet<Penyiaporder> Penyiaporder { get; set; } = null!;
         public virtual DbSet<Potonganbarangkurang> Potonganbarangkurangs { get; set; } = null!;
-        public virtual DbSet<Profileperush> Profileperushes { get; set; } = null!;
+        public virtual DbSet<Profileperush> Profileperush { get; set; } = null!;
         public virtual DbSet<Rumushargaonline> Rumushargaonlines { get; set; } = null!;
         public virtual DbSet<Sales> Sales { get; set; } = null!;
         public virtual DbSet<Sethargajual> Sethargajual { get; set; } = null!;
@@ -220,6 +222,108 @@ namespace DoranOfficeBackend
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Dtransarsip>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("dtransarsip");
+
+                entity.HasIndex(e => e.Kodebarang, "kodebarang");
+
+                entity.HasIndex(e => e.Kodeh, "kodeh");
+
+                entity.Property(e => e.Harga).HasColumnName("harga");
+
+                entity.Property(e => e.Jumlah).HasColumnName("jumlah");
+
+                entity.Property(e => e.Kodebarang).HasColumnName("kodebarang");
+
+                entity.Property(e => e.Koded).HasColumnName("koded");
+
+                entity.Property(e => e.Kodeh).HasColumnName("kodeh");
+
+                entity.Property(e => e.Nmrsn)
+                    .HasMaxLength(50)
+                    .HasColumnName("nmrsn")
+                    .HasDefaultValueSql("''");
+            });
+
+            modelBuilder.Entity<Htransarsip>(entity =>
+            {
+                entity.HasKey(e => e.Kode)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("htransarsip");
+
+                entity.HasIndex(e => e.KodePelanggan, "kodePelanggan");
+
+                entity.HasIndex(e => e.Kodegudang, "kodegudang");
+
+                entity.HasIndex(e => e.TglTrans, "tglTrans");
+
+                entity.Property(e => e.Kode).HasColumnName("kode");
+
+                entity.Property(e => e.AkanDjJurnalkan).HasColumnName("akanDjJurnalkan");
+
+                entity.Property(e => e.Barcodeonline)
+                    .HasMaxLength(30)
+                    .HasColumnName("barcodeonline")
+                    .HasDefaultValueSql("''''''");
+
+                entity.Property(e => e.Diskon).HasColumnName("diskon");
+
+                entity.Property(e => e.Dpp).HasColumnName("dpp");
+
+                entity.Property(e => e.InsertName).HasColumnName("insertName");
+
+                entity.Property(e => e.InsertTime)
+                    .HasColumnType("datetime")
+                    .HasColumnName("insertTime")
+                    .HasDefaultValueSql("'0000-00-00 00:00:00'");
+
+                entity.Property(e => e.Jumlah).HasColumnName("jumlah");
+
+                entity.Property(e => e.Jumlahbarangbiaya).HasColumnName("jumlahbarangbiaya");
+
+                entity.Property(e => e.Keterangan)
+                    .HasMaxLength(400)
+                    .HasColumnName("keterangan")
+                    .HasDefaultValueSql("''''''");
+
+                entity.Property(e => e.KodeH).HasColumnName("kodeH");
+
+                entity.Property(e => e.KodePelanggan).HasColumnName("kodePelanggan");
+
+                entity.Property(e => e.KodeSales).HasColumnName("kodeSales");
+
+                entity.Property(e => e.Kodegudang)
+                    .HasColumnName("kodegudang")
+                    .HasDefaultValueSql("'1'");
+
+                entity.Property(e => e.Kodenota)
+                    .HasMaxLength(12)
+                    .HasColumnName("kodenota")
+                    .HasDefaultValueSql("''");
+
+                entity.Property(e => e.NoSeriOnline)
+                    .HasMaxLength(20)
+                    .HasColumnName("noSeriOnline")
+                    .HasDefaultValueSql("''''''");
+
+                entity.Property(e => e.Ppn).HasColumnName("ppn");
+
+                entity.Property(e => e.Ppnreal).HasColumnName("ppnreal");
+
+                entity.Property(e => e.TambahanLainnya).HasColumnName("tambahanLainnya");
+
+                entity.Property(e => e.Terbitfakturppn).HasColumnName("terbitfakturppn");
+
+                entity.Property(e => e.TglTrans)
+                    .HasColumnType("date")
+                    .HasColumnName("tglTrans")
+                    .HasDefaultValueSql("'0000-00-00'");
+            });
+
             modelBuilder.Entity<Absenspg>(entity =>
             {
                 entity.HasNoKey();
@@ -4499,7 +4603,10 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Logfile>(entity =>
             {
-                entity.HasNoKey();
+                entity.Property(e => e.Id)
+                    .HasColumnType("long(20)")
+                  .HasColumnName("id")
+                  .ValueGeneratedOnAdd();
 
                 entity.ToTable("logfile");
 
@@ -5633,6 +5740,27 @@ namespace DoranOfficeBackend
                 entity.Property(e => e.Urutpelanggan)
                     .HasColumnType("tinyint(4)")
                     .HasColumnName("urutpelanggan");
+
+                entity.Property(e => e.Multigudang)
+                    .HasColumnName("multigudang")
+                    .HasColumnType("tinyint(4)")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.Multigudangonline)
+                   .HasColumnName("multigudangonline")
+                   .HasColumnType("tinyint(4)")
+                   .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.TitipanUangTokoUniversal)
+                   .HasColumnName("titipanUangTokoUniversal")
+                   .HasColumnType("tinyint(4)")
+                   .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.DefaultJurnalPenjualan)
+                   .HasColumnName("defaultJurnalPenjualan")
+                   .HasColumnType("tinyint(4)")
+                   .HasDefaultValueSql("'1'");
+
             });
 
             modelBuilder.Entity<Masterpemasukan>(entity =>
@@ -7949,6 +8077,12 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Horder>(entity =>
             {
+                entity.HasOne(e => e.Mastergudang)
+                    .WithMany(c => c.Horder)
+                    .HasForeignKey(e => e.Kodegudang)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
+
                 entity.HasOne(e => e.Masterpelanggan)
                     .WithMany(c => c.Horder)
                     .HasForeignKey(e => e.Kodepelanggan)

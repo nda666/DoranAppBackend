@@ -4,7 +4,7 @@ namespace DoranOfficeBackend.Dtos.Masterbarang
 {
     public class MasterbarangOptionDto
     {
-        public short BrgKode { get; set; }
+        public short? BrgKode { get; set; }
         public string BrgNama { get; set; } = null!;
     }
 
@@ -17,6 +17,8 @@ namespace DoranOfficeBackend.Dtos.Masterbarang
     public class MasterbarangOptionWithSnDto : MasterbarangOptionDto
     {
         public bool Sn { get; set; }
+        public bool JurnalBiaya { get; set; }
+        
     }
 
 }

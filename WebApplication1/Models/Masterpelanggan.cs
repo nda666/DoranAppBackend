@@ -79,6 +79,7 @@ namespace DoranOfficeBackend.Models
         /// 0=tidak,1=ppn
         /// </summary>
         public sbyte DefaultPpn { get; set; }
+        public sbyte DefaultJurnalPenjualan { get; set; }
         public sbyte Kodeleveltokopedia { get; set; }
         public string Linktoko { get; set; } = null!;
         public int Kodegroup { get; set; }
@@ -88,6 +89,9 @@ namespace DoranOfficeBackend.Models
         /// </summary>
         public int Kodelevelharga { get; set; }
         public sbyte KodelevelhargaJete { get; set; }
+        public bool Multigudang { get; set; }
+        public bool Multigudangonline { get; set; }
+        public sbyte TitipanUangTokoUniversal { get; set; }
 
         public virtual LokasiKota? LokasiKota { get; set; }
 

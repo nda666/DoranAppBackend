@@ -76,7 +76,7 @@ namespace DoranOfficeBackend.Controller.HkategoriBarangsController
                             Nama = d.Nama
                         }).ToList()
                     });
-
+            ConsoleDump.Extensions.Dump("xxxxxxxxxxxx");
             return await query.ToListAsync();
         }
 

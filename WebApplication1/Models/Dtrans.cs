@@ -20,7 +20,7 @@ namespace DoranOfficeBackend.Models
         public int Komisi { get; set; }
         public int Untung { get; set; }
         public sbyte PoinToko { get; set; }
-        public bool? KuranginStok { get; set; }
+        public bool KuranginStok { get; set; }
         public sbyte Tukartipe { get; set; }
         public sbyte HargaOk { get; set; }
         public string Nmrsn { get; set; } = null!;

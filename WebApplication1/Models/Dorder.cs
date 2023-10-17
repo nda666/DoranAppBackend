@@ -16,7 +16,7 @@ namespace DoranOfficeBackend.Models
         /// <summary>
         /// 0:belum. 1: kurang, 2: lunas. 3:cancel, 4:menyusul, 5:berespaksa
         /// </summary>
-        public bool Lunas { get; set; }
+        public sbyte Lunas { get; set; }
         public string Keterangancancel { get; set; } = null!;
         public int KodehTrans { get; set; }
         public sbyte KodedTrans { get; set; }

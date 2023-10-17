@@ -28,7 +28,7 @@ namespace DoranOfficeBackend.Models
         /// <summary>
         /// 0=TIDAK_TERBIT. 1=TERBIT_FAKTUR_PPN
         /// </summary>
-        public sbyte Terbitfakturppn { get; set; }
+        public bool Terbitfakturppn { get; set; }
         /// <summary>
         /// 1=AKAN MASUK JURNAL PENJUALAN. 0=TIDAK MASUK JURNAL PENJUALAN
         /// </summary>

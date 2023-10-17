@@ -25,7 +25,7 @@ namespace DoranOfficeBackend.Controller
         // POST: api/Login
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Masteruser>> PostLogin(LoginDto login)
+        public async Task<ActionResult<LoginResposeDto>> PostLogin(LoginDto login)
         {
          
           if (_context.Masterusers == null)
@@ -62,12 +62,12 @@ namespace DoranOfficeBackend.Controller
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var jwtToken = tokenHandler.WriteToken(token);
                 var stringToken = tokenHandler.WriteToken(token);
-                return new JsonResult(new
+                return Ok(new LoginResposeDto
                 {
-                    api_token = stringToken
+                    
+                    ApiToken = stringToken,
+                    Masteruser = user
                 });
-
-                return user;
             //} catch (InvalidOperationException ex){
             //    ConsoleDump.Extensions.Dump(ex);
             //    Console.WriteLine("123123 " + ex.Message);

@@ -29,6 +29,9 @@ namespace DoranOfficeBackend.Mappings
             CreateMap<Dtrans, DtransResult>();
             CreateMap<DtransResult, Dtrans>();
             CreateMap<Htrans, HtransResult>();
+
+            CreateMap<Htrans, Htransarsip>();
+            CreateMap<Dtrans, Dtransarsip>();
         }
     }
 }

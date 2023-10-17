@@ -17,6 +17,7 @@ namespace DoranOfficeBackend.Models
         /// </summary>
         public sbyte? Historynya { get; set; }
         public int Kodepelanggan { get; set; }
+        public int Kodegudang { get; set; }
         public int Kodesales { get; set; }
         public sbyte Kodepenyiap { get; set; }
         public bool Dicetak { get; set; }
@@ -40,6 +41,7 @@ namespace DoranOfficeBackend.Models
         /// UNTUK UPDATE NMR HP
         /// </summary>
         public sbyte Sudahupdatephone { get; set; }
+        public Mastergudang? Mastergudang { get; set; }
         public Masterpelanggan? Masterpelanggan { get; set; }
         public ICollection<Dorder> Dorder { get; set; }
         public Masteruser? MasteruserInsert { get; set; }

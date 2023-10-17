@@ -65,7 +65,8 @@ namespace DoranOfficeBackend.Controller
                 {
                     BrgKode = e.BrgKode,
                     BrgNama = e.BrgNama,
-                    Sn = e.Dkategoribarang != null ? e.Dkategoribarang.Sn : false
+                    Sn = e.Dkategoribarang != null ? e.Dkategoribarang.Sn : false,
+                    JurnalBiaya = e.JurnalBiaya
                 });
             return await query.ToListAsync();
         }

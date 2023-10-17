@@ -32,5 +32,6 @@ namespace DoranOfficeBackend.Models
         public virtual ICollection<Htrans> Htrans { get; set; }
         public virtual ICollection<Htransit> Htransit { get; set; }
         public virtual ICollection<Htransit> HtransitTujuan { get; set; }
+        public virtual ICollection<Horder> Horder { get; set; }
     }
 }

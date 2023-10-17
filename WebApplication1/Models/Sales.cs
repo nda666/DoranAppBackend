@@ -33,7 +33,7 @@ namespace DoranOfficeBackend.Models
         public int T4 { get; set; }
         public int T5 { get; set; }
         public string Tim { get; set; } = null!;
-        public bool Salesol { get; set; }
+        public sbyte Salesol { get; set; }
         public int Kodepegawai { get; set; }
         public bool Manager { get; set; }
         public int Kodemanager { get; set; }

@@ -16,6 +16,7 @@ using Dapper.Extensions.MySql;
 using System.Globalization;
 using FluentValidation;
 using DoranOfficeBackend.Dtos.Transit;
+using DoranOfficeBackend.Dtos.Order;
 
 namespace DoranOfficeBackend
 {
@@ -60,6 +61,7 @@ namespace DoranOfficeBackend
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
+                options.UseAllOfToExtendReferenceSchemas();
                 options.CustomOperationIds(apiDesc =>
                 {
                     return apiDesc.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name.CamelToWords() : null;
@@ -136,7 +138,7 @@ namespace DoranOfficeBackend
             services.AddSingleton<WebSocketService>();
 
             services.AddScoped<IValidator<SaveHeaderTransitDto>, SaveHeaderTransitValidation>();
-
+            services.AddScoped<IValidator<SaveOrderDto>, SaveOrderDtoValidator>();
             //services.AddFluentValidationAutoValidation();
             //services.AddScoped<IValidator<SalesChannel>, SalesChannelValidator>();
             //services.AddScoped<IValidator<User>, UserValidator>();
@@ -182,13 +184,18 @@ namespace DoranOfficeBackend
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger(c =>
                 {
-                    c.SerializeAsV2 = true;
+                    c.SerializeAsV2 = false;
                 });
-                
+
+                app.UseSwaggerUI( c =>
+                {
+                });
+
                 app.UseReDoc(c =>
                 {
                     c.RoutePrefix = "docs";
                     c.SpecUrl("/swagger/v1/swagger.json");
+                    c.ConfigObject.HideLoading = true;
                 });
             }
             //app.UseHttpsRedirection();

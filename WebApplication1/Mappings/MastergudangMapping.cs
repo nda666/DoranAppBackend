@@ -10,6 +10,7 @@ namespace DoranOfficeBackend.Mappings
         {
             CreateMap<SaveMastergudangDto, Mastergudang>();
             CreateMap<Mastergudang, SaveMastergudangDto>();
+            CreateMap<Mastergudang, MastergudangOptionDto>();
         }
     }
 }

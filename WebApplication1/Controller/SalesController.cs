@@ -46,7 +46,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpGet("nama")]
-        public async Task<ActionResult> GetSalesNama([FromQuery] FindSalesDto dto)
+        public async Task<ActionResult<IEnumerable<SalesOptionDto>>> GetSalesNama([FromQuery] FindSalesDto dto)
         {
             if (_context.Masterbarang == null)
             {
@@ -54,7 +54,12 @@ namespace DoranOfficeBackend.Controller
             }
 
             var baseQuery = baseSelect(dto);
-            var data = await baseQuery.Select(x => new { x.Kode, x.Nama }).ToListAsync();
+            var data = await baseQuery.Select(x => new SalesOptionDto {
+                Kode = x.Kode, 
+                Nama = x.Nama, 
+                Salesol = x.Salesol,
+                Kodetimsales = x.Kodetimsales
+            }).OrderBy(e => e.Nama).ToListAsync();
 
             return Ok(data);
         }
