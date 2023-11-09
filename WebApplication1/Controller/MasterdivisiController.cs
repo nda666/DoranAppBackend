@@ -37,7 +37,6 @@ namespace DoranOfficeBackend.Controller
           {
               return NotFound();
           }
-
             var query = _context.Masterdivisi
                     .AsNoTracking()
                     .Include(x => x.Masterpegawais)
@@ -47,15 +46,6 @@ namespace DoranOfficeBackend.Controller
             {
                  query = query.Where(x => x.Nama.Contains(dto.Nama));
             }
-
-            //if (dto.Deleted == true)
-            //{
-            //    query = query.WhereDeleted();
-            //}
-            //else
-            //{
-            //    query = query.WhereNotDeleted();
-            //}
 
             return await query.ToListAsync();
         }

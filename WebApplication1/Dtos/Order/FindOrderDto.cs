@@ -6,7 +6,7 @@
         GUDANG = 1
     }
     /**
-     * public class FindTransaksiDto
+     * public class GetOrderRequest
      */
     public class GetOrderRequest : PaginationDto
     {
@@ -16,6 +16,7 @@
         public int? Kodesales { get; set; }
         public int? Kodepelanggan { get; set; }
         public int? Kodegudang { get; set; }
+        public string? Namagudang { get; set; }
         public sbyte? Historynya { get; set; }
         public LevelOrderEnum? LevelOrder { get; set; }
 
@@ -32,6 +33,8 @@
         public bool? SalesOl {  get; set; }
         public bool? Dicetak {  get; set; }
         public sbyte? Lunas { get; set; }
+        public int? KodeBarang { get; set; }
+        public bool? StokSales { get; set; }
         public DateTime? MinDate { get; set;}
         public DateTime? MaxDate { get; set; }
     }

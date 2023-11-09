@@ -18,7 +18,8 @@ namespace DoranOfficeBackend.Dtos.Masterbarang
     {
         public bool Sn { get; set; }
         public bool JurnalBiaya { get; set; }
-        
+        public sbyte Shownya { get; set; }
+
     }
 
 }

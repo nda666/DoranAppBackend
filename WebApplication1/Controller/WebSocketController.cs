@@ -50,7 +50,8 @@ namespace DoranOfficeBackend.Controller
 
             while (!result.CloseStatus.HasValue)
             {
-                var serverMsg = Encoding.UTF8.GetBytes($"Server: Hello. You said: {Encoding.UTF8.GetString(buffer)}");
+               
+                var serverMsg = Encoding.UTF8.GetBytes($"Server said: Hello. You said: {Encoding.UTF8.GetString(buffer)}");
                 await webSocket.SendAsync(new ArraySegment<byte>(serverMsg, 0, serverMsg.Length), result.MessageType, result.EndOfMessage, CancellationToken.None);
                 _logger.LogWarning("Message sent to Client");
 

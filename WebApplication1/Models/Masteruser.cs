@@ -33,6 +33,8 @@ namespace DoranOfficeBackend.Models
 
         public Sales? Sales { get; set; }
 
+        public virtual ICollection<Htrans> HtransUserinsert { get; set; }
+        public virtual ICollection<Htrans> HtransUserupdate { get; set; }
         public virtual ICollection<Horder> HorderUserinsert { get; set; }
         public virtual ICollection<Horder> HorderUserupdate { get; set; }
         public virtual ICollection<Htransit> HtransitUserinsert { get; set; }

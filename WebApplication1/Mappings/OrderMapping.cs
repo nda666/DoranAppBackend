@@ -2,6 +2,7 @@
 using DoranOfficeBackend.Dtos;
 using DoranOfficeBackend.Dtos.Masteruser;
 using DoranOfficeBackend.Dtos.Order;
+using DoranOfficeBackend.Dtos.PermintaanSales;
 using DoranOfficeBackend.Dtos.Transaksi;
 using DoranOfficeBackend.Models;
 
@@ -26,6 +27,8 @@ namespace DoranOfficeBackend.Mappings
             CreateMap<Dorder, DorderResult>();
             CreateMap<DorderResult, Dorder>();
             CreateMap<Horder, HorderResult>();
+
+            CreateMap<SavePermintaanSalesDto, Horder>();
         }
     }
 }

@@ -68,6 +68,11 @@ namespace DoranOfficeBackend.Controller
                 HorderQ = HorderQ.Where(x => EF.Functions.Like(x.Masterpelanggan.Nama, $"%{dto.NamaCust}%"));
             }
 
+            if (!String.IsNullOrEmpty(dto.Namagudang))
+            {
+                HorderQ = HorderQ.Where(x => EF.Functions.Like(x.Mastergudang.Nama, $"%{dto.Namagudang}%"));
+            }
+
             if (dto.Kodeh.HasValue)
             {
                 HorderQ = HorderQ.Where(x => x.Kodeh == dto.Kodeh);
@@ -138,6 +143,17 @@ namespace DoranOfficeBackend.Controller
                 HorderQ = HorderQ.Where(x => x.Historynya == dto.Historynya);
             }
 
+
+            if (dto.StokSales.HasValue)
+            {
+                HorderQ = HorderQ.Where(x => x.StokSales == dto.StokSales);
+            }
+
+            if (dto.KodeBarang.HasValue)
+            {
+                HorderQ = HorderQ.Where(x => x.Dorder.Any(e => e.Kodebarang == dto.KodeBarang));
+            }
+
             return HorderQ;
         }
 
@@ -152,23 +168,18 @@ namespace DoranOfficeBackend.Controller
                 .Include(e => e.Ekspedisi)
                 .Include(e => e.Masterpelanggan)
                 .ThenInclude(e => e.LokasiKota);
-            if (dto.Lunas.HasValue)
-            {
-                HorderQ = HorderQ.Include(e => e.Dorder.Where(x => x.Lunas == dto.Lunas))
-                    .ThenInclude(e => e.Masterbarang);
-            }
-            else
-            {
-                HorderQ = HorderQ.Include(e => e.Dorder.Where(x => x.Lunas == 0))
-                    .ThenInclude(e => e.Masterbarang);
-            }
+
+           HorderQ = HorderQ.Include(e => e.Dorder
+                    .Where(x => x.Lunas == (dto.Lunas.HasValue ? dto.Lunas : 0))
+                )
+                .ThenInclude(e => e.Masterbarang)
+                .ThenInclude(e => e.Mastertipebarang);
             return HorderQ;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HorderResultDto>>> GetOrder([FromQuery] GetOrderRequest dto)
         {
-            dto.Dump();
             var HorderQ = BaseHorderQuery(dto);
             var HorderPagingQ = HorderQ;
             var totalRow = await HorderPagingQ.CountAsync();
@@ -182,7 +193,7 @@ namespace DoranOfficeBackend.Controller
 
             var Horder = await HorderQ.ToListAsync();
             ICollection<HorderResult> HorderResults = _mapper.Map<ICollection<HorderResult>>(Horder);
-
+           
             var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
             var result = new HorderResultDto
             {
@@ -350,6 +361,38 @@ namespace DoranOfficeBackend.Controller
             Horder.Updatetime = DateTime.Now;
             await _context.SaveChangesAsync();
             return Ok(Horder);
+        }
+
+        [HttpDelete("{kode}/header", Name = "CancelOrderHeader")]
+        public async Task<ActionResult> CancelOrderHeader(int kode)
+        {
+            var horder = await _context.Horder.Where(e => e.Kodeh == kode)
+                    .Where(e => e.Lunas == false)
+                    .FirstOrDefaultAsync();
+            if (horder == null)
+            {
+                return BadRequest(new { message = "OrderData Detail harus dicek dulu semua nya" });
+            }
+            string query = "UPDATE horder SET historynya = 1, dicetak = 1 " +
+               $"WHERE kodeh = {kode}";
+            await _context.Database.ExecuteSqlRawAsync(query);
+            return Ok();
+        }
+
+        [HttpDelete("{kode}/detail", Name = "CancelOrderDetail")]
+        public async Task<ActionResult> CancelOrderDetail(int kode, [FromBody] CancelOrderDetailDto dto)
+        {
+            var dorder = await _context.Dorder
+                .Where(e => e.Kodeh == kode)
+                .Where(e => e.Koded == dto.koded)
+                .FirstOrDefaultAsync();
+            if (dorder == null) {
+                return BadRequest(new { message = "Detail order tidak ditemukan" });
+            }
+            dorder.Lunas = dto.kodecancel;
+            dorder.Keterangancancel = dto.keterangancancel;
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         [HttpPut("{kode}/set-penyiap", Name = "SetPenyiapOrder")]

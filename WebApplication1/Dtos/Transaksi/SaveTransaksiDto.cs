@@ -15,6 +15,7 @@
     }
     public class SaveTransaksiDto
     {
+        public bool? Force { get; set; } = false;
         public DateTime TglTrans { get; set; }
         public int KodePelanggan { get; set; }
         public int Jumlah { get; set; }

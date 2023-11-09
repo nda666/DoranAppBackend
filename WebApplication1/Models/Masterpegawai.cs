@@ -7,8 +7,8 @@ namespace DoranOfficeBackend.Models
 {
     public partial class Masterpegawai
     {
-        [Column("id")]
-        public Guid Id { get; set; }
+        //[Column("id")]
+        //public Guid Id { get; set; }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -40,14 +40,14 @@ namespace DoranOfficeBackend.Models
         public sbyte Laporan { get; set; }
         public sbyte KodeAgama { get; set; }
 
-        [Column("created_at")]
-        public DateTime? CreatedAt { get; set; }
+        //[Column("created_at")]
+        //public DateTime? CreatedAt { get; set; }
 
-        [Column("updated_at")]
-        public DateTime? UpdatedAt { get; set; }
+        //[Column("updated_at")]
+        //public DateTime? UpdatedAt { get; set; }
 
-        [Column("deleted_at")]
-        public DateTime? DeletedAt { get; set; }
+        //[Column("deleted_at")]
+        //public DateTime? DeletedAt { get; set; }
         public virtual Masterdivisi? Masterdivisi { get; set; }
 
         public virtual Masterjabatan? Masterjabatan { get; set; }

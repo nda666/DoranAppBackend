@@ -47,6 +47,12 @@ namespace DoranOfficeBackend.Controller
             {
                 query = query.Where(x => x.BrgAktif == dto.BrgAktif);
             }
+
+            if (dto.Shownya == true)
+            {
+                query = query.Where(x => x.Mastertipebarang.Shownya == 1);
+            }
+
             return query;
         }
 
@@ -61,12 +67,15 @@ namespace DoranOfficeBackend.Controller
 
             var query = baseSelect(dto)
                 .Include(x => x.Dkategoribarang)
+                .Include(x => x.Mastertipebarang)
+                .OrderBy(e => e.BrgNama)
                 .Select(e => new MasterbarangOptionWithSnDto
                 {
                     BrgKode = e.BrgKode,
                     BrgNama = e.BrgNama,
                     Sn = e.Dkategoribarang != null ? e.Dkategoribarang.Sn : false,
-                    JurnalBiaya = e.JurnalBiaya
+                    JurnalBiaya = e.JurnalBiaya,
+                    Shownya = e.Mastertipebarang.Shownya
                 });
             return await query.ToListAsync();
         }

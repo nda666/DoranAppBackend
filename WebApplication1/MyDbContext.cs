@@ -188,7 +188,7 @@ namespace DoranOfficeBackend
         public virtual DbSet<Mastertipeinventari> Mastertipeinventaris { get; set; } = null!;
         public virtual DbSet<Mastertipetuga> Mastertipetugas { get; set; } = null!;
         public virtual DbSet<Mastertuga> Mastertugas { get; set; } = null!;
-        public virtual DbSet<Masteruser> Masterusers { get; set; } = null!;
+        public virtual DbSet<Masteruser> Masteruser { get; set; } = null!;
         public virtual DbSet<Masteruserretur> Masteruserreturs { get; set; } = null!;
         public virtual DbSet<Memostok> Memostoks { get; set; } = null!;
         public virtual DbSet<Penandajurnal> Penandajurnals { get; set; } = null!;
@@ -491,10 +491,9 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Barangsn>(entity =>
             {
-                entity.HasNoKey();
 
                 entity.ToTable("barangsn");
-
+                entity.HasKey( e=> e.NmrSn);
                 entity.Property(e => e.Insertnamebeli)
                     .HasColumnType("int(11)")
                     .HasColumnName("insertnamebeli");
@@ -7958,7 +7957,7 @@ namespace DoranOfficeBackend
 
         public void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
-
+            
             modelBuilder.Entity<Masterpegawai>(e =>
             {
                 e.HasOne(e => e.Masterdivisi)
@@ -8015,6 +8014,18 @@ namespace DoranOfficeBackend
 
             modelBuilder.Entity<Htrans>(entity =>
             {
+                entity.HasOne(e => e.MasteruserInsert)
+                    .WithMany(e => e.HtransUserinsert)
+                    .HasForeignKey(e => e.InsertName)
+                    .HasPrincipalKey(e => e.Kodeku)
+                    .IsRequired(false);
+
+                entity.HasOne(e => e.MasteruserUpdate)
+                    .WithMany(e => e.HtransUserupdate)
+                    .HasForeignKey(e => e.UpdateName)
+                    .HasPrincipalKey(e => e.Kodeku)
+                    .IsRequired(false);
+
                 entity.HasOne(e => e.Masterpelanggan)
                     .WithMany(e => e.Htrans)
                     .HasForeignKey(e => e.KodePelanggan)
@@ -8082,6 +8093,13 @@ namespace DoranOfficeBackend
                     .HasForeignKey(e => e.Kodegudang)
                     .HasPrincipalKey(e => e.Kode)
                     .IsRequired(false);
+
+                entity.HasOne(e => e.MastergudangTujuan)
+                    .WithMany(c => c.HorderTujuan)
+                    .HasForeignKey(e => e.Kodepelanggan)
+                    .HasPrincipalKey(e => e.Kode)
+                    .IsRequired(false);
+                
 
                 entity.HasOne(e => e.Masterpelanggan)
                     .WithMany(c => c.Horder)

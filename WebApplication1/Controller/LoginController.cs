@@ -28,14 +28,14 @@ namespace DoranOfficeBackend.Controller
         public async Task<ActionResult<LoginResposeDto>> PostLogin(LoginDto login)
         {
          
-          if (_context.Masterusers == null)
+          if (_context.Masteruser == null)
           {
               return Problem("Entity set 'DoranOfficeContext.Users'  is null.");
           }
             
             //try
             //{
-                var user = _context.Masterusers.Where(user => user.Usernameku.ToLower() == login.username.ToLower()).First();
+                var user = _context.Masteruser.Where(user => user.Usernameku.ToLower() == login.username.ToLower()).First();
 
 
                 if (login.password != user.Passwordku)

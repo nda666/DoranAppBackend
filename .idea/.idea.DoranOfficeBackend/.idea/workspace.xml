@@ -9,22 +9,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c77e4c3c-8e05-4928-9ba4-87b9e6aeaeaf" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.DoranOfficeBackend/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DoranOfficeBackend/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Attributes/AuthAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Attributes/AuthAttribute.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/MasterbarangController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/MasterbarangController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/MasterdivisiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/MasterdivisiController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/MasterjabatanController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/MasterjabatanController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/MasterpelangganController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/MasterpelangganController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/OrderController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/OrderController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/TransaksiController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/TransaksiController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Controller/WebSocketController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Controller/WebSocketController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/DoranOfficeBackend.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/DoranOfficeBackend.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Masterbarang/FindMasterbarangDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Masterbarang/FindMasterbarangDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Masterbarang/MasterbarangOptionDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Masterbarang/MasterbarangOptionDto.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/FindOrderDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Order/FindOrderDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/SaveTransaksiDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Order/SaveTransaksiDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/TransaksiByBarangResultDto.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/TransaksiBySalesResultDto.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/TransaksiByTokoResultDto.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/HtransResultDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/HtransResultDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Mappings/TransaksiMapping.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Mappings/TransaksiMapping.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Dorder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Dorder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Order/HorderResultDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Order/HorderResultDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/SaveTransaksiDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Transaksi/SaveTransaksiDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Dtos/Transit/SaveHeaderTransitDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Dtos/Transit/SaveHeaderTransitDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Mappings/OrderMapping.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Mappings/OrderMapping.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Horder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Horder.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Masterbarang.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Masterbarang.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Sales.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Sales.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Mastergudang.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Mastergudang.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Masterjabatan.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Masterjabatan.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Masterpegawai.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Masterpegawai.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Models/Masterpelanggan.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Models/Masterpelanggan.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebApplication1/MyDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/MyDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApplication1/Startup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApplication1/Startup.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,6 +113,7 @@
       <workItem from="1694583916354" duration="183000" />
       <workItem from="1694861135588" duration="844000" />
       <workItem from="1695000225804" duration="8738000" />
+      <workItem from="1698977385448" duration="2000" />
     </task>
     <servers />
   </component>

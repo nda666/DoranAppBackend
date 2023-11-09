@@ -109,7 +109,8 @@ namespace DoranOfficeBackend.Models
         public sbyte Sudahupdatephone { get; set; }
 
         public ICollection<Dtrans> Dtrans { get; set; }
-
+        public Masteruser? MasteruserInsert { get; set; }
+        public Masteruser? MasteruserUpdate { get; set; }
         public virtual Masterpelanggan? Masterpelanggan { get; set; }
         public virtual Mastergudang? Mastergudang { get; set; }
 

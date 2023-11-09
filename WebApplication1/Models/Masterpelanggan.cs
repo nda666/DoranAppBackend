@@ -78,7 +78,7 @@ namespace DoranOfficeBackend.Models
         /// <summary>
         /// 0=tidak,1=ppn
         /// </summary>
-        public sbyte DefaultPpn { get; set; }
+        public bool DefaultPpn { get; set; }
         public sbyte DefaultJurnalPenjualan { get; set; }
         public sbyte Kodeleveltokopedia { get; set; }
         public string Linktoko { get; set; } = null!;

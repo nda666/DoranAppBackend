@@ -41,7 +41,6 @@ namespace DoranOfficeBackend.Controller
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HtransResultDto>>> GetTransaksi([FromQuery] FindTransaksiDto dto)
         {
-            ConsoleDump.Extensions.Dump(dto);
             var htransQ = _context.Htrans
                 .AsNoTracking()
                 .AsQueryable();
@@ -104,39 +103,144 @@ namespace DoranOfficeBackend.Controller
                 htransQ = htransQ.Where(x => x.Lunas == dto.Lunas);
             }
 
-            var htransPagingQ = htransQ;
-            var totalRow = await htransPagingQ.CountAsync();
+            //var htransPagingQ = htransQ;
+            //var totalRow = await htransPagingQ.CountAsync();
 
-            htransQ = htransQ.OrderByDescending(x => x.TglTrans).ThenByDescending(e => e.Notrans);
+            htransQ = htransQ.OrderByDescending(x => x.KodeH);
 
-            if (dto.Limit.HasValue)
+            //if (dto.Limit.HasValue)
+            //{
+            //    htransQ = htransQ.Take(dto.Limit.Value);
+            //}
+            if (!String.IsNullOrEmpty(dto.NamaPelanggan))
             {
-                htransQ = htransQ.Take(dto.Limit.Value);
+                htransQ = htransQ.Take(30);
             }
-            int skip = (dto.Page - 1) * dto.PageSize;
-            htransQ = htransQ.Skip(skip)
-                    .Take(dto.PageSize);
+            else
+            {
+                htransQ = htransQ.Take(300);
+            }
+            //int skip = (dto.Page - 1) * dto.PageSize;
+            //htransQ = htransQ.Skip(skip)
+            //        .Take(dto.PageSize);
             htransQ = htransQ.Include(e => e.Dtrans)
                 .ThenInclude(e => e.Masterbarang)
-                .AsSplitQuery()
                 .Include(e => e.Masterpelanggan)
                 .ThenInclude(e => e.LokasiKota)
-                .AsSplitQuery()
+                .ThenInclude(e => e.LokasiProvinsi)
                 .Include(e => e.Sales)
                 .Include(e => e.Mastergudang);
 
             var htrans = await htransQ.ToListAsync();
             ICollection<HtransResult> htransResults = _mapper.Map<ICollection<HtransResult>>(htrans);
-            var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
-            var result = new HtransResultDto
+            //var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
+            //var result = new HtransResultDto
+            //{
+            //    Data = htransResults,
+            //    Page = dto.Page,
+            //    PageSize = dto.PageSize,
+            //    TotalPage = totalPage,
+            //    TotalRow = totalRow
+            //};
+            return Ok(htransResults);
+        }
+
+        [HttpGet("{kodeh}")]
+        public async Task<ActionResult<HtransResult>> GetTransaksiByKodeh(int kodeh)
+        {
+            var htrans = await _context.Htrans
+               .AsNoTracking()
+               .Where(e => e.KodeH == kodeh)
+               .Include(e => e.Dtrans)
+             .ThenInclude(e => e.Masterbarang)
+             .Include(e => e.Masterpelanggan)
+             .ThenInclude(e => e.LokasiKota)
+             .Include(e => e.Sales)
+             .Include(e => e.Mastergudang)
+             .Include(e => e.MasteruserInsert)
+             .FirstOrDefaultAsync();
+            if (htrans == null) {
+                return BadRequest(new { message = "Transaksi tidak ditemukan" });
+            }
+            var result = _mapper.Map<HtransResult>(htrans);
+            return result;
+             
+        }
+
+            [HttpGet("{kodeh}/nota-ppn")]
+        public async Task<ActionResult<NotaTransaksiPpnResultDto>> GetNotaTransaksiPpn(int kodeh)
+        {
+            var htransCheck = await _context.Htrans.Where(e => e.KodeH == kodeh).Select(e => new
             {
-                Data = htransResults,
-                Page = dto.Page,
-                PageSize = dto.PageSize,
-                TotalPage = totalPage,
-                TotalRow = totalRow
-            };
-            return Ok(result);
+                e.Terbitfakturppn,
+                e.Retur,
+                e.TglTrans
+            }).FirstOrDefaultAsync();
+            double PEMBAGI_PPN = 0;
+            if (htransCheck == null)
+            {
+                return BadRequest(new { message = "Data tidak ditemukan" });
+            }
+            if (htransCheck.Terbitfakturppn == false || htransCheck.Retur != "0")
+            {
+                return BadRequest(new { message = "Data tidak ditemukan" });
+            }
+            if (htransCheck.TglTrans.Month <= 2022 && htransCheck.TglTrans.Month <= 3)
+            {
+                PEMBAGI_PPN = Constants.PEMBAGI_PPN10;
+            }
+            else
+            {
+                PEMBAGI_PPN = Constants.PEMBAGI_PPN11;
+            }
+            var htransQ = _context.Htrans
+                .AsNoTracking()
+                .Where(e => e.KodeH == kodeh)
+                .Include(e => e.Dtrans)
+              .ThenInclude(e => e.Masterbarang)
+              .Include(e => e.Masterpelanggan)
+              .ThenInclude(e => e.LokasiKota)
+              .Include(e => e.Sales)
+              .Include(e => e.Mastergudang)
+              .Include(e => e.MasteruserInsert)
+              .Select(h => new NotaTransaksiPpnResultDto
+              {
+                  Kodenota = h.Kodenota,
+                  Tambahanlainnya = h.TambahanLainnya,
+                  Diskon = h.Diskon,
+                  Kodeh = h.KodeH,
+                  Dpp = h.Dpp,
+                  Ppn = h.Ppn,
+                  Diskonppn = -1 * h.Ppn,
+                  Tanggal = h.TglTrans,
+                  TglPPN = h.TglPpn,
+                  Infopenting = h.Infopenting,
+                  Tgltempo = h.Tgltempo,
+                  Tipetempo = "-",
+                  Nama = h.Masterpelanggan.Nama,
+                  Jumlah = h.Jumlah,
+                  Oleh = h.MasteruserInsert.Usernameku,
+                  Namasales = h.Sales.Nama,
+                  Lokasi = $"{h.Masterpelanggan.LokasiKota.Nama} - {h.Masterpelanggan.LokasiKota.LokasiProvinsi.Nama}",
+                  Detail = h.Dtrans.Select(d => new DetailNotaTransaksiPpnResultDto
+                  {
+                      Namabarang = d.Masterbarang.BrgNama,
+                      Pcs = d.Jumlah,
+                      Kodebarang = d.Kodebarang,
+                      Harganya = d.Harga,
+                      Hargabelumppn = (decimal)(Math.Round(d.Harga / PEMBAGI_PPN)),
+                      Subtotalbelumppn = (decimal)(Math.Round(d.Harga / PEMBAGI_PPN) * d.Jumlah),
+                      TotalNya = d.Jumlah * d.Harga
+                  }).ToList(),
+                  TotalNya = h.Dtrans.Sum(d => d.Jumlah * d.Harga),
+              });
+
+            var htrans = await htransQ.FirstOrDefaultAsync();
+            if (htrans == null)
+            {
+                return BadRequest(new { message = "Transaksi tidak ditemukan" });
+            }
+            return Ok(htrans);
         }
 
 
@@ -151,9 +255,8 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpPost]
-        public async Task<ActionResult<Htrans>> SaveTransaksi([FromBody] SaveTransaksiDto dto)
+        public async Task<ActionResult> SaveTransaksi([FromBody] SaveTransaksiDto dto)
         {
-            ;
             var jumlahHutang = await _context.Htrans
                 .Where(e => e.Lunas == "0" && e.KodePelanggan == dto.KodePelanggan)
                 .SumAsync(e => e.Jumlah);
@@ -161,18 +264,35 @@ namespace DoranOfficeBackend.Controller
                 .Where(e => e.Kode == dto.KodePelanggan)
                 .Include(e => e.LokasiKota)
                 .FirstOrDefaultAsync();
+            var user = getUser();
             if (pelanggan == null)
             {
                 return BadRequest(new { message = $"Pelanggan tidak ditemukan" });
             }
             var currentTotal = dto.Details.Sum(e => e.Harga * e.Jumlah);
-            if (currentTotal + jumlahHutang > pelanggan.BatasOmzet && pelanggan.BatasOmzet > 0)
+            if (
+                currentTotal + jumlahHutang > pelanggan.BatasOmzet
+                && pelanggan.BatasOmzet > 0
+                && user?.Akses?.ToLower() != "bos"
+                && dto.Force == false
+                )
             {
-                return BadRequest(new { message = $"Pelanggan \"{pelanggan.Nama}-{pelanggan.LokasiKota.Nama}\" sudah melebihi limit {pelanggan.BatasOmzet.ToString("N0")}." });
+                return BadRequest(new
+                {
+                    message = "Pelanggan dalam limit",
+                    errorType = "LIMIT_TRANSAKSI",
+                    data = new
+                    {
+                        limitMessage = $"Pelanggan \"{pelanggan.Nama}-{pelanggan.LokasiKota.Nama}\" Limit diberikan = " +
+                    $"{pelanggan.BatasOmzet.ToString("N0")}. Total Utang akan menjadi = " +
+                    $"{(currentTotal + jumlahHutang).ToString("N0")}, TOKO AKAN OVERLIMIT. TETAP PAKSAKAN ?",
+                        isTokenError = false
+                    }
+                });
             }
 
             Horder? horder = null;
-            if (dto.NoOrder.HasValue)
+            if (dto.NoOrder.HasValue && dto.NoOrder != 0)
             {
                 horder = await _context.Horder
                         .AsNoTracking()
@@ -205,7 +325,7 @@ namespace DoranOfficeBackend.Controller
                         var kodeh = await GetLastKodeh();
                         var noTrans = await GetLastNoTrans();
                         var kodeNota = GetKodeNota(noTrans);
-                        var user = getUser();
+
                         entity.HistoryNya = Constants.DEFAULT_HISTORY_TRANSAKSI;
                         entity.Kodenota = kodeNota;
                         entity.Notrans = noTrans;
@@ -226,7 +346,7 @@ namespace DoranOfficeBackend.Controller
                             entity.Ppnreal = 0;
                         }
 
-                        if (entity.Terbitfakturppn)
+                        if (dto.Terbitfakturppn)
                         {
                             entity.Ppn = 0;
                         }
@@ -270,7 +390,8 @@ namespace DoranOfficeBackend.Controller
 
                         var logFile = new Logfile
                         {
-                            Keterangan = $"Tambah Trans Penjualan No : {entity.KodeH}",
+                            Keterangan = $"Tambah Trans Penjualan No : {entity.KodeH}" +
+                            $"",
                             Username = getUser()?.Kodeku ?? 0,
                             Tanggal = DateTime.Now
                         };
@@ -319,7 +440,7 @@ namespace DoranOfficeBackend.Controller
                     }
                 }
             }
-            return Ok(entity);
+            return Ok();
         }
 
         [HttpPut("{kode}")]
@@ -344,6 +465,15 @@ namespace DoranOfficeBackend.Controller
                 });
             }
 
+            var pelanggan = await _context.Masterpelanggan
+              .Where(e => e.Kode == dto.KodePelanggan)
+              .Include(e => e.LokasiKota)
+              .FirstOrDefaultAsync();
+            if (pelanggan == null)
+            {
+                return BadRequest(new { message = $"Pelanggan tidak ditemukan" });
+            }
+
             var anyErrorMessage = await CekDataUpdate(htrans, user);
             if (!String.IsNullOrEmpty(anyErrorMessage))
             {
@@ -366,14 +496,6 @@ namespace DoranOfficeBackend.Controller
                 .Where(e => e.Kodeh == htrans.NoOrder)
                 .FirstOrDefaultAsync();
 
-            var pelanggan = await _context.Masterpelanggan
-               .Where(e => e.Kode == dto.KodePelanggan)
-               .Include(e => e.LokasiKota)
-               .FirstOrDefaultAsync();
-            if (pelanggan == null)
-            {
-                return BadRequest(new { message = $"Pelanggan tidak ditemukan" });
-            }
             _mapper.Map(dto, htrans);
             var dtrans = _mapper.Map<List<Dtrans>>(dto.Details);
             htrans.Ppnreal = dto.Ppn;
@@ -489,7 +611,7 @@ namespace DoranOfficeBackend.Controller
                 return BadRequest(new { message = anyErrorMessage });
             }
 
-           
+
             return Ok(htrans);
         }
 
@@ -732,7 +854,7 @@ namespace DoranOfficeBackend.Controller
                     {
                         var beresOrderNotGantiHarga = 1;
                         var sisaOrderNotGantiHarga = foundDorder.Jumlah - dtrans[i].Jumlah;
-                        if (sisaOrder == 0)
+                        if (sisaOrderNotGantiHarga == 0)
                         {
                             beresOrder = 2;
                         }
@@ -740,7 +862,7 @@ namespace DoranOfficeBackend.Controller
                              $"kodehTrans = {htrans.KodeH}, " +
                              $"kodedTrans = {dtrans[i].Koded}, " +
                              $"jumlahdikirim = {dtrans[i].Jumlah}, " +
-                             $"sisa = {sisaOrder}, " +
+                             $"sisa = {sisaOrderNotGantiHarga}, " +
                              $"lunas = {beresOrder} " +
                              $"WHERE kodeh = {horder.Kodeh} " +
                              $"AND koded = {foundDorder.Koded};";
@@ -823,7 +945,7 @@ namespace DoranOfficeBackend.Controller
             {
                 insertDUpdate = " INSERT into dupdate (kodeHUpdate, koded, kodebarang, jumlah) " +
                         " Values " + insertDUpdate + ";";
-             
+
             }
 
             if (!hanyaGantiHarga)

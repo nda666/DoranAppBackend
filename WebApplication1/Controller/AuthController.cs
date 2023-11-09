@@ -32,7 +32,7 @@ namespace DoranOfficeBackend.Controller
             {
                 return BadRequest("User not found");
             }
-            var user = _context.Masterusers.Where(e => e.Kodeku == userKode).FirstOrDefault();
+            var user = _context.Masteruser.Where(e => e.Kodeku == userKode).FirstOrDefault();
             if (user == null)
             {
                 return BadRequest("Your token is valid but User not found");
@@ -45,14 +45,14 @@ namespace DoranOfficeBackend.Controller
         public async Task<ActionResult<LoginResposeDto>> PostLogin(LoginDto login)
         {
 
-            if (_context.Masterusers == null)
+            if (_context.Masteruser == null)
             {
                 return Problem("Entity set 'DoranOfficeContext.Users'  is null.");
             }
 
             //try
             //{
-            var user = await _context.Masterusers
+            var user = await _context.Masteruser
                 .Where(user => user.Usernameku.ToLower() == login.username.ToLower())
                 .Where(user => user.Passwordku == login.password)
                 .FirstOrDefaultAsync();

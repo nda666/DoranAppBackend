@@ -1,7 +1,10 @@
-﻿namespace DoranOfficeBackend.Dtos.Masterpelanggan
+﻿using DoranOfficeBackend.Dtos.LokasiKota;
+
+namespace DoranOfficeBackend.Dtos.Masterpelanggan
 {
     public class MasterpelangganWithLokasiKotaOptionDto:CommonResultDto
     {
-        public CommonResultDto LokasiKota { get; set; }
+        public LokasiKotaWithLokasiProvinsiDto LokasiKota { get; set; }
+
     }
 }

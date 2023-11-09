@@ -39,7 +39,7 @@ namespace DoranOfficeBackend.Middleware
                    
                     var userId = jwtToken.Claims.First(x => x.Type == "Id").Value;
 
-                    var user = dbContext.Masterusers.FirstOrDefault(x => x.Kodeku.ToString() == userId);
+                    var user = dbContext.Masteruser.FirstOrDefault(x => x.Kodeku.ToString() == userId);
                     httpContext.Items["User"] = user;
                 }
                 catch (Exception ex) { }

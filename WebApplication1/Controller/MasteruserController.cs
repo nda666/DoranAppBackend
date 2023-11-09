@@ -25,11 +25,11 @@ namespace DoranOfficeBackend.Controller
         public async Task<ActionResult<IEnumerable<Masteruser>>> GetUsers([FromQuery]FindMasteruserDto dto)
         {
             ConsoleDump.Extensions.Dump(dto);
-            if (_context.Masterusers == null)
+            if (_context.Masteruser == null)
             {
                 return NotFound();
             }
-            var query = _context.Masterusers.AsNoTracking().AsQueryable();
+            var query = _context.Masteruser.AsNoTracking().AsQueryable();
             if (!String.IsNullOrEmpty(dto.Username))
             {
                 query = query.Where(r => EF.Functions.Like(r.Usernameku, $"%{Request.Query["username"]}%"));
@@ -57,11 +57,11 @@ namespace DoranOfficeBackend.Controller
         [HttpGet("{kode}")]
         public async Task<ActionResult<Masteruser>> GetUser(int kode)
         {
-            if (_context.Masterusers == null)
+            if (_context.Masteruser == null)
             {
                 return NotFound();
             }
-            var user = await _context.Masterusers.Where(e => e.Kodeku == kode).FirstOrDefaultAsync();
+            var user = await _context.Masteruser.Where(e => e.Kodeku == kode).FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -77,7 +77,7 @@ namespace DoranOfficeBackend.Controller
         public async Task<ActionResult<Masteruser>> PostUser([FromBody] SaveMasteruserDto
  saveMasteruser)
         {
-            if (_context.Masterusers == null)
+            if (_context.Masteruser == null)
             {
                 return Problem("Entity set 'MyDbContext.Users'  is null.");
             }
@@ -88,7 +88,7 @@ namespace DoranOfficeBackend.Controller
             user.Aktif = saveMasteruser.Aktif;
             user.Akses = saveMasteruser.Akses;
             //user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            _context.Masterusers.Add(user);
+            _context.Masteruser.Add(user);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetUser", new { id = user.Kodeku }, user);
@@ -100,7 +100,7 @@ namespace DoranOfficeBackend.Controller
         [HttpPut("{kodeKu}")]
         public async Task<IActionResult> PutUser(int kodeKu, UpdateMasteruserDto dto)
         {
-            var user = _context.Masterusers?.Where(e => e.Kodeku == kodeKu).FirstOrDefault();
+            var user = _context.Masteruser?.Where(e => e.Kodeku == kodeKu).FirstOrDefault();
 
             if (user == null)
             {
@@ -126,17 +126,17 @@ namespace DoranOfficeBackend.Controller
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            if (_context.Masterusers == null)
+            if (_context.Masteruser == null)
             {
                 return NotFound();
             }
-            var user = await _context.Masterusers.FindAsync(id);
+            var user = await _context.Masteruser.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Masterusers.Remove(user);
+            _context.Masteruser.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -144,7 +144,7 @@ namespace DoranOfficeBackend.Controller
 
         private bool UserExists(sbyte id)
         {
-            return (_context.Masterusers?.Any(e => e.Kodeku == id)).GetValueOrDefault();
+            return (_context.Masteruser?.Any(e => e.Kodeku == id)).GetValueOrDefault();
         }
     }
 }

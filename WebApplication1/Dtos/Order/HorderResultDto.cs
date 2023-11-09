@@ -18,7 +18,7 @@ namespace DoranOfficeBackend.Dtos.Order
         /// <summary>
         /// 5=BelumdicekOL
         /// </summary>
-        public bool? Historynya { get; set; }
+        public sbyte? Historynya { get; set; }
         public int Kodepelanggan { get; set; }
         public int Kodegudang { get; set; }
         public int Kodesales { get; set; }
@@ -64,7 +64,13 @@ namespace DoranOfficeBackend.Dtos.Order
         public long Harga { get; set; }
         public string Keterangan { get; set; } = null!;
         public sbyte Lunas { get; set; }
-        public virtual MasterbarangOptionDto? Masterbarang { get; set; }
+        public int Jumlahdikirim { get; set; }
+        public int Sisa { get; set; }
+        public int KodehTrans { get; set; }
+        public sbyte KodedTrans { get; set; }
+
+        public string Keterangancancel { get; set; } = null!;
+        public virtual MasterbarangOptionWithTipeDto? Masterbarang { get; set; }
     }
 
     public class HorderResultDto : PaginationResultDto

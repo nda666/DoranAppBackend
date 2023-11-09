@@ -26,7 +26,7 @@ namespace DoranOfficeBackend.Models
         public int Kodeexp { get; set; }
         public sbyte Kirimmelalui { get; set; }
         public int Jumlah { get; set; }
-        public sbyte StokSales { get; set; }
+        public bool StokSales { get; set; }
         public int Ppn { get; set; }
         public sbyte? Tipetempo { get; set; }
         public DateTime Tgltempo { get; set; }
@@ -42,6 +42,11 @@ namespace DoranOfficeBackend.Models
         /// </summary>
         public sbyte Sudahupdatephone { get; set; }
         public Mastergudang? Mastergudang { get; set; }
+
+        /// <summary>
+        /// MastergudangTujuan digunakan apabila stoksales = 0
+        /// jadi horder.kodepelanggan = masterpelanggan.kode
+        /// </summary>
         public Masterpelanggan? Masterpelanggan { get; set; }
         public ICollection<Dorder> Dorder { get; set; }
         public Masteruser? MasteruserInsert { get; set; }
@@ -49,5 +54,11 @@ namespace DoranOfficeBackend.Models
         public Sales? Sales { get; set; }
         public Penyiaporder? Penyiaporder { get; set; }
         public Masterpengeluaran? Ekspedisi { get; set; }
+
+        /// <summary>
+        /// MastergudangTujuan digunakan apabila stoksales = 1
+        /// jadi horder.kodepelanggan = mastergudang.kode
+        /// </summary>
+        public Mastergudang? MastergudangTujuan { get; set; }
     }
 }

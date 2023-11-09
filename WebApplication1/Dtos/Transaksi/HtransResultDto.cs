@@ -1,5 +1,6 @@
 ﻿using DoranOfficeBackend.Dtos.Masterbarang;
 using DoranOfficeBackend.Dtos.Masterpelanggan;
+using DoranOfficeBackend.Dtos.Masteruser;
 using DoranOfficeBackend.Models;
 using _Masterbarang = DoranOfficeBackend.Models.Masterbarang;
 namespace DoranOfficeBackend.Dtos.Transaksi
@@ -110,6 +111,8 @@ namespace DoranOfficeBackend.Dtos.Transaksi
         public sbyte Sudahupdatephone { get; set; }
 
         public ICollection<DtransResult> Dtrans { get; set; }
+
+        public virtual MasteruserOptionDto MasteruserInsert { get; set; }
 
         public virtual MasterpelangganWithLokasiKotaOptionDto? Masterpelanggan { get; set; }
         public virtual CommonResultDto? Mastergudang { get; set; }

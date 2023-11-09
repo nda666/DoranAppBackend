@@ -65,7 +65,7 @@ namespace DoranOfficeBackend.Controller
         }
 
         [HttpGet("nama")]
-        public async Task<ActionResult> GetMasterpelangganNama([FromQuery] FindMasterpelangganDto dto)
+        public async Task<ActionResult<ICollection<MasterpelangganNamaResultDto>>> GetMasterpelangganNama([FromQuery] FindMasterpelangganDto dto)
         {
             if (_context.Masterpelanggan == null)
             {
@@ -75,9 +75,12 @@ namespace DoranOfficeBackend.Controller
             var baseQuery =  baseSelect(dto);
             var data = await baseQuery
                 .OrderBy(x => x.Nama)
-                .Select(x => new { 
+                .Select(x => new MasterpelangganNamaResultDto
+                { 
+                    Kode = x.Kode,
                 Nama = $"{x.Nama} - {(x.LokasiKota != null ? x.LokasiKota.Nama :  "Unknown Kota")} ",
-                x.Kode })
+                DefaultPpn = x.DefaultPpn 
+                })
                 .ToListAsync();
             return Ok(data);
         }

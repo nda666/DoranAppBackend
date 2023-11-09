@@ -17,6 +17,7 @@ using System.Globalization;
 using FluentValidation;
 using DoranOfficeBackend.Dtos.Transit;
 using DoranOfficeBackend.Dtos.Order;
+using DoranOfficeBackend.Dtos.PermintaanSales;
 
 namespace DoranOfficeBackend
 {
@@ -139,6 +140,7 @@ namespace DoranOfficeBackend
 
             services.AddScoped<IValidator<SaveHeaderTransitDto>, SaveHeaderTransitValidation>();
             services.AddScoped<IValidator<SaveOrderDto>, SaveOrderDtoValidator>();
+            services.AddScoped<IValidator<SavePermintaanSalesDto>, SavePermintaanSalesValidation>();
             //services.AddFluentValidationAutoValidation();
             //services.AddScoped<IValidator<SalesChannel>, SalesChannelValidator>();
             //services.AddScoped<IValidator<User>, UserValidator>();
@@ -174,7 +176,7 @@ namespace DoranOfficeBackend
             };
 
 
-            //app.UseWebSockets(webSocketOptions);
+            app.UseWebSockets(webSocketOptions);
             app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 

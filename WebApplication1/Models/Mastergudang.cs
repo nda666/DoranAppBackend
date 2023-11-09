@@ -33,5 +33,11 @@ namespace DoranOfficeBackend.Models
         public virtual ICollection<Htransit> Htransit { get; set; }
         public virtual ICollection<Htransit> HtransitTujuan { get; set; }
         public virtual ICollection<Horder> Horder { get; set; }
+
+        /// <summary>
+        /// Relasi ke MastergudangTujuan digunakan apabila horder.stoksales = 1
+        /// jadi horder.kodepelanggan = mastergudang.kode
+        /// </summary>
+        public virtual ICollection<Horder> HorderTujuan { get; set; }
     }
 }
