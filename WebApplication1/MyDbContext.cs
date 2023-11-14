@@ -1546,7 +1546,6 @@ namespace DoranOfficeBackend
             modelBuilder.Entity<Dorder>(entity =>
             {
                 entity.HasKey(e => e.Id);
-
                 entity.ToTable("dorder");
                 entity.Property(e => e.Id)
                     .HasColumnName("id")

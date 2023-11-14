@@ -94,6 +94,20 @@ namespace DoranOfficeBackend.Controller
             return Ok(data);
         }
 
+        [HttpPost("{kode}/nonaktif", Name = "NonaktifMasterbarang")]
+        public async Task<ActionResult> NonaktifMasterbarang(int kode)
+        {
+            if (_context.Masterbarang == null)
+            {
+                return NotFound();
+            }
+
+            await _context.Database
+                .ExecuteSqlRawAsync($"UPDATE masterbarang SET brgAktif = 0 WHERE brgKode = {kode}");
+
+            return Ok();
+        }
+
         //// GET: api/Masterbarang/5
         //[HttpGet("{kode}")]
         //public async Task<ActionResult<Masterbarang>> GetMasterbarang(int kode)

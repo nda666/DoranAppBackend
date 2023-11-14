@@ -23,8 +23,8 @@ namespace DoranOfficeBackend.Dtos.Order
         public int Kodegudang { get; set; }
         public int Kodesales { get; set; }
         public int Kodepenyiap { get; set; }
-        public bool Dicetak { get; set; }
-        public bool Lunas { get; set; }
+        public sbyte Dicetak { get; set; }
+        public sbyte Lunas { get; set; }
         public DateTime Tglcetak { get; set; }
         public int Kodeexp { get; set; }
         public sbyte Kirimmelalui { get; set; }

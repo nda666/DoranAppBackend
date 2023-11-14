@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoranOfficeBackend.Models
 {
@@ -16,6 +17,7 @@ namespace DoranOfficeBackend.Models
         /// <summary>
         /// 0:belum. 1: kurang, 2: lunas. 3:cancel, 4:menyusul, 5:berespaksa
         /// </summary>
+        [NotMapped]
         public sbyte Lunas { get; set; }
         public string Keterangancancel { get; set; } = null!;
         public int KodehTrans { get; set; }
@@ -23,11 +25,11 @@ namespace DoranOfficeBackend.Models
         /// <summary>
         /// 0=belum, 1=disiapkan, 2=beres
         /// </summary>
-        public bool Disiapkan { get; set; }
+        [NotMapped]
+        public sbyte Disiapkan { get; set; }
         public int Harga { get; set; }
         public int Komisi { get; set; }
         public virtual Horder? Horder { get; set; }
-        
         public virtual Masterbarang? Masterbarang { get; set; }
     }
 }

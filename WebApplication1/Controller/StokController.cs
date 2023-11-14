@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using DoranOfficeBackend.Dtos.Transaksi;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Vml;
+using MySqlX.XDevAPI.Common;
+using ConsoleDump;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -34,32 +36,91 @@ namespace DoranOfficeBackend.Controller
             _context = context;
         }
 
+        private async Task<List<GetStokMassResponseDto>> RunGetStokQueryMass(GetStokMassRequestDto dto) 
+        {
+            var result = (
+     await (from bm in _context.Barangmasuk
+            where bm.KodeBarang == dto.KodeBarang
+            select new { Jumlah = (int?)bm.Jumlah ?? 0, KodeGudang = bm.Kodegudang }).ToListAsync()
+ )
+ .Concat(
+ await (
+     from ht in _context.Htrans
+     join dt in _context.Dtrans on ht.KodeH equals dt.Kodeh
+     where dt.Kodebarang == dto.KodeBarang
+     select new { Jumlah = dt.KuranginStok ? dt.Jumlah * -1 : 0, KodeGudang = ht.Kodegudang }
+     ).ToListAsync()
+ ).Concat(
+     await (from ht in _context.Htransit
+            join dt in _context.Dtransit on ht.KodeT equals dt.Kodet
+            where dt.Kodebarang == dto.KodeBarang
+            select new { Jumlah = (int)dt.Jumlah, KodeGudang = (int)ht.KodeGudangTujuan }).ToListAsync()
+ )
+ .Concat(
+    await (from ht in _context.Htransit
+           join dt in _context.Dtransit on ht.KodeT equals dt.Kodet
+           where dt.Kodebarang == dto.KodeBarang
+           select new { Jumlah = (int)dt.Jumlah * -1, KodeGudang = (int)ht.Kodegudang }).ToListAsync()
+ )
+
+ .GroupBy(e => e.KodeGudang)
+ .Where(e => dto.Kodegudang.Contains(e.Key))
+ .Select(g => new GetStokMassResponseDto { KodeGudang = g.Key, TotalJumlah = g.Sum(e => e.Jumlah) })
+ .Join(_context.Mastergudang, e => e.KodeGudang, e => e.Kode, (e, x) => new GetStokMassResponseDto
+  {
+      KodeGudang = e.KodeGudang,
+      TotalJumlah = e.TotalJumlah,
+      NamaGudang = x.Nama
+ })
+ .ToList();
+            return result;
+        }
+
         private async Task<int> RunGetStokQuery(GetStokRequestDto dto)
         {
-            var result = await (
-                    from a in _context.Barangmasuk
-                    where a.Kodegudang == dto.Kodegudang && a.KodeBarang == dto.KodeBarang
-                    select (int?)a.Jumlah ?? 0
-                ).SumAsync() -
-                await (
-                    from h in _context.Htrans
-                    join d in _context.Dtrans on h.KodeH equals d.Kodeh
-                    join p in _context.Masterpelanggan on h.KodePelanggan equals p.Kode
-                    where h.Kodegudang == dto.Kodegudang && d.Kodebarang == dto.KodeBarang
-                    select d.KuranginStok ? d.Jumlah : 0
-                ).SumAsync() +
-                await (
-                    from ht in _context.Htransit
-                    join dt in _context.Dtransit on ht.KodeT equals dt.Kodet
-                    where ht.KodeGudangTujuan == dto.Kodegudang && dt.Kodebarang == dto.KodeBarang
-                    select (int?)dt.Jumlah ?? 0
-                ).SumAsync() -
-                await (
-                    from ht in _context.Htransit
-                    join dt in _context.Dtransit on ht.KodeT equals dt.Kodet
-                    where ht.Kodegudang == dto.Kodegudang && dt.Kodebarang == dto.KodeBarang
-                    select (int?)dt.Jumlah ?? 0
-                ).SumAsync();
+            int result = 0;
+            if (dto.Kodegudang != 0)
+            {
+                result = await (
+                       from a in _context.Barangmasuk
+                       where a.Kodegudang == dto.Kodegudang && a.KodeBarang == dto.KodeBarang
+                       select (int?)a.Jumlah ?? 0
+                   ).SumAsync() -
+                   await (
+                       from h in _context.Htrans
+                       join d in _context.Dtrans on h.KodeH equals d.Kodeh
+                       join p in _context.Masterpelanggan on h.KodePelanggan equals p.Kode
+                       where h.Kodegudang == dto.Kodegudang && d.Kodebarang == dto.KodeBarang
+                       select d.KuranginStok ? d.Jumlah : 0
+                   ).SumAsync() +
+                   await (
+                       from ht in _context.Htransit
+                       join dt in _context.Dtransit on ht.KodeT equals dt.Kodet
+                       where ht.KodeGudangTujuan == dto.Kodegudang && dt.Kodebarang == dto.KodeBarang
+                       select (int?)dt.Jumlah ?? 0
+                   ).SumAsync() -
+                   await (
+                       from ht in _context.Htransit
+                       join dt in _context.Dtransit on ht.KodeT equals dt.Kodet
+                       where ht.Kodegudang == dto.Kodegudang && dt.Kodebarang == dto.KodeBarang
+                       select (int?)dt.Jumlah ?? 0
+                   ).SumAsync();
+            }
+            else
+            {
+                result = await (
+                   from a in _context.Barangmasuk
+                   where a.Kodegudang == dto.Kodegudang && a.KodeBarang == dto.KodeBarang
+                   select (int?)a.Jumlah ?? 0
+               ).SumAsync() -
+               await (
+                   from h in _context.Htrans
+                   join d in _context.Dtrans on h.KodeH equals d.Kodeh
+                   join p in _context.Masterpelanggan on h.KodePelanggan equals p.Kode
+                   where h.Kodegudang == dto.Kodegudang && d.Kodebarang == dto.KodeBarang
+                   select d.KuranginStok ? d.Jumlah : 0
+               ).SumAsync();
+            }
             return result;
         }
 
@@ -70,8 +131,9 @@ namespace DoranOfficeBackend.Controller
             int? stokSby = null;
             if (dto.Kodegudang == 1)
             {
-                stokSby = await RunGetStokQuery(new GetStokRequestDto { 
-                    Kodegudang = 134, 
+                stokSby = await RunGetStokQuery(new GetStokRequestDto
+                {
+                    Kodegudang = 134,
                     KodeBarang = dto.KodeBarang
                 });
             }
@@ -83,12 +145,21 @@ namespace DoranOfficeBackend.Controller
 
         }
 
-            [HttpGet("mutasi")]
+        [HttpPost("mass")]
+        public async Task<ActionResult<List<GetStokMassResponseDto>>> GetStokByBarangAndGudangMass([FromBody] GetStokMassRequestDto dto)
+        {
+            var res = await RunGetStokQueryMass(dto);
+            res?.Dump();
+            return res;
+
+        }
+
+        [HttpGet("mutasi")]
         public async Task<ActionResult<IEnumerable<GetMutasiResultDto>>> GetMutasi([FromQuery] FintMutasiDto dto)
         {
             var result = (
     from t1 in (
-            // Subquery 1
+        // Subquery 1
         from bm in _context.Barangmasuk
         join s in _context.Mastersupplier on bm.KodeSupplier equals s.SupplierKode
         where bm.KodeBarang == dto.KodeBarang && bm.Kodegudang == dto.Kodegudang
@@ -102,7 +173,7 @@ namespace DoranOfficeBackend.Controller
             Saldo = Convert.ToInt32(0),
             Indexnya = Convert.ToInt32(1),
             KODEnya = Convert.ToInt32(bm.Kode),
-            KodeSupplier = Convert.ToInt32( bm.KodeSupplier),
+            KodeSupplier = Convert.ToInt32(bm.KodeSupplier),
             KodeBarang = Convert.ToInt32(bm.KodeBarang),
             History = Convert.ToString(bm.HistoryNya),
             Lunas = Convert.ToString("2")
@@ -140,7 +211,7 @@ namespace DoranOfficeBackend.Controller
             select new
             {
                 Tanggal = grouped.Key.TglTrans ?? DateTime.Now,
-                Keterangan =Convert.ToString( "OUT - " + grouped.Key.Keterangan),
+                Keterangan = Convert.ToString("OUT - " + grouped.Key.Keterangan),
                 Oleh = Convert.ToString("GUDANG " + grouped.Key.Nama),
                 Harga = Convert.ToInt32(0), // Adjust this part according to your actual logic
                 Jumlah = Convert.ToInt32(-1 * grouped.Sum(x => x.dt.Jumlah)),
@@ -181,7 +252,7 @@ namespace DoranOfficeBackend.Controller
         Indexnya = Convert.ToInt32(t1.KODEnya),
         Tanggal = t1.Tanggal,
         Keterangan = t1.Keterangan,
-        Oleh= t1.Oleh,
+        Oleh = t1.Oleh,
         Harga = t1.Harga,
         Jumlah = t1.Jumlah,
         Saldo = Convert.ToInt32(t1.Saldo),
@@ -196,7 +267,7 @@ namespace DoranOfficeBackend.Controller
         }
 
 
-       
+
     }
 
 

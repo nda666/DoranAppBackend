@@ -41,6 +41,7 @@ namespace DoranOfficeBackend.Controller
 
         private IQueryable<Horder> BaseHorderQuery(GetOrderRequest dto)
         {
+            dto.Dump();
             var HorderQ = _context.Horder
                .AsNoTracking()
                .AsQueryable();
@@ -78,9 +79,14 @@ namespace DoranOfficeBackend.Controller
                 HorderQ = HorderQ.Where(x => x.Kodeh == dto.Kodeh);
             }
 
-            if (dto.Dicetak.HasValue)
+            if (dto.Dicetak == true)
             {
-                HorderQ = HorderQ.Where(x => x.Dicetak == dto.Dicetak);
+                HorderQ = HorderQ.Where(x => x.Dicetak > 0);
+            }
+
+            if (dto.Dicetak == false)
+            {
+                HorderQ = HorderQ.Where(x => x.Dicetak <= 0 && x.Historynya >= 2);
             }
 
             if (dto.LevelOrder.HasValue)
@@ -89,12 +95,12 @@ namespace DoranOfficeBackend.Controller
                 if (dto.LevelOrder == LevelOrderEnum.ADMIN)
                 {
 
-                    HorderQ = HorderQ.Where(x => x.Historynya >= 2 && x.Historynya <= 2);
+                    HorderQ = HorderQ.Where(x => x.Historynya >= 3);
                 }
 
                 if (dto.LevelOrder == LevelOrderEnum.GUDANG)
                 {
-                    HorderQ = HorderQ.Where(x => x.Historynya >= 2 && x.Historynya >= 3);
+                    HorderQ = HorderQ.Where(x =>  x.Historynya <= 2);
                 }
             }
 
@@ -105,9 +111,11 @@ namespace DoranOfficeBackend.Controller
 
             if (dto.SalesOl.HasValue)
             {
-                if (dto.SalesOl == true) { 
-                 HorderQ = HorderQ.Where(x => x.Sales.Salesol > 0);
-                } else
+                if (dto.SalesOl == true)
+                {
+                    HorderQ = HorderQ.Where(x => x.Sales.Salesol > 0);
+                }
+                else
                 {
                     HorderQ = HorderQ.Where(x => x.Sales.Salesol == 0);
                 }
@@ -169,11 +177,9 @@ namespace DoranOfficeBackend.Controller
                 .Include(e => e.Masterpelanggan)
                 .ThenInclude(e => e.LokasiKota);
 
-           HorderQ = HorderQ.Include(e => e.Dorder
-                    .Where(x => x.Lunas == (dto.Lunas.HasValue ? dto.Lunas : 0))
-                )
-                .ThenInclude(e => e.Masterbarang)
-                .ThenInclude(e => e.Mastertipebarang);
+            HorderQ = HorderQ.Include(e => e.Dorder )
+                 .ThenInclude(e => e.Masterbarang)
+                 .ThenInclude(e => e.Mastertipebarang);
             return HorderQ;
         }
 
@@ -193,7 +199,7 @@ namespace DoranOfficeBackend.Controller
 
             var Horder = await HorderQ.ToListAsync();
             ICollection<HorderResult> HorderResults = _mapper.Map<ICollection<HorderResult>>(Horder);
-           
+
             var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
             var result = new HorderResultDto
             {
@@ -367,7 +373,7 @@ namespace DoranOfficeBackend.Controller
         public async Task<ActionResult> CancelOrderHeader(int kode)
         {
             var horder = await _context.Horder.Where(e => e.Kodeh == kode)
-                    .Where(e => e.Lunas == false)
+                    .Where(e => e.Lunas == 0)
                     .FirstOrDefaultAsync();
             if (horder == null)
             {
@@ -386,10 +392,11 @@ namespace DoranOfficeBackend.Controller
                 .Where(e => e.Kodeh == kode)
                 .Where(e => e.Koded == dto.koded)
                 .FirstOrDefaultAsync();
-            if (dorder == null) {
+            if (dorder == null)
+            {
                 return BadRequest(new { message = "Detail order tidak ditemukan" });
             }
-            dorder.Lunas = dto.kodecancel;
+            dorder.Lunas = (sbyte) dto.kodecancel;
             dorder.Keterangancancel = dto.keterangancancel;
             await _context.SaveChangesAsync();
             return Ok();
@@ -485,17 +492,17 @@ namespace DoranOfficeBackend.Controller
                 .FirstOrDefaultAsync();
             if (horder == null)
             {
-                return BadRequest(new { message = "Orderan tidak ditemukan"});
+                return BadRequest(new { message = "Orderan tidak ditemukan" });
             }
             horder.Kodepenyiap = (sbyte)profilPerush.KodePenyiap;
 
             if (
-                horder.Masterpelanggan?.LokasiKota?.AdaKertasOrder == 1 && 
+                horder.Masterpelanggan?.LokasiKota?.AdaKertasOrder == 1 &&
                 horder.Ekspedisi?.OllangusungCetak == 1
                )
             {
                 horder.Historynya = 2;
-                horder.Dicetak = true;
+                horder.Dicetak = 1;
                 horder.Tglcetak = DateTime.Now;
             }
 
@@ -503,6 +510,192 @@ namespace DoranOfficeBackend.Controller
             await _context.SaveChangesAsync();
             HorderResult horderResult = _mapper.Map<HorderResult>(horder);
             return Ok();
+        }
+
+        [HttpGet("{kodeh}/{koded}/info")]
+        public async Task<ActionResult<string>> InfoOrderan(int kodeh, int koded)
+        {
+
+            var dorder = await _context.Dorder
+                .Where(e => e.Kodeh == kodeh)
+                .Where(e => e.Koded == koded)
+                .FirstAsync();
+            var horder = await _context.Horder
+                .Where(e => e.Kodeh == kodeh)
+                .FirstOrDefaultAsync();
+            dorder.Dump();
+            var message = "";
+            if (horder == null || dorder == null)
+            {
+                return BadRequest(new { message = "Orderan tidak ditemukan"});
+            }
+          
+            if (dorder.Lunas == 0)
+            {
+                message = "Orderan ini belum disiapkan";
+            }
+
+            if (dorder.Lunas == 3)
+            {
+                message = $"Orderan ini DICANCEL, alasan : {dorder.Keterangancancel}";
+            }
+
+            var detailTrans = await _context.Dtrans
+                    .AsNoTracking()
+                    .Include(e => e.Htrans)
+                    .Include(e => e.Masterbarang)
+                    .Where(e => e.Kodeh == dorder.KodehTrans)
+                    .Where(e => e.Koded == dorder.KodedTrans)
+                    .FirstOrDefaultAsync();
+
+            if (dorder.Lunas == 1)
+            {
+                message = $"ORDERAN INI MASI KURANG KIRIM\r\n\r\n";
+            } else
+            {
+                if (dorder.Keterangancancel == "")
+                {
+                    message = $"ORDERAN INI BERES\r\n\r\n";
+                } else
+                {
+                    message = $"ORDERAN INI DIPAKSA BERES, alasan : {dorder.Keterangancancel}\r\n\r\n";
+                }
+            }
+            detailTrans?.Htrans.Dump();
+            message += $"Disiapkan Pada : \r\n";
+            message += $"{detailTrans?.Htrans?.TglTrans.ToString("dd/MM/yyyy")} \r\n";
+            message += $"{detailTrans?.Jumlah} {detailTrans?.Masterbarang?.BrgNama}";
+            return Ok(message);
+        }
+
+        [HttpGet("{kode}/print")]
+        public async Task<ActionResult<PrintOrderResultDto>> PrintOrderan(int kode)
+        {
+            int counterCetak, jumNotaTrans, jumNotaRetur;
+            string TotalBarangLabel = "";
+            string JumlahKirimanLabel = "";
+            bool StatusBlok;
+            PrintHorderDto horderResult;
+            List<PrintDorderDto> dorderResult;
+            sbyte printOL = 0;
+            var horder = await _context.Horder
+                .AsNoTracking()
+                .Include(e => e.Masterpelanggan)
+                .ThenInclude(e => e.LokasiKota)
+                .Where(e => e.Kodeh == kode)
+                .FirstOrDefaultAsync();
+
+            if (horder == null || horder?.Historynya == 3)
+            {
+                return BadRequest(new { message = "Data Tidak Ada" });
+
+            }
+
+            var kodeProvinsi = horder.Masterpelanggan?.LokasiKota?.Provinsi;
+            printOL = 0;
+            kodeProvinsi.Dump("KODEPROV");
+            //if (getUser()?.Akses == "gudangol" && kodeProvinsi == 23)
+            if (kodeProvinsi == 23)
+            {
+                printOL = 1;
+            }
+
+            if (horder.Masterpelanggan?.KursKomisi <= 0)
+            {
+                return BadRequest(new { message = "TOKO DIBLOK !! HUBUNGI ADMIN !!" });
+            }
+            if (horder.Kodepenyiap == 0)
+            {
+                return BadRequest(new { message = "Harap Tentukan Penyiap Orderan Terlebih Dahulu" });
+            }
+
+            horder.Dicetak += 1;
+            await _context.SaveChangesAsync();
+
+            var query = from h in _context.Horder
+                        join p in _context.Masterpelanggan on h.Kodepelanggan equals p.Kode
+                        join s in _context.Sales on h.Kodesales equals s.Kode
+                        join mtp in _context.Masterpengeluaran on h.Kodeexp equals mtp.Kode
+                        join k in _context.LokasiKota on p.Kota equals k.Kode
+                        join pr in _context.LokasiProvinsi on k.Provinsi equals pr.Kode
+                        join po in _context.Penyiaporder on h.Kodepenyiap equals po.Kode
+                        where h.Kodeh == kode
+                        orderby h.Kodeh descending
+                        select new PrintHorderDto
+                        {
+                            KodeH = h.Kodeh,
+                            InfoPenting = h.Infopenting,
+                            Keterangan = h.Keterangan,
+                            Tanggal = h.Tglorder.ToString("dd/MM/yyyy"),
+                            Nama = $"{p.Nama} - {k.Nama}",
+                            NamaSales = s.Nama,
+                            Lokasi = $"{k.Nama} - {pr.Nama}",
+                            PenyiapOrder = po.Nama,
+                            TanggalInput = h.Inserttime.ToString("dd/MM/yyyy HH:mm:ss"),
+                            TanggalCetak = h.Tglcetak.ToString("dd/MM/yyyy HH:mm:ss"),
+                            NamaExp = mtp.Nama,
+                            Melalui = h.Kirimmelalui == 0 ? "Belum Diisi" :
+                                      h.Kirimmelalui == 1 ? "DARAT" :
+                                      h.Kirimmelalui == 2 ? "UDARA" : "LAUT"
+                        };
+            horderResult = await query.FirstAsync();
+            var dorderQuery = from d in _context.Dorder
+                              join b in _context.Masterbarang on d.Kodebarang equals b.BrgKode
+                              where d.Kodeh == kode
+                              orderby d.Koded ascending
+                              select new PrintDorderDto
+                              {
+                                  NamaKeterangan = b.BrgNama + " ///// KET : " + d.Keterangan,
+                                  NamaBarang = b.BrgNama,
+                                  Pcs = d.Jumlah,
+                                  KeteranganBrg = d.Keterangan,
+                                  StokAtas = 0,
+                                  StokBawah = 0,
+                                  StokSales = 0
+                              };
+
+             dorderResult = await dorderQuery.ToListAsync();
+
+
+            if (printOL == 1)
+            {
+                TotalBarangLabel = $"Total Varian Barang : {dorderResult.Count.ToString()}";
+            }
+            else
+            {
+                if (kodeProvinsi == 23)
+                {
+                    JumlahKirimanLabel = $"SERI OL : {horder.NoSeriOnline}";
+                }
+                else
+                {
+                    JumlahKirimanLabel = "Nota lainnya : ";
+                    jumNotaTrans = _context.Htrans.Where(e => e.KodePelanggan == horder.Kodepelanggan)
+                            .Where(e => e.HistoryNya == Constants.DEFAULT_HISTORY_TRANSAKSI)
+                            .Where(e => e.Dikirim == 0)
+                            .Where(e => e.Retur == "0")
+                            .Count();
+
+                    jumNotaRetur = _context.Htrans.Where(e => e.KodePelanggan == horder.Kodepelanggan)
+                           .Where(e => e.HistoryNya == Constants.DEFAULT_HISTORY_TRANSAKSI)
+                           .Where(e => e.Dikirim == 0)
+                           .Where(e => e.Retur != "0")
+                           .Count();
+                    JumlahKirimanLabel += jumNotaTrans.ToString() + " N, ";
+                    JumlahKirimanLabel += jumNotaRetur.ToString() + " R";
+
+                }
+                StatusBlok = horder?.Masterpelanggan?.KursKomisi < 0;
+            }
+
+            return new PrintOrderResultDto
+            {
+                Horder = horderResult,
+                Dorder = dorderResult,
+                JumlahKirimanLabel = JumlahKirimanLabel,
+                PrintOl = printOL,
+                TotalBarangLabel = TotalBarangLabel
+            };
         }
 
         private async Task InsertToDorder(int kodeh, List<Dorder> dtrans)
