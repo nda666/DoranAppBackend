@@ -71,6 +71,7 @@ namespace DoranOfficeBackend.Controller
                    .Include(x => x.SalesManager)
                    .Include(x => x.Mastertimsales)
                    .AsQueryable();
+
             if (!string.IsNullOrEmpty(dto.Nama))
             {
                 query = query.Where(r => EF.Functions.Like(r.Nama, $"%{dto.Nama}%"));
@@ -102,6 +103,23 @@ namespace DoranOfficeBackend.Controller
             //    query = query.WhereNotDeleted();
             //}
             return query;
+        }
+
+        [HttpGet("had-email")]
+        public async Task<ActionResult<IEnumerable<Sales>>> GetSalesThatHadEmail()
+        {
+            if (_context.Sales == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _context.Sales
+                .Where(e => e.Aktif)
+                .Where(e => e.Email != "")
+                .OrderBy(e => e.Nama)
+                .ToListAsync();
+
+            return result;
         }
 
         // GET: api/Sales/5

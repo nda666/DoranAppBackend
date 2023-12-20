@@ -3998,6 +3998,11 @@ namespace DoranOfficeBackend
                     .HasColumnName("sudahupdatephone")
                     .HasComment("UNTUK UPDATE NMR HP");
 
+                entity.Property(e => e.Valid)
+                   .HasColumnType("tinyint(4)")
+                   .HasColumnName("valid")
+                   .HasDefaultValueSql("'1'");
+
                 entity.Property(e => e.TambahanLainnya)
                     .HasColumnType("int(11)")
                     .HasColumnName("tambahanLainnya");
@@ -8000,6 +8005,9 @@ namespace DoranOfficeBackend
                 entity.HasOne(e => e.LokasiKota)
                     .WithMany(c => c.Masterpelanggans)
                     .HasForeignKey(e => e.Kota);
+                entity.HasOne(e => e.Sales)
+                    .WithMany(c => c.Masterpelanggan)
+                    .HasForeignKey(e => e.Salespemilik);
             });
 
             modelBuilder.Entity<Dtrans>(entity =>
@@ -8016,32 +8024,27 @@ namespace DoranOfficeBackend
                 entity.HasOne(e => e.MasteruserInsert)
                     .WithMany(e => e.HtransUserinsert)
                     .HasForeignKey(e => e.InsertName)
-                    .HasPrincipalKey(e => e.Kodeku)
-                    .IsRequired(false);
+                    .HasPrincipalKey(e => e.Kodeku);
 
                 entity.HasOne(e => e.MasteruserUpdate)
                     .WithMany(e => e.HtransUserupdate)
                     .HasForeignKey(e => e.UpdateName)
-                    .HasPrincipalKey(e => e.Kodeku)
-                    .IsRequired(false);
+                    .HasPrincipalKey(e => e.Kodeku);
 
                 entity.HasOne(e => e.Masterpelanggan)
                     .WithMany(e => e.Htrans)
                     .HasForeignKey(e => e.KodePelanggan)
-                    .HasPrincipalKey(e => e.Kode)
-                    .IsRequired(false);
+                    .HasPrincipalKey(e => e.Kode);
 
                 entity.HasOne(e => e.Sales)
                     .WithMany(e => e.Htrans)
                     .HasForeignKey(e => e.KodeSales)
-                    .HasPrincipalKey(e => e.Kode)
-                    .IsRequired(false);
+                    .HasPrincipalKey(e => e.Kode);
 
                 entity.HasOne(e => e.Mastergudang)
                     .WithMany(e => e.Htrans)
                     .HasForeignKey(e => e.Kodegudang)
-                    .HasPrincipalKey(e => e.Kode)
-                    .IsRequired(false);
+                    .HasPrincipalKey(e => e.Kode);
             });
 
             modelBuilder.Entity<Dtrans>(entity =>

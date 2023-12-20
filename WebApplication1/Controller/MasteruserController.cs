@@ -20,38 +20,57 @@ namespace DoranOfficeBackend.Controller
             _context = context;
         }
 
-        // GET: api/Users
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Masteruser>>> GetUsers([FromQuery]FindMasteruserDto dto)
+        private IQueryable<Masteruser> BaseQuery(FindMasteruserDto dto)
         {
-            ConsoleDump.Extensions.Dump(dto);
-            if (_context.Masteruser == null)
-            {
-                return NotFound();
-            }
             var query = _context.Masteruser.AsNoTracking().AsQueryable();
             if (!String.IsNullOrEmpty(dto.Username))
             {
                 query = query.Where(r => EF.Functions.Like(r.Usernameku, $"%{Request.Query["username"]}%"));
             }
-           
+
             if (dto.Aktif.HasValue)
             {
                 query = query.Where(r => r.Aktif == dto.Aktif);
             }
 
-            //if (dto.Deleted.HasValue)
-            //{
-            //    query = dto.Deleted == true ? query.WhereDeleted() : query;
-            //}
-            //else
-            //{
-            //    query = query.WhereNotDeleted();
-            //}
+            if (!String.IsNullOrEmpty(dto.Akses))
+            {
+                query = query.Where(r => r.Akses == dto.Akses);
+            }
+
+            return query;
+        }
+
+        // GET: api/Users
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Masteruser>>> GetUsers([FromQuery]FindMasteruserDto dto)
+        {
+            if (_context.Masteruser == null)
+            {
+                return NotFound();
+            }
+            var query = this.BaseQuery(dto);
 
             return await query.ToListAsync();
         }
 
+        [HttpGet("options")]
+        public async Task<ActionResult<IEnumerable<MasteruserOptionDto>>> GetUserOptions([FromQuery] FindMasteruserDto dto)
+        {
+            if (_context.Masteruser == null)
+            {
+                return NotFound();
+            }
+            var result = await this.BaseQuery(dto)
+                .Select(e => new MasteruserOptionDto
+                {
+                    Kodeku = e.Kodeku,
+                    Usernameku = e.Usernameku
+                })
+                .ToListAsync();
+
+            return result;
+        }
 
         // GET: api/Users/5
         [HttpGet("{kode}")]

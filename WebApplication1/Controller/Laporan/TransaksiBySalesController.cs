@@ -7,6 +7,7 @@ using MySql.Data.MySqlClient;
 using Dapper.FluentMap;
 using System.Data;
 using Dapper;
+using ConsoleDump;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -125,7 +126,7 @@ namespace DoranOfficeBackend.Controller.Laporan
             {
                 connection.Open();
                 var queryResult = await connection.QueryAsync<TransaksiBySalesResultDto>(template.RawSql, template.Parameters);
-                Console.WriteLine(template.RawSql);
+                
                 var grandTotal = queryResult.Sum(e => e.SumTotal);
                 var result = queryResult.Select((e) => new TransaksiBySalesResultDto
                 {
@@ -136,6 +137,37 @@ namespace DoranOfficeBackend.Controller.Laporan
                 }).ToList();
                 connection.Close();
                 return result;
+            }
+        }
+
+        [HttpGet("/belum-lunas")]
+        public async Task<ActionResult<IEnumerable<OmzetBelumLunasBySalesDto>>> OmzetBelumLunasBySales([FromQuery] OmzetBelumLunasBySalesQueryParams dto)
+        {
+            var builder = new SqlBuilder(); 
+            var template = builder.AddTemplate(@"
+                SELECT CONCAT(p.nama, ' - ', p.lokasi) as Nama, 
+                SUM(h.Jumlah) as JumlahNya, h.kodesales
+                FROM htrans h
+                INNER JOIN masterpelanggan p ON h.kodepelanggan = p.kode
+                /**where**/
+                GROUP BY h.kodesales, p.nama, p.lokasi 
+                HAVING JumlahNya > 0
+                ORDER BY JumlahNya DESC;");
+
+            builder.Where("h.lunas = 0");
+
+            var inClause = string.Join(",", dto.KodeSales);
+            builder.Where($"h.kodesales IN({inClause})");
+
+            builder.Where("h.tglTrans >= @dateMin", new { dateMin = dto.DateMin.ToString("yyyy-MM-dd") });
+            builder.Where("h.tglTrans <= @dateMax", new { dateMax = dto.DateMax.ToString("yyyy-MM-dd") });
+
+            using (var connection = _dbConnection)
+            {
+                connection.Open();
+                var queryResult = await connection.QueryAsync<OmzetBelumLunasBySalesDto>(template.RawSql, template.Parameters);
+                
+                return queryResult.ToList();
             }
         }
     }

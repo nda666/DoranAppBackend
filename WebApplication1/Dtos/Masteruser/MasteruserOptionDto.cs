@@ -2,7 +2,7 @@
 {
     public class MasteruserOptionDto
     {
-        public int Kodeku { get; set; }
+        public int? Kodeku { get; set; }
         public string Usernameku { get; set; } = null!;
     }
 }

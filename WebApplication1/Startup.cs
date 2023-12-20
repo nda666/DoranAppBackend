@@ -164,7 +164,6 @@ namespace DoranOfficeBackend
             app.UseSession();
             app.ConfigureExceptionHandler();
             app.UseMiddleware<JwtMiddleware>();
-            //app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -200,16 +199,6 @@ namespace DoranOfficeBackend
                     c.ConfigObject.HideLoading = true;
                 });
             }
-            //app.UseHttpsRedirection();
-            //app.UseStaticFiles();
-
-            //app.UseRouting();
-
-            //app.UseAuthorization();
-
-            //app.MapRazorPages();
-
-            //app.Run();
         }
 
        

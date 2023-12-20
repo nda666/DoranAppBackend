@@ -67,5 +67,7 @@ namespace DoranOfficeBackend.Models
         public virtual ICollection<Htrans>? Htrans { get; set; }
         
         public virtual ICollection<Horder>? Horder { get; set; }
+
+        public virtual ICollection<Masterpelanggan> Masterpelanggan { get; set; }
     }
 }

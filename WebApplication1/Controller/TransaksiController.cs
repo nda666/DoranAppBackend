@@ -5,22 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DoranOfficeBackend;
 using DoranOfficeBackend.Models;
 using AutoMapper;
-using DoranOfficeBackend.Extentsions;
-using DoranOfficeBackend.Exceptions;
 using DoranOfficeBackend.Attributes;
-using DoranOfficeBackend.Dtos.Masterpelanggan;
 using DoranOfficeBackend.Dtos.Transaksi;
-using Microsoft.AspNetCore.Mvc.Filters;
-using StackExchange.Profiling.Internal;
 using ConsoleDump;
-using Microsoft.Data.SqlClient;
 using MySql.Data.MySqlClient;
-using DocumentFormat.OpenXml.InkML;
-using MySqlX.XDevAPI;
-using ZstdSharp.Unsafe;
+using MySql.EntityFrameworkCore.Extensions;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -103,15 +94,9 @@ namespace DoranOfficeBackend.Controller
                 htransQ = htransQ.Where(x => x.Lunas == dto.Lunas);
             }
 
-            //var htransPagingQ = htransQ;
-            //var totalRow = await htransPagingQ.CountAsync();
-
             htransQ = htransQ.OrderByDescending(x => x.KodeH);
 
-            //if (dto.Limit.HasValue)
-            //{
-            //    htransQ = htransQ.Take(dto.Limit.Value);
-            //}
+           
             if (!String.IsNullOrEmpty(dto.NamaPelanggan))
             {
                 htransQ = htransQ.Take(30);
@@ -120,9 +105,7 @@ namespace DoranOfficeBackend.Controller
             {
                 htransQ = htransQ.Take(300);
             }
-            //int skip = (dto.Page - 1) * dto.PageSize;
-            //htransQ = htransQ.Skip(skip)
-            //        .Take(dto.PageSize);
+
             htransQ = htransQ.Include(e => e.Dtrans)
                 .ThenInclude(e => e.Masterbarang)
                 .Include(e => e.Masterpelanggan)
@@ -133,17 +116,10 @@ namespace DoranOfficeBackend.Controller
 
             var htrans = await htransQ.ToListAsync();
             ICollection<HtransResult> htransResults = _mapper.Map<ICollection<HtransResult>>(htrans);
-            //var totalPage = (int)Math.Ceiling((double)totalRow / dto.PageSize);
-            //var result = new HtransResultDto
-            //{
-            //    Data = htransResults,
-            //    Page = dto.Page,
-            //    PageSize = dto.PageSize,
-            //    TotalPage = totalPage,
-            //    TotalRow = totalRow
-            //};
+          
             return Ok(htransResults);
         }
+
 
         [HttpGet("{kodeh}")]
         public async Task<ActionResult<HtransResult>> GetTransaksiByKodeh(int kodeh)
@@ -167,7 +143,7 @@ namespace DoranOfficeBackend.Controller
              
         }
 
-            [HttpGet("{kodeh}/nota-ppn")]
+        [HttpGet("{kodeh}/nota-ppn")]
         public async Task<ActionResult<NotaTransaksiPpnResultDto>> GetNotaTransaksiPpn(int kodeh)
         {
             var htransCheck = await _context.Htrans.Where(e => e.KodeH == kodeh).Select(e => new

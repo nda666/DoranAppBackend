@@ -12,6 +12,7 @@ using DoranOfficeBackend.Extentsions;
 using DoranOfficeBackend.Exceptions;
 using DoranOfficeBackend.Attributes;
 using DoranOfficeBackend.Dtos.Masterpelanggan;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -83,6 +84,33 @@ namespace DoranOfficeBackend.Controller
                 })
                 .ToListAsync();
             return Ok(data);
+        }
+
+
+        [HttpPost("{kode}/blok")]
+        public async Task<ActionResult> BlokMasterpelanggan(int kode)
+        {
+            return await ToggleKursKomisi(kode, 1);
+        }
+
+        [HttpPost("{kode}/unblock")]
+        public async Task<ActionResult> UnBlokMasterpelanggan(int kode)
+        {
+            return await ToggleKursKomisi(kode, -1);
+        }
+
+        private async Task<ActionResult> ToggleKursKomisi(int kode, sbyte block)
+        {
+            var result = await _context.Masterpelanggan
+                .Where(e => e.Kode == kode)
+                .FirstOrDefaultAsync();
+            if (result == null)
+            {
+                return NotFound();
+            }
+            result.KursKomisi = block;
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         //// GET: api/Masterpelanggan/5

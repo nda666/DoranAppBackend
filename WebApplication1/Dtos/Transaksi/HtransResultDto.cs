@@ -63,7 +63,7 @@ namespace DoranOfficeBackend.Dtos.Transaksi
         public int Kodegudang { get; set; }
         public bool DiCetak { get; set; }
         public short SalesPenagih { get; set; }
-        public bool StatusNota { get; set; }
+        public sbyte StatusNota { get; set; }
         /// <summary>
         /// 0=NORMAL. 2=RETUR. 1 TIDAK DIPAKE
         /// </summary>
@@ -138,9 +138,25 @@ namespace DoranOfficeBackend.Dtos.Transaksi
         public virtual MasterbarangOptionDto? Masterbarang { get; set; }
     }
 
+    public class HtransTotalDto
+    {
+        public decimal Total { get; set; }
+        public decimal Komisi { get; set; }
+        public decimal Untung { get; set; }
+        public decimal UntungbelumpotOl { get; set; }
+        public decimal PpnFull { get; set; }
+        public decimal Ppn { get; set; }
+        public decimal DppFull { get; set; }
+        public decimal Dpp { get; set; }
+        public decimal Jumlahbarangbiaya { get; set; }
+        public decimal Diskon { get; set; }
+        public decimal TotalOmzetPPN { get; set; }
+        public decimal TambahanLainnya { get; set; }
+    }
     public class HtransResultDto : PaginationResultDto
     {
         public ICollection<HtransResult> Data {get; set;}
+        public HtransTotalDto? Total { get; set; }
     }
 
 }

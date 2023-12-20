@@ -61,7 +61,7 @@ namespace DoranOfficeBackend.Models
         public int Kodegudang { get; set; }
         public bool DiCetak { get; set; }
         public short SalesPenagih { get; set; }
-        public bool StatusNota { get; set; }
+        public sbyte StatusNota { get; set; }
         /// <summary>
         /// 0=NORMAL. 2=RETUR. 1 TIDAK DIPAKE
         /// </summary>
@@ -76,7 +76,7 @@ namespace DoranOfficeBackend.Models
         public string Barcodeonline { get; set; } = null!;
         public sbyte Ppndiarsip { get; set; }
         public DateTime TglLaporPpn { get; set; }
-        public bool? Tipetempo { get; set; }
+        public sbyte? Tipetempo { get; set; }
         public DateTime Tgltempo { get; set; }
         public string Infopenting { get; set; } = null!;
         public int Notrans { get; set; }
@@ -107,6 +107,7 @@ namespace DoranOfficeBackend.Models
         /// UNTUK UPDATE NMR HP
         /// </summary>
         public sbyte Sudahupdatephone { get; set; }
+        public sbyte Valid { get; set; }
 
         public ICollection<Dtrans> Dtrans { get; set; }
         public Masteruser? MasteruserInsert { get; set; }
