@@ -4932,7 +4932,7 @@ namespace DoranOfficeBackend
                     .HasColumnName("minStokHabis");
 
                 entity.Property(e => e.Modal)
-                    .HasColumnType("int(11)")
+                    .HasColumnType("double")
                     .HasColumnName("modal");
 
                 entity.Property(e => e.Namaol)
@@ -4973,6 +4973,10 @@ namespace DoranOfficeBackend
                     .HasColumnType("datetime")
                     .HasColumnName("updateTime")
                     .HasDefaultValueSql("'current_timestamp()'");
+
+                entity.Property(e => e.Jurnalbiaya)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("jurnalbiaya");
             });
 
             modelBuilder.Entity<Mastercatatan>(entity =>
@@ -8079,14 +8083,13 @@ namespace DoranOfficeBackend
                     .IsRequired(false);
             });
 
-            modelBuilder.Entity<Dkategoribarang>(entity =>
-            {
-                entity.HasOne(e => e.Hkategoribarang)
-                    .WithMany(c => c.Dkategoribarang)
-                    .HasForeignKey(e => e.Kodeh)
-                    .HasPrincipalKey(e => e.Kodeh)
-                    .IsRequired(false);
-            });
+            //modelBuilder.Entity<Dkategoribarang>(entity =>
+            //{
+            //    entity.HasOne(e => e.Hkategoribarang)
+            //        .WithMany(c => c.Dkategoribarang)
+            //        .HasForeignKey(e => e.Kodeh)
+            //        .HasPrincipalKey(e => e.Kodeh);
+            //});
 
             modelBuilder.Entity<Horder>(entity =>
             {

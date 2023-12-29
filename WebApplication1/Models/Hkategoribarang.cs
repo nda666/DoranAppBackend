@@ -29,6 +29,6 @@ namespace DoranOfficeBackend.Models
         //[Column("deleted_at")]
         //public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<Dkategoribarang> Dkategoribarang { get; set; }
+        //public virtual ICollection<Dkategoribarang> Dkategoribarang { get; set; }
     }
 }

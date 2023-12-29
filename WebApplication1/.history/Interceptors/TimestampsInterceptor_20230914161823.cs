@@ -10,8 +10,8 @@ namespace DoranOfficeBackend.Interceptors
         {
             if (eventData.Context is null) return result;
 
-            var entries = eventData.Context.ChangeTracker.Entries().Where(e =>
-            {
+            var entries = eventData.Context.ChangeTracker.Entries().Where(e => {
+                Console.WriteLine("123123 " + (e.Entity is ITimestamps).ToString());
                 return e.Entity is ITimestamps && (e.State == EntityState.Added || e.State == EntityState.Modified);
             });
             var currentTime = DateTime.Now;

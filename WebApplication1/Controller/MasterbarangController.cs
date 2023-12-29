@@ -12,6 +12,10 @@ using DoranOfficeBackend.Extentsions;
 using DoranOfficeBackend.Exceptions;
 using DoranOfficeBackend.Attributes;
 using DoranOfficeBackend.Dtos.Masterbarang;
+using DocumentFormat.OpenXml.InkML;
+using System.Data;
+using Dapper;
+using DoranOfficeBackend.Dtos.LaporanTransaksiPenjualan;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -23,11 +27,13 @@ namespace DoranOfficeBackend.Controller
     {
         private readonly IMapper _mapper;
         private readonly MyDbContext _context;
+        private IDbConnection _connection;
 
-        public MasterbarangController(IMapper mapper, MyDbContext context)
+        public MasterbarangController(IMapper mapper, MyDbContext context, IDbConnection connection)
         {
             _mapper = mapper;
             _context = context;
+            _connection = connection;
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -58,26 +64,28 @@ namespace DoranOfficeBackend.Controller
 
         // GET: api/Masterbarang
         [HttpGet("options", Name = "GetMasterbarangOptions")]
-        public async Task<ActionResult<IEnumerable<MasterbarangOptionWithSnDto>>> GetMasterbarangOptions([FromQuery] FindMasterbarangDto dto)
+        public async Task<ActionResult<IEnumerable<MasterbarangOptionWithSnDto>?>> GetMasterbarangOptions([FromQuery] FindMasterbarangDto dto)
         {
             if (_context.Masterbarang == null)
             {
                 return NotFound();
             }
 
-            var query = baseSelect(dto)
-                .Include(x => x.Dkategoribarang)
-                .Include(x => x.Mastertipebarang)
-                .OrderBy(e => e.BrgNama)
-                .Select(e => new MasterbarangOptionWithSnDto
-                {
-                    BrgKode = e.BrgKode,
-                    BrgNama = e.BrgNama,
-                    Sn = e.Dkategoribarang != null ? e.Dkategoribarang.Sn : false,
-                    JurnalBiaya = e.JurnalBiaya,
-                    Shownya = e.Mastertipebarang.Shownya
-                });
-            return await query.ToListAsync();
+            var query = $@"SELECT 
+                m.brgKode AS BrgKode, 
+                m.brgNama AS BrgNama, 
+                d.sn AS Sn, 
+                m.jurnalbiaya AS Jurnalbiaya, 
+                m0.shownya AS Shownya 
+                FROM masterbarang m 
+                LEFT JOIN dkategoribarang AS d ON m.kategoriBrg = d.koded 
+                LEFT JOIN mastertipebarang AS m0 ON m.tipebarang = m0.kode 
+                WHERE m.brgAktif = 1 ORDER BY m.brgNama;";
+
+            var result = await _connection.QueryAsync<MasterbarangOptionWithSnDto>(query);
+
+           
+            return Ok(result);
         }
 
         [HttpGet("nama", Name = "GetMasterbarangNama")]

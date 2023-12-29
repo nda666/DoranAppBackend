@@ -6,6 +6,7 @@ using DoranOfficeBackend.Attributes;
 using DoranOfficeBackend.Extentsions;
 using DoranOfficeBackend.Dtos.LokasiProvinsi;
 using AutoMapper;
+using DocumentFormat.OpenXml.InkML;
 
 namespace DoranOfficeBackend.Controller.LokasiProvinsiController
 {
@@ -121,11 +122,38 @@ namespace DoranOfficeBackend.Controller.LokasiProvinsiController
           {
               return Problem("Entity set 'MyDbContext.LokasiProvinsi'  is null.");
           }
-            var lokasiProvinsi = _mapper.Map<LokasiProvinsi>(dto);
-            _context.LokasiProvinsi.Add(lokasiProvinsi);
-            await _context.SaveChangesAsync();
+         
+            var lastProv = await _context.LokasiProvinsi
+                .OrderByDescending(e => e.Kode)
+                .FirstOrDefaultAsync();
+            var user = (Masteruser)HttpContext.Items["User"];
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var lokasiProvinsi = _mapper.Map<LokasiProvinsi>(dto);
+                    lokasiProvinsi.Kode = (sbyte)((lastProv?.Kode ?? 0) + 1);
+                    _context.LokasiProvinsi.Add(lokasiProvinsi);
 
-            return CreatedAtAction("GetLokasiProvinsi", new { kode = lokasiProvinsi.Kode }, lokasiProvinsi);
+                    var logFile = new Logfile();
+                    logFile.Keterangan = $"Tambah Master Provinsi {lastProv.Nama}";
+                    logFile.Tanggal = DateTime.Now;
+                    logFile.Username = user.Kodeku;
+                    _context.Logfile.Add(logFile);
+
+
+                    await _context.SaveChangesAsync();
+
+                    transaction.Commit();
+                    return CreatedAtAction("GetLokasiProvinsi", new { kode = lokasiProvinsi.Kode }, lokasiProvinsi);
+                }
+                catch (Exception)
+                {
+                    // If an exception occurs, roll back the transaction
+                    transaction.Rollback();
+                    return BadRequest();
+                }
+            }
         }
 
         // DELETE: api/LokasiProvinsi/5

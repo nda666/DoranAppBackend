@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DoranOfficeBackend.Models
+﻿namespace DoranOfficeBackend.Dtos.LokasiKota
 {
-    public partial class LokasiKota
+    public class LokasiKotaDataDto
     {
         public int Kode { get; set; }
         public string Nama { get; set; } = null!;
@@ -11,7 +8,7 @@ namespace DoranOfficeBackend.Models
         public sbyte Kodeareapengiriman { get; set; }
         public int Kodecoa4 { get; set; }
         public sbyte AdaKertasOrder { get; set; }
-        public virtual LokasiProvinsi? LokasiProvinsi { get; set; }
-        public virtual ICollection<Masterpelanggan>? Masterpelanggans { get; set; }
+        public string NamaProvinsi { get; set; } = null!;
+        public string NamaCoa { get; set; } = null!;
     }
 }

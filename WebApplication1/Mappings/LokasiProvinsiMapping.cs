@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DoranOfficeBackend.Dtos;
+using DoranOfficeBackend.Dtos.LokasiProvinsi;
 using DoranOfficeBackend.Models;
 
 namespace DoranOfficeBackend.Mappings
@@ -9,6 +10,7 @@ namespace DoranOfficeBackend.Mappings
         public LokasiProvinsiMapping()
         {
             CreateMap<LokasiProvinsi, CommonResultDto>();
+            CreateMap<SaveLokasiProvinsiDto, LokasiProvinsi>();
         }
     }
 }

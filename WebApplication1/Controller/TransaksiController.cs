@@ -280,11 +280,19 @@ namespace DoranOfficeBackend.Controller
                     return BadRequest(new { message = "Kode order tidak ditemukan" });
                 }
                 var checkNoSeri = await _context.Htrans
-                        .Where(e => e.NoSeriOnline == horder.NoSeriOnline || e.NoSeriOnline == horder.NoSeriOnline.Trim())
+                        .Where(e => e.NoSeriOnline == horder.NoSeriOnline)
                         .FirstOrDefaultAsync();
                 if (checkNoSeri != null)
                 {
                     return BadRequest(new { message = "Tidak bisa disimpan karena No Seri Online sudah pernah ada" });
+                }
+
+                var checkBarcode = await _context.Htrans
+                        .Where(e => e.Barcodeonline == horder.Barcodeonline)
+                        .FirstOrDefaultAsync();
+                if (checkBarcode != null)
+                {
+                    return BadRequest(new { message = "Tidak bisa disimpan karena Barcode Online sudah pernah ada" });
                 }
 
             }
@@ -359,10 +367,10 @@ namespace DoranOfficeBackend.Controller
                             _context.Horder.Update(horder);
                         }
 
-                        if (pelanggan.LokasiKota?.Provinsi != 23)
-                        {
+                        //if (pelanggan.LokasiKota?.Provinsi != 23)
+                        //{
                             entity.JumlahKomisi = jumlahKomisi;
-                        }
+                        //}
 
                         var logFile = new Logfile
                         {
@@ -425,7 +433,6 @@ namespace DoranOfficeBackend.Controller
             var htrans = await _context.Htrans
                 .Where(e => e.KodeH == kode)
                 .FirstOrDefaultAsync();
-
 
             if (htrans == null)
             {
@@ -587,7 +594,6 @@ namespace DoranOfficeBackend.Controller
                 return BadRequest(new { message = anyErrorMessage });
             }
 
-
             return Ok(htrans);
         }
 
@@ -669,6 +675,7 @@ namespace DoranOfficeBackend.Controller
             // Bulk read Masterbarang entities
             var masterbarangEntities = _context.Masterbarang
                 .Where(mb => masterbarangIds.Contains(mb.BrgKode))
+                .Include(e => e.Dkategoribarang)
                 .ToList();
 
             // Create a dictionary for quick lookup based on MasterbarangId
@@ -696,9 +703,12 @@ namespace DoranOfficeBackend.Controller
                 dtrans[i].Koded = (short)(i + 1);
                 dtrans[i].Kodeh = kodeh;
 
-                // IF bukan online
-                if (pelanggan.LokasiKota.Provinsi != 23)
+                if (dtrans[i].Masterbarang?.Dkategoribarang?.Sn == false)
                 {
+                    dtrans[i].Nmrsn = "";
+                }
+
+
                     var komisi = (int)HitungKomisi(
                         Convert.ToDouble(dtrans[i].Masterbarang?.Modal),
                         Convert.ToDouble(dtrans[i].Harga),
@@ -708,7 +718,7 @@ namespace DoranOfficeBackend.Controller
                         (int)(dtrans[i].Masterbarang?.Komisi ?? 0)
                    );
                     totalKomisi += (komisi * dtrans[i].Jumlah);
-                }
+                
                 dtrans[i].Komisi = totalKomisi;
                 if (dtrans[i].Nmrsn.Trim() != "")
                 {
@@ -745,11 +755,11 @@ namespace DoranOfficeBackend.Controller
                 }
             }
 
-            //string insertQuery = "INSERT INTO dtrans (kodeh,koded,kodebarang,jumlah,harga,nmrsn) VALUES ";
-            //string values = string.Join(", ", dtrans.Select(item => $"({item.Kodeh},{item.Koded},{item.Kodebarang},{item.Jumlah},{item.Harga},'{item.Nmrsn}')"));
-            //insertQuery += values;
-            //await _context.Database.ExecuteSqlRawAsync(insertQuery);
-            await _context.BulkInsertAsync(dtrans);
+            string insertQuery = "INSERT INTO dtrans (kodeh,koded,kodebarang,jumlah,harga,nmrsn) VALUES ";
+            string values = string.Join(", ", dtrans.Select(item => $"({item.Kodeh},{item.Koded},{item.Kodebarang},{item.Jumlah},{item.Harga},'{item.Nmrsn}')"));
+            insertQuery += values;
+            await _context.Database.ExecuteSqlRawAsync(insertQuery);
+            //await _context.BulkInsertAsync(dtrans);
             return totalKomisi;
         }
         private async Task<int> UpdateToDtrans(
@@ -774,8 +784,8 @@ namespace DoranOfficeBackend.Controller
                 dtrans[i].Kodeh = htrans.KodeH;
 
                 // IF bukan online
-                if (pelanggan.LokasiKota.Provinsi != 23)
-                {
+                //if (pelanggan.LokasiKota.Provinsi != 23)
+                //{
                     var komisi = (int)HitungKomisi(
                         Convert.ToDouble(dtrans[i].Masterbarang?.Modal),
                         Convert.ToDouble(dtrans[i].Harga),
@@ -785,7 +795,7 @@ namespace DoranOfficeBackend.Controller
                         (int)(dtrans[i].Masterbarang?.Komisi ?? 0)
                    );
                     totalKomisi += (komisi * dtrans[i].Jumlah);
-                }
+                //}
                 dtrans[i].Komisi = totalKomisi;
                 if (dtrans[i].Nmrsn.Trim() != "")
                 {

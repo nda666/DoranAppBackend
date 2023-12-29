@@ -11,6 +11,7 @@ namespace DoranOfficeBackend.Mappings
         {
             CreateMap<LokasiKota, CommonResultDto>();
             CreateMap<LokasiKota, LokasiKotaWithLokasiProvinsiDto>();
+            CreateMap<SaveLokasiKotaDto, LokasiKota>();
         }
     }
 }

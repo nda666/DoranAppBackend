@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace DoranOfficeBackend.Models
 {
-    public partial class Masterbarang
+    public class Masterbarang
     {
         public short BrgKode { get; set; }
         public string BrgNama { get; set; } = null!;
         public bool BrgAktif { get; set; }
-        public bool InsertName { get; set; }
+        public sbyte InsertName { get; set; }
         public DateTime InsertTime { get; set; }
-        public bool UpdateName { get; set; }
+        public sbyte UpdateName { get; set; }
         public DateTime UpdateTime { get; set; }
         public sbyte BrgHabis { get; set; }
-        public int Modal { get; set; }
+        public long Modal { get; set; }
         public int Hargatoko { get; set; }
         public int HargaSrp { get; set; }
         public int MinStokHabis { get; set; }
@@ -40,7 +40,7 @@ namespace DoranOfficeBackend.Models
         /// Keperluan Apps PastiSukses untuk cek apakah brg ini perlu diorder toko atau belum. 1=Perlu. 0=TidakPerlu.
         /// </summary>
         public sbyte Kpikelengkapantoko { get; set; }
-        public bool JurnalBiaya { get; set; }
+        public int Jurnalbiaya { get; set; }
 
         public virtual ICollection<Dtrans> Dtrans { get; set; }
         public virtual ICollection<Dorder> Dorder { get; set; }

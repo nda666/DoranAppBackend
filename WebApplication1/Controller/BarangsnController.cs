@@ -12,6 +12,7 @@ using DoranOfficeBackend.Extentsions;
 using DoranOfficeBackend.Exceptions;
 using DoranOfficeBackend.Attributes;
 using DoranOfficeBackend.Dtos.Masterbarang;
+using ConsoleDump;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -31,14 +32,14 @@ namespace DoranOfficeBackend.Controller
         }
 
         // GET: api/Masterbarang
-        [HttpGet("{sn}")]
-        public async Task<ActionResult<Barangsn>> GetBarangsnBySn(string sn)
+        [HttpGet("find")]
+        public async Task<ActionResult<Barangsn>> FindBarangsnBySn([FromQuery]string sn)
         {
             if (_context.Barangsn == null)
             {
                 return NotFound();
             }
-
+            Console.WriteLine(sn);
             var query = _context.Barangsn
                      .AsNoTracking()
                      .AsQueryable()

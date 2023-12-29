@@ -63,20 +63,27 @@ namespace DoranOfficeBackend.Controller.HkategoriBarangsController
             }
 
             var query = BaseQuery(dto)
-                    .Include(e => e.Dkategoribarang)
-                    .OrderBy(e => e.Nama)
+                    .GroupJoin(
+                _context.Dkategoribarangs,
+                e => e.Kodeh,
+                e => e.Kodeh,
+                (h,d) => new
+                {
+                    h,d
+                }
+                )
+                    .OrderBy(e => e.h.Nama)
                     .Select(e => new HkategoribarangOptionDto
                     {
-                        Nama = e.Nama,
-                        Kodeh = e.Kodeh,
-                        Dkategoribarang = e.Dkategoribarang.Select(d => new DkategoribarangOptionDto
+                        Nama = e.h.Nama,
+                        Kodeh = e.h.Kodeh,
+                        Dkategoribarang = e.d.Select(d => new DkategoribarangOptionDto
                         {
                             Kodeh = d.Koded,
                             Koded = d.Koded,
                             Nama = d.Nama
                         }).ToList()
                     });
-            ConsoleDump.Extensions.Dump("xxxxxxxxxxxx");
             return await query.ToListAsync();
         }
 
