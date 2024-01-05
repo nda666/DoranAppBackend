@@ -12,6 +12,9 @@ using DoranOfficeBackend.Dtos.Transaksi;
 using ConsoleDump;
 using MySql.Data.MySqlClient;
 using MySql.EntityFrameworkCore.Extensions;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using Dapper;
 
 namespace DoranOfficeBackend.Controller
 {
@@ -23,10 +26,14 @@ namespace DoranOfficeBackend.Controller
     {
         private readonly IMapper _mapper;
         private readonly MyDbContext _context;
-        public TransaksiController(IMapper mapper, MyDbContext context)
+        private readonly IDbConnection _connection;
+        private readonly ILogger<TransaksiController> _logger;
+        public TransaksiController(IMapper mapper, MyDbContext context, IDbConnection connection, ILogger<TransaksiController> logger)
         {
             _mapper = mapper;
             _context = context;
+            _connection = connection;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -96,7 +103,7 @@ namespace DoranOfficeBackend.Controller
 
             htransQ = htransQ.OrderByDescending(x => x.KodeH);
 
-           
+
             if (!String.IsNullOrEmpty(dto.NamaPelanggan))
             {
                 htransQ = htransQ.Take(30);
@@ -112,11 +119,12 @@ namespace DoranOfficeBackend.Controller
                 .ThenInclude(e => e.LokasiKota)
                 .ThenInclude(e => e.LokasiProvinsi)
                 .Include(e => e.Sales)
-                .Include(e => e.Mastergudang);
+                .Include(e => e.Mastergudang)
+                .Include(e => e.MasteruserInsert);
 
             var htrans = await htransQ.ToListAsync();
             ICollection<HtransResult> htransResults = _mapper.Map<ICollection<HtransResult>>(htrans);
-          
+
             return Ok(htransResults);
         }
 
@@ -135,12 +143,13 @@ namespace DoranOfficeBackend.Controller
              .Include(e => e.Mastergudang)
              .Include(e => e.MasteruserInsert)
              .FirstOrDefaultAsync();
-            if (htrans == null) {
+            if (htrans == null)
+            {
                 return BadRequest(new { message = "Transaksi tidak ditemukan" });
             }
             var result = _mapper.Map<HtransResult>(htrans);
             return result;
-             
+
         }
 
         [HttpGet("{kodeh}/nota-ppn")]
@@ -217,6 +226,185 @@ namespace DoranOfficeBackend.Controller
                 return BadRequest(new { message = "Transaksi tidak ditemukan" });
             }
             return Ok(htrans);
+        }
+
+        [HttpPost("{kodeh}/add-ppn")]
+        public async Task<ActionResult> AddPpnToTransaction(int kodeh)
+        {
+            var htrans = await _context.Htrans.Where(e => e.KodeH == kodeh).FirstOrDefaultAsync();
+            if (htrans == null)
+            {
+                return NotFound("Data tidak ditemukan");
+            }
+            if (htrans.AkanDjJurnalkan != 1)
+            {
+                return NotFound("Data tidak ditemukan");
+            }
+            _connection.Open();
+            var transaction = _connection.BeginTransaction();
+            try
+            {
+
+                string s = @"
+                SELECT jumlah, harga
+                FROM masterbarang mb
+                JOIN dtrans d ON kodebarang = brgkode
+                WHERE jurnalbiaya = 0 AND kodeh = @Kodeh
+            ";
+
+                var details = await _connection.QueryAsync(s, new { Kodeh = kodeh });
+
+                double besaranPPN = Constants.PEMBAGI_PPN11;
+                double jumlah = 0;
+
+                foreach (var detail in details)
+                {
+                    jumlah += Convert.ToDouble(detail.harga) * Convert.ToInt32(detail.jumlah);
+                }
+
+                double dpp = Math.Round(jumlah / besaranPPN, 0);
+                double ppn = jumlah - dpp;
+
+                string updateQuery = @"
+                    UPDATE htrans 
+                    SET terbitfakturppn = 1, 
+                        dpp = @Dpp, 
+                        ppn = @Ppn, 
+                        ppnreal = @PpnReal
+                    WHERE kodeh = @Kodeh
+                ";
+
+                await _connection.ExecuteAsync(updateQuery, new { Dpp = dpp, Ppn = ppn, PpnReal = ppn, Kodeh = kodeh });
+                transaction.Commit();
+                return Ok("Berhasil disimpan");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex);
+                transaction.Rollback();
+                return Problem("Terjadi kesalahan, data tidak dapat disimpan");
+            }
+
+        }
+
+        [HttpPost("set-tempo")]
+        public async Task<ActionResult> SetTempoToTransaction(SetTempoToTransactionDto dto)
+        {
+            var kodehChunk = dto.kodeh.Chunk(100);
+
+            _connection.Open();
+            var _transaction = _connection.BeginTransaction();
+            try
+            {
+                foreach (var kodehs in kodehChunk)
+                {
+                    string sqlString = @"
+                         UPDATE Htrans 
+                         SET Tgltempo = @Tgltempo
+                         WHERE KodeH IN @Ids";
+
+                    await _connection.ExecuteAsync(sqlString, new
+                    {
+                        Tgltempo = dto.Tgltempo,
+                        Ids = kodehs
+                    });
+                }
+                _transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("SetTanggalPpnToTransaction failed", ex);
+                _transaction.Rollback();
+                return Problem("Terjadi kesalahan, data tidak dapat disimpan");
+            }
+
+            return Ok("Set Tgl Jatuh Tempo Berhasil");
+
+        }
+
+        [HttpPost("{kodeh}/delete-ppn")]
+        public async Task<ActionResult> DeletePpnToTransaction(int kodeh)
+        {
+            string updateQuery = @"
+                    UPDATE htrans 
+                    SET terbitfakturppn = 0, 
+                        ppn = 0
+                    WHERE 
+                        kodeh = @Kodeh
+                ";
+            _connection.Open();
+            var affected = await _connection.ExecuteAsync(updateQuery, new { Kodeh = kodeh });
+            return Ok("PPN berhasil di hapus");
+        }
+
+        [HttpPost("lapor-ppn")]
+        public async Task<ActionResult> SetLaporPpnToTransaction(SetTanggalLaporPpnToTransactionDto dto)
+        {
+            var kodehChunk = dto.kodeh.Chunk(100);
+
+            _connection.Open();
+            var _transaction = _connection.BeginTransaction();
+            try
+            {
+                foreach (var kodehs in kodehChunk)
+                {
+                    string updateQuery = @"
+                    UPDATE htrans 
+                    SET 
+                        tglLaporPPN = @TglLaporPPN,
+                        ppndiarsip = 1
+                    WHERE 
+                        kodeh IN @Kodeh
+                ";
+                    await _connection.ExecuteAsync(updateQuery, new
+                    {
+                        TglLaporPPN = dto.TglLaporPPN.ToString("yyyy-MM-dd HH:mm:ss"),
+                        Kodeh = dto.kodeh
+                    });
+                }
+                _transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("SetTanggalPpnToTransaction failed", ex);
+                _transaction.Rollback();
+                return Problem("Terjadi kesalahan, data tidak dapat disimpan");
+            }
+
+            return Ok("Lapor PPN berhasil disimpan");
+        }
+
+        [HttpPost("tanggal-ppn")]
+        public async Task<ActionResult> SetTanggalPpnToTransaction(SetTanggalPpnToTransactionDto dto)
+        {
+            var kodehChunk = dto.kodeh.Chunk(100);
+
+            _connection.Open();
+            var _transaction = _connection.BeginTransaction();
+            try {
+                foreach (var kodehs in kodehChunk)
+                {
+                    string updateQuery = @"
+                    UPDATE htrans 
+                    SET tglPPN = @TglPPN
+                    WHERE 
+                        kodeh IN @Kodeh
+                ";
+                    await _connection.ExecuteAsync(updateQuery, new
+                    {
+                        TglPPN = dto.TglPPN.ToString("yyyy-MM-dd HH:mm:ss"),
+                        Kodeh = kodehs
+                    });
+                }
+                _transaction.Commit();
+            } catch (Exception ex)
+            {
+                _logger.LogError("SetTanggalPpnToTransaction failed", ex);
+                _transaction.Rollback();
+                return Problem("Terjadi kesalahan, data tidak dapat disimpan");
+            }
+            
+            return Ok("Tanggal PPN berhasil di set");
         }
 
 
@@ -369,7 +557,7 @@ namespace DoranOfficeBackend.Controller
 
                         //if (pelanggan.LokasiKota?.Provinsi != 23)
                         //{
-                            entity.JumlahKomisi = jumlahKomisi;
+                        entity.JumlahKomisi = jumlahKomisi;
                         //}
 
                         var logFile = new Logfile
@@ -709,16 +897,16 @@ namespace DoranOfficeBackend.Controller
                 }
 
 
-                    var komisi = (int)HitungKomisi(
-                        Convert.ToDouble(dtrans[i].Masterbarang?.Modal),
-                        Convert.ToDouble(dtrans[i].Harga),
-                        (double)pelanggan.Potongan,
-                        (double)0, (double)0,
-                        (int)pelanggan.KursKomisi,
-                        (int)(dtrans[i].Masterbarang?.Komisi ?? 0)
-                   );
-                    totalKomisi += (komisi * dtrans[i].Jumlah);
-                
+                var komisi = (int)HitungKomisi(
+                    Convert.ToDouble(dtrans[i].Masterbarang?.Modal),
+                    Convert.ToDouble(dtrans[i].Harga),
+                    (double)pelanggan.Potongan,
+                    (double)0, (double)0,
+                    (int)pelanggan.KursKomisi,
+                    (int)(dtrans[i].Masterbarang?.Komisi ?? 0)
+               );
+                totalKomisi += (komisi * dtrans[i].Jumlah);
+
                 dtrans[i].Komisi = totalKomisi;
                 if (dtrans[i].Nmrsn.Trim() != "")
                 {
@@ -786,15 +974,15 @@ namespace DoranOfficeBackend.Controller
                 // IF bukan online
                 //if (pelanggan.LokasiKota.Provinsi != 23)
                 //{
-                    var komisi = (int)HitungKomisi(
-                        Convert.ToDouble(dtrans[i].Masterbarang?.Modal),
-                        Convert.ToDouble(dtrans[i].Harga),
-                        (double)pelanggan.Potongan,
-                        (double)0, (double)0,
-                        (int)pelanggan.KursKomisi,
-                        (int)(dtrans[i].Masterbarang?.Komisi ?? 0)
-                   );
-                    totalKomisi += (komisi * dtrans[i].Jumlah);
+                var komisi = (int)HitungKomisi(
+                    Convert.ToDouble(dtrans[i].Masterbarang?.Modal),
+                    Convert.ToDouble(dtrans[i].Harga),
+                    (double)pelanggan.Potongan,
+                    (double)0, (double)0,
+                    (int)pelanggan.KursKomisi,
+                    (int)(dtrans[i].Masterbarang?.Komisi ?? 0)
+               );
+                totalKomisi += (komisi * dtrans[i].Jumlah);
                 //}
                 dtrans[i].Komisi = totalKomisi;
                 if (dtrans[i].Nmrsn.Trim() != "")
@@ -1051,11 +1239,11 @@ namespace DoranOfficeBackend.Controller
         }
         private async Task<int> GetLastKodeh()
         {
-            var lastKodeh = await _context.Htrans.MaxAsync(e => e.KodeH);
+            var lastKodeh = await _context.Htrans.MaxAsync(e => (int?)e.KodeH);
             var kodeh = 1;
             if (lastKodeh != null)
             {
-                kodeh = lastKodeh + 1;
+                kodeh = (lastKodeh ?? 0) + 1;
                 //kodeh = lastKodeh;
             }
             return kodeh;
@@ -1064,13 +1252,13 @@ namespace DoranOfficeBackend.Controller
         private async Task<int> GetLastNoTrans()
         {
             var lastNoTrans = await _context.Htrans
-                .Where(e => e.TglTrans.Month == DateTime.Now.Month && e.TglTrans.Year == DateTime.Now.Year)
-                //.Select(e => e.Notrans)
-                .MaxAsync(e => e.Notrans);
+                .Where(e => e.TglTrans.Month == DateTime.Now.Month)
+                .Where(e => e.TglTrans.Year == DateTime.Now.Year)
+                .MaxAsync(e => (int?)e.Notrans);
             var noTrans = 1;
             if (lastNoTrans != null && lastNoTrans > noTrans)
             {
-                noTrans = lastNoTrans + 1;
+                noTrans = (lastNoTrans ?? 0) + 1;
             }
             return noTrans;
         }

@@ -477,6 +477,7 @@ namespace DoranOfficeBackend.Controller.Laporan
                 parameters = parameters
             };
         }
+
     }
 
     internal class GroupByWhere
